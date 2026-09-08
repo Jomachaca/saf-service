@@ -2,8 +2,10 @@
 
 ## Estado actual
 
-**Fase 0 en curso.** Diseño cerrado, decisiones abiertas resueltas
-(ver `DECISIONES.md`), andamiaje iniciado.
+**Fase 2 casi terminada.** Funcionan la recepción, el tablero, el detalle de
+orden, el diagnóstico, el presupuesto y la vista del cliente con aprobación por
+enlace. Falta la pantalla para editar el catálogo, y el despliegue en Vercel de
+la Fase 0.
 
 Lo que está cerrado:
 
@@ -65,13 +67,18 @@ Es la fase que hace útil el sistema. Si solo se construye esto, ya sirve.
 
 ## Fase 2 — Diagnóstico, presupuesto y cliente
 
-- [ ] Catálogo de servicios editable `/admin/catalogo`
-- [ ] Diagnóstico: hallazgos y recomendación
-- [ ] Presupuesto con líneas (catálogo + libres), total en céntimos, tiempo estimado
-- [ ] Generación de token público
-- [ ] Vista pública `/o/{token}` resuelta en servidor
-- [ ] Botón de aprobar/rechazar con registro de quién y cuándo
-- [ ] Botón de WhatsApp con `wa.me` y plantilla editable
+- [ ] Catálogo de servicios editable `/admin/catalogo` — el catálogo ya se usa
+      desde el presupuesto, falta la pantalla para editarlo
+- [x] Diagnóstico: hallazgos y recomendación
+- [x] Presupuesto con líneas (catálogo + libres), total en céntimos, tiempo estimado
+- [x] Generación de token público
+- [x] Vista pública `/o/{token}` resuelta en servidor
+- [x] Botón de aprobar/rechazar con registro de quién y cuándo
+- [x] Botón de WhatsApp con `wa.me` y plantilla editable
+
+`config_sitio` se adelantó desde la Fase 3 porque ahí viven la configuración del
+IGV y las plantillas de mensaje. La tabla existe con valores por defecto; la
+pantalla que la edita sigue siendo de la Fase 3.
 
 ## Fase 3 — Landing configurable
 

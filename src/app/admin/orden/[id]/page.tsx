@@ -3,12 +3,25 @@ import { notFound } from "next/navigation";
 import { Suspense } from "react";
 
 import { formatearFechaHora, tiempoTranscurrido } from "@/lib/fecha";
-import { cargarBoxes, cargarEventos, cargarOrden, cargarTablero } from "@/lib/orden/consultas";
+import {
+  cargarBoxes,
+  cargarCatalogo,
+  cargarConfig,
+  cargarDiagnostico,
+  cargarEventos,
+  cargarOrden,
+  cargarPresupuestos,
+  cargarTablero,
+} from "@/lib/orden/consultas";
 import { etiquetaEvento } from "@/lib/orden/eventos";
 import { requerirStaff } from "@/lib/sesion";
+import { aplicarPlantilla, enlacePublico, enlaceWhatsApp } from "@/lib/whatsapp";
 
 import { Insignia, Seccion, Ubicada } from "../../componentes";
 import { CambiarEstado, MoverVehiculo } from "./acciones-orden";
+import { FormularioDiagnostico } from "./diagnostico";
+import { EditorPresupuesto, PresupuestoEmitido } from "./presupuesto";
+import { BotonWhatsApp } from "./whatsapp";
 
 export const metadata = {
   title: "Orden · SAF Service",
@@ -35,15 +48,37 @@ async function Contenido({ params }: { params: Parametros }) {
   const orden = await cargarOrden(id);
   if (!orden) notFound();
 
-  const [eventos, boxes, { ocupacion }] = await Promise.all([
-    cargarEventos(id),
-    cargarBoxes(),
-    cargarTablero(),
-  ]);
+  const [eventos, boxes, { ocupacion }, diagnostico, presupuestos, catalogo, config] =
+    await Promise.all([
+      cargarEventos(id),
+      cargarBoxes(),
+      cargarTablero(),
+      cargarDiagnostico(id),
+      cargarPresupuestos(id),
+      cargarCatalogo(),
+      cargarConfig(),
+    ]);
 
   const nombresDeBox = Object.fromEntries(boxes.map((box) => [box.id, box.nombre]));
   const boxesOcupados = [...ocupacion.keys()];
   const ahora = new Date();
+
+  const borrador = presupuestos.find((p) => p.estado === "BORRADOR") ?? null;
+  const emitidos = presupuestos.filter((p) => p.estado !== "BORRADOR");
+  const vigente = emitidos[0] ?? null;
+
+  const urlCliente = enlacePublico(orden.token_publico);
+  const mensaje = aplicarPlantilla(
+    config.plantillas.presupuesto ??
+      "Hola {cliente}, ya revisamos tu {marca} {modelo} {placa}. El diagnóstico y presupuesto están acá: {url}",
+    {
+      cliente: orden.cliente?.nombre,
+      marca: orden.vehiculo?.marca,
+      modelo: orden.vehiculo?.modelo,
+      placa: orden.vehiculo?.placa,
+      url: urlCliente,
+    },
+  );
 
   return (
     <div className="flex flex-col gap-8">
@@ -75,14 +110,37 @@ async function Contenido({ params }: { params: Parametros }) {
             <CambiarEstado ordenId={orden.id} estado={orden.estado} />
           </Seccion>
 
-          <Seccion titulo="Ubicación">
-            <MoverVehiculo
-              ordenId={orden.id}
-              ubicacion={orden.ubicacion}
-              boxId={orden.box_id}
-              boxes={boxes}
-              boxesOcupados={boxesOcupados}
-            />
+          <Seccion titulo="Diagnóstico">
+            <FormularioDiagnostico ordenId={orden.id} diagnostico={diagnostico} />
+          </Seccion>
+
+          <Seccion titulo="Presupuesto">
+            <div className="flex flex-col gap-5">
+              {emitidos.map((presupuesto) => (
+                <PresupuestoEmitido key={presupuesto.id} presupuesto={presupuesto} />
+              ))}
+
+              {vigente?.estado === "ENVIADO" ? (
+                <BotonWhatsApp
+                  ordenId={orden.id}
+                  enlace={
+                    orden.cliente?.telefono
+                      ? enlaceWhatsApp(orden.cliente.telefono, mensaje)
+                      : null
+                  }
+                  enlacePublico={urlCliente}
+                />
+              ) : null}
+
+              {vigente?.estado === "ENVIADO" ? null : (
+                <EditorPresupuesto
+                  ordenId={orden.id}
+                  catalogo={catalogo}
+                  config={config}
+                  borrador={borrador}
+                />
+              )}
+            </div>
           </Seccion>
 
           <Seccion titulo="Bitácora">
@@ -91,6 +149,9 @@ async function Contenido({ params }: { params: Parametros }) {
                 <li key={evento.id} className="flex flex-wrap items-baseline gap-x-3 py-2">
                   <span className="text-sm font-medium">{etiquetaEvento(evento.tipo)}</span>
                   <Detalle payload={evento.payload} />
+                  {evento.actor_descripcion ? (
+                    <span className="text-xs opacity-50">{evento.actor_descripcion}</span>
+                  ) : null}
                   <span className="ml-auto text-xs tabular-nums opacity-50">
                     {formatearFechaHora(evento.creado_en)}
                   </span>
@@ -109,6 +170,16 @@ async function Contenido({ params }: { params: Parametros }) {
                 <dd className="opacity-70">{orden.cliente.email}</dd>
               ) : null}
             </dl>
+          </Seccion>
+
+          <Seccion titulo="Ubicación">
+            <MoverVehiculo
+              ordenId={orden.id}
+              ubicacion={orden.ubicacion}
+              boxId={orden.box_id}
+              boxes={boxes}
+              boxesOcupados={boxesOcupados}
+            />
           </Seccion>
 
           <Seccion titulo="Ingreso">
@@ -164,6 +235,8 @@ function Detalle({ payload }: { payload: unknown }) {
   }
   if (typeof datos.ubicacion === "string") partes.push(String(datos.ubicacion));
   if (typeof datos.motivo === "string") partes.push(String(datos.motivo));
+  if (typeof datos.mecanico === "string" && datos.mecanico) partes.push(String(datos.mecanico));
+  if (typeof datos.nombre === "string" && datos.nombre) partes.push(String(datos.nombre));
   if (typeof datos.nota === "string" && datos.nota) partes.push(`"${datos.nota}"`);
 
   if (partes.length === 0) return null;

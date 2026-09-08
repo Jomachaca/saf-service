@@ -62,6 +62,60 @@ export type Database = {
         }
         Relationships: []
       }
+      config_sitio: {
+        Row: {
+          actualizado_en: string
+          descripcion: string
+          direccion: string
+          galeria: Json
+          horarios: Json
+          id: number
+          igv_incluido: boolean
+          igv_tasa_bp: number
+          logo_url: string | null
+          nombre_taller: string
+          plantillas_mensaje: Json
+          publicado_en: string | null
+          slogan: string
+          telefono: string
+          whatsapp: string
+        }
+        Insert: {
+          actualizado_en?: string
+          descripcion?: string
+          direccion?: string
+          galeria?: Json
+          horarios?: Json
+          id?: number
+          igv_incluido?: boolean
+          igv_tasa_bp?: number
+          logo_url?: string | null
+          nombre_taller?: string
+          plantillas_mensaje?: Json
+          publicado_en?: string | null
+          slogan?: string
+          telefono?: string
+          whatsapp?: string
+        }
+        Update: {
+          actualizado_en?: string
+          descripcion?: string
+          direccion?: string
+          galeria?: Json
+          horarios?: Json
+          id?: number
+          igv_incluido?: boolean
+          igv_tasa_bp?: number
+          logo_url?: string | null
+          nombre_taller?: string
+          plantillas_mensaje?: Json
+          publicado_en?: string | null
+          slogan?: string
+          telefono?: string
+          whatsapp?: string
+        }
+        Relationships: []
+      }
       contador_orden: {
         Row: {
           anio: number
@@ -76,6 +130,44 @@ export type Database = {
           ultimo?: number
         }
         Relationships: []
+      }
+      diagnostico: {
+        Row: {
+          actualizado_en: string
+          creado_en: string
+          hallazgos: string
+          id: string
+          mecanico: string
+          orden_id: string
+          recomendacion: string
+        }
+        Insert: {
+          actualizado_en?: string
+          creado_en?: string
+          hallazgos?: string
+          id?: string
+          mecanico?: string
+          orden_id: string
+          recomendacion?: string
+        }
+        Update: {
+          actualizado_en?: string
+          creado_en?: string
+          hallazgos?: string
+          id?: string
+          mecanico?: string
+          orden_id?: string
+          recomendacion?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "diagnostico_orden_id_fkey"
+            columns: ["orden_id"]
+            isOneToOne: true
+            referencedRelation: "orden_servicio"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       evento_orden: {
         Row: {
@@ -118,6 +210,51 @@ export type Database = {
             columns: ["orden_id"]
             isOneToOne: false
             referencedRelation: "orden_servicio"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      linea_presupuesto: {
+        Row: {
+          cantidad: number
+          concepto: string
+          id: string
+          orden_visual: number
+          precio_unitario_centimos: number
+          presupuesto_id: string
+          servicio_catalogo_id: string | null
+        }
+        Insert: {
+          cantidad?: number
+          concepto: string
+          id?: string
+          orden_visual?: number
+          precio_unitario_centimos: number
+          presupuesto_id: string
+          servicio_catalogo_id?: string | null
+        }
+        Update: {
+          cantidad?: number
+          concepto?: string
+          id?: string
+          orden_visual?: number
+          precio_unitario_centimos?: number
+          presupuesto_id?: string
+          servicio_catalogo_id?: string | null
+        }
+        Relationships: [
+          {
+            foreignKeyName: "linea_presupuesto_presupuesto_id_fkey"
+            columns: ["presupuesto_id"]
+            isOneToOne: false
+            referencedRelation: "presupuesto"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "linea_presupuesto_servicio_catalogo_id_fkey"
+            columns: ["servicio_catalogo_id"]
+            isOneToOne: false
+            referencedRelation: "servicio_catalogo"
             referencedColumns: ["id"]
           },
         ]
@@ -221,6 +358,65 @@ export type Database = {
           rol?: string
         }
         Relationships: []
+      }
+      presupuesto: {
+        Row: {
+          creado_en: string
+          enviado_en: string | null
+          estado: string
+          id: string
+          igv_centimos: number
+          igv_incluido: boolean
+          igv_tasa_bp: number
+          orden_id: string
+          respondido_en: string | null
+          respondido_por: string | null
+          subtotal_centimos: number
+          tiempo_estimado_min: number | null
+          total_centimos: number
+          version: number
+        }
+        Insert: {
+          creado_en?: string
+          enviado_en?: string | null
+          estado?: string
+          id?: string
+          igv_centimos?: number
+          igv_incluido?: boolean
+          igv_tasa_bp?: number
+          orden_id: string
+          respondido_en?: string | null
+          respondido_por?: string | null
+          subtotal_centimos?: number
+          tiempo_estimado_min?: number | null
+          total_centimos?: number
+          version: number
+        }
+        Update: {
+          creado_en?: string
+          enviado_en?: string | null
+          estado?: string
+          id?: string
+          igv_centimos?: number
+          igv_incluido?: boolean
+          igv_tasa_bp?: number
+          orden_id?: string
+          respondido_en?: string | null
+          respondido_por?: string | null
+          subtotal_centimos?: number
+          tiempo_estimado_min?: number | null
+          total_centimos?: number
+          version?: number
+        }
+        Relationships: [
+          {
+            foreignKeyName: "presupuesto_orden_id_fkey"
+            columns: ["orden_id"]
+            isOneToOne: false
+            referencedRelation: "orden_servicio"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       servicio_catalogo: {
         Row: {
@@ -326,8 +522,34 @@ export type Database = {
         }
         Returns: string
       }
+      enviar_presupuesto: {
+        Args: { p_presupuesto_id: string }
+        Returns: string
+      }
       es_staff: { Args: never; Returns: boolean }
       generar_token_publico: { Args: never; Returns: string }
+      guardar_diagnostico: {
+        Args: {
+          p_hallazgos: string
+          p_mecanico?: string
+          p_orden_id: string
+          p_recomendacion: string
+        }
+        Returns: string
+      }
+      guardar_presupuesto: {
+        Args: {
+          p_igv_centimos: number
+          p_igv_incluido: boolean
+          p_igv_tasa_bp: number
+          p_lineas: Json
+          p_orden_id: string
+          p_subtotal_centimos: number
+          p_tiempo_estimado_min?: number
+          p_total_centimos: number
+        }
+        Returns: string
+      }
       mover_orden: {
         Args: { p_box_id?: string; p_orden_id: string; p_ubicacion: string }
         Returns: undefined
@@ -349,6 +571,14 @@ export type Database = {
           p_vehiculo_id?: string
         }
         Returns: string
+      }
+      registrar_evento: {
+        Args: { p_orden_id: string; p_payload?: Json; p_tipo: string }
+        Returns: undefined
+      }
+      responder_presupuesto: {
+        Args: { p_decision: string; p_nombre: string; p_token: string }
+        Returns: Json
       }
       siguiente_correlativo: { Args: { p_anio: number }; Returns: number }
     }

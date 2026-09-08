@@ -76,11 +76,13 @@ app móvil, facturación electrónica, multi-taller, roles granulares.
 
 ## Estado actual
 
-**Fase 1 terminada, salvo pruebas en el taller.** El modelo conceptual está
-cerrado y las decisiones abiertas se resolvieron (`docs/DECISIONES.md` 16–23).
+**Fase 2 casi terminada.** El modelo conceptual está cerrado y las decisiones
+abiertas se resolvieron (`docs/DECISIONES.md` 16–23).
 
-Funcionan el tablero, la recepción rápida y el detalle de orden con cambio de
-estado, movimiento de box y bitácora. Las escrituras pasan por funciones de
+Funcionan el tablero, la recepción rápida, el detalle de orden con cambio de
+estado, movimiento de box y bitácora, el diagnóstico, el presupuesto con líneas
+del catálogo, y la vista pública `/o/{token}` donde el cliente aprueba o
+rechaza. Falta la pantalla de catálogo editable. Las escrituras pasan por funciones de
 Postgres (`recepcionar_vehiculo`, `cambiar_estado_orden`, `mover_orden`) para que
 el cambio y su evento entren en la misma transacción; las reglas de transición
 siguen viviendo en `src/lib/orden/estados.ts`.
