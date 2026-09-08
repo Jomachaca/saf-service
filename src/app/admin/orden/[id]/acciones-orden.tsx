@@ -7,7 +7,8 @@ import { ETIQUETA_ESTADO, transicionesValidas, type Estado } from "@/lib/orden/e
 import { UBICACIONES, ETIQUETA_UBICACION, type Ubicacion } from "@/lib/orden/ubicacion";
 
 import { Aviso } from "../../componentes";
-import { cambiarEstado, moverOrden, SIN_ERROR } from "../../acciones";
+import { cambiarEstado, moverOrden } from "../../acciones";
+import { SIN_ERROR } from "../../estado-formulario";
 
 /**
  * Las transiciones que se ofrecen salen de la función pura, no de una lista

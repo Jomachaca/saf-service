@@ -7,9 +7,12 @@ import { buscarVehiculo, type VehiculoEncontrado } from "@/lib/orden/consultas";
 import { esEstado, transicionar, type Estado } from "@/lib/orden/estados";
 import { esUbicacion, ubicar, type Ubicacion } from "@/lib/orden/ubicacion";
 import { requerirStaff } from "@/lib/sesion";
+
+import { SIN_ERROR, type EstadoFormulario } from "./estado-formulario";
 import { crearClienteServidor } from "@/lib/supabase/server";
 
-export type EstadoFormulario = { error: string | null };
+// El tipo y SIN_ERROR viven en estado-formulario.ts: un archivo "use server"
+// solo puede exportar funciones async.
 
 /**
  * Búsqueda para la recepción rápida. Va como acción del servidor y no como
@@ -19,8 +22,6 @@ export async function buscarVehiculos(termino: string): Promise<VehiculoEncontra
   await requerirStaff();
   return buscarVehiculo(termino);
 }
-
-export const SIN_ERROR: EstadoFormulario = { error: null };
 
 function texto(datos: FormData, campo: string): string {
   return String(datos.get(campo) ?? "").trim();

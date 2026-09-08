@@ -55,10 +55,10 @@ Es la fase que hace útil el sistema. Si solo se construye esto, ya sirve.
 - **El objetivo de los 60 segundos.** Hace falta cronometrar una recepción real,
   con un auto delante y alguien del taller escribiendo. Es el riesgo número dos
   de la tabla de abajo y no se cierra desde el escritorio.
-- **`evento_orden.actor`.** Las funciones lo llenan con `auth.uid()`, pero las
-  pruebas corrieron con clave de servicio, que no tiene sesión: quedó en NULL.
-  Al entrar como staff debería aparecer el perfil en cada evento. Vale la pena
-  mirarlo en la primera orden real, porque es la trazabilidad de la decisión 14.
+- ~~**`evento_orden.actor`**~~ — **verificado** con la primera orden real
+  (`OS-2026-0001`): los ocho eventos del recorrido completo, incluidos los de
+  box, quedaron atribuidos al perfil del staff. La trazabilidad de la decisión 14
+  funciona de punta a punta.
 - **No hay pruebas automatizadas.** Las funciones de la base se verificaron con
   un script descartable. Si la Fase 2 crece, conviene decidir si eso se
   formaliza.

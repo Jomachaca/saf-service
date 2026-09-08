@@ -19,11 +19,13 @@ export default function LayoutAdmin({ children }: LayoutProps<"/admin">) {
           SAF Service
         </Link>
 
+        {/*
+          Solo lo que existe. Catálogo entra con la Fase 2, Configuración con la
+          3 y Agenda con la 4; enlazarlas antes de tiempo solo produce 404 y hace
+          dudar de si algo se rompió.
+        */}
         <nav className="flex gap-4 text-sm opacity-80">
           <Link href="/admin/ingreso">Ingreso</Link>
-          <Link href="/admin/agenda">Agenda</Link>
-          <Link href="/admin/catalogo">Catálogo</Link>
-          <Link href="/admin/config">Configuración</Link>
         </nav>
 
         <Suspense fallback={<span className="ml-auto text-sm opacity-40">…</span>}>

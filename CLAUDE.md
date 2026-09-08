@@ -156,3 +156,10 @@ no apagar el prerenderizado con `instant = false`.
 **Conjuntos cerrados en la base.** `text` con `check`, no enums de Postgres: en
 v2 hay que agregar estados y roles, y reemplazar un check es una migración
 trivial.
+
+**Un archivo `"use server"` solo exporta funciones async.** Nada de constantes ni
+objetos: rompen el módulo entero al evaluarse y se caen todas las acciones a la
+vez, no solo la que toca el valor. Peor aún, **`next build` no lo detecta** — el
+error aparece solo al ejecutar. Lo compartido entre acciones y formularios va en
+un módulo aparte, como `src/app/admin/estado-formulario.ts`. Los `export type` sí
+son seguros, porque desaparecen al compilar.

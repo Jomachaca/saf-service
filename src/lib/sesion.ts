@@ -13,12 +13,21 @@ export type Perfil = {
 };
 
 /**
- * Lee el perfil del staff que hace la petición, o null si no hay sesión válida.
+ * Tres desenlaces, y hay que distinguirlos.
  *
- * `cache()` de React lo memoiza dentro del mismo render, para que varios
- * componentes lo pidan sin consultar dos veces.
+ * El del medio parece un detalle y no lo es: alguien puede tener sesión válida
+ * de Supabase y no ser staff, porque su cuenta se creó en el panel de Supabase y
+ * nadie le insertó la fila en `perfil`, o porque lo desactivaron. Tratar ese caso
+ * como "no hay sesión" produce un bucle infinito —/admin manda a /acceso, el
+ * proxy ve la sesión y manda de vuelta a /admin— que en pantalla se ve como un
+ * parpadeo constante. Por eso tiene su propio estado y su propia página.
  */
-export const obtenerPerfil = cache(async (): Promise<Perfil | null> => {
+export type EstadoSesion =
+  | { tipo: "sin-sesion" }
+  | { tipo: "sin-perfil"; usuarioId: string; email: string | null }
+  | { tipo: "staff"; perfil: Perfil };
+
+export const obtenerSesion = cache(async (): Promise<EstadoSesion> => {
   const supabase = await crearClienteServidor();
 
   // getUser() valida el token contra Supabase; getSession() se conforma con la
@@ -27,7 +36,7 @@ export const obtenerPerfil = cache(async (): Promise<Perfil | null> => {
     data: { user },
   } = await supabase.auth.getUser();
 
-  if (!user) return null;
+  if (!user) return { tipo: "sin-sesion" };
 
   const { data: perfil } = await supabase
     .from("perfil")
@@ -35,27 +44,29 @@ export const obtenerPerfil = cache(async (): Promise<Perfil | null> => {
     .eq("id", user.id)
     .maybeSingle();
 
-  if (!perfil?.activo) return null;
+  if (!perfil?.activo) {
+    return { tipo: "sin-perfil", usuarioId: user.id, email: user.email ?? null };
+  }
 
-  return perfil as Perfil;
+  return { tipo: "staff", perfil: perfil as Perfil };
 });
 
 /**
- * Para todo lo que cuelga de /admin. Redirige si no hay staff activo detrás.
+ * Para todo lo que cuelga de /admin. Esto no es la defensa —la defensa es RLS en
+ * la base—, es el guardia de la UI.
  *
- * `use cache: private` guarda el resultado en el navegador de esa persona y
- * nunca en el servidor. Es la única forma de cachear algo que depende de
- * `cookies()` con Cache Components activo (decisión 22). El `redirect()`
- * interrumpe el render lanzando, así que el caso "no hay sesión" nunca se
- * cachea: solo se guarda un perfil resuelto.
- *
- * Esto no es la defensa: la defensa es RLS en la base. Es el guardia de la UI.
+ * **No lleva `use cache: private`, y es a propósito.** Lo tuvo, y hacía parpadear
+ * el panel: esa directiva exige un `cacheLife` explícito, y sin él el valor
+ * expira enseguida, el navegador vuelve a pedir la página y el `<Suspense>` de
+ * carga aparece una y otra vez. Cachear la sesión solo sirve para prefetchear UI
+ * autenticada; leerla son dos consultas baratas. Si algún día se vuelve a
+ * cachear, tiene que ser con `cacheLife({ stale: 300 })` o más.
  */
 export async function requerirStaff(): Promise<Perfil> {
-  "use cache: private";
+  const sesion = await obtenerSesion();
 
-  const perfil = await obtenerPerfil();
-  if (!perfil) redirect("/acceso");
+  if (sesion.tipo === "sin-sesion") redirect("/acceso");
+  if (sesion.tipo === "sin-perfil") redirect("/sin-perfil");
 
-  return perfil;
+  return sesion.perfil;
 }

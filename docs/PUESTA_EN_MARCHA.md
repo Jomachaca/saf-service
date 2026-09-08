@@ -127,8 +127,14 @@ insert into perfil (id, nombre)
 values ('PEGA-AQUI-EL-UUID', 'Tu nombre');
 ```
 
-Si te saltas este paso, el login va a funcionar pero `/admin` te va a devolver a
-`/acceso` una y otra vez: hay sesión, pero no hay staff.
+Si te saltas este paso, el login funciona pero la aplicación te manda a
+`/sin-perfil`, que te muestra este mismo `insert` **ya con tu UID dentro**, listo
+para copiar. Así que si te pierdes acá, entra igual y la propia pantalla te dice
+qué ejecutar.
+
+> Lo mismo pasa si borras un usuario en Supabase y creas otro: la fila de
+> `perfil` se va en cascada con el usuario viejo y hay que insertarla de nuevo
+> para el UID nuevo.
 
 ---
 

@@ -6,7 +6,8 @@ import type { Box, VehiculoEncontrado } from "@/lib/orden/consultas";
 import { UBICACIONES, ETIQUETA_UBICACION, type Ubicacion } from "@/lib/orden/ubicacion";
 
 import { Aviso } from "../componentes";
-import { buscarVehiculos, recepcionarVehiculo, SIN_ERROR } from "../acciones";
+import { buscarVehiculos, recepcionarVehiculo } from "../acciones";
+import { SIN_ERROR } from "../estado-formulario";
 
 const CLASES_INPUT =
   "w-full rounded-md border border-black/15 px-3 py-2 dark:border-white/20";
