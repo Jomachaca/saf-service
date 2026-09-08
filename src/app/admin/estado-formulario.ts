@@ -13,3 +13,12 @@
 export type EstadoFormulario = { error: string | null };
 
 export const SIN_ERROR: EstadoFormulario = { error: null };
+
+/**
+ * Alta de catálogo. `creado` lleva el id del servicio recién insertado y se usa
+ * como `key` del formulario: cuando cambia, React lo remonta y los campos
+ * quedan vacíos para el siguiente. Sin efectos y sin limpiar estado a mano.
+ */
+export type EstadoCatalogo = EstadoFormulario & { creado: string | null };
+
+export const CATALOGO_INICIAL: EstadoCatalogo = { error: null, creado: null };

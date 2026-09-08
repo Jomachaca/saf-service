@@ -31,6 +31,7 @@ export function FormularioIngreso({
   const [elegido, setElegido] = useState<VehiculoEncontrado | null>(null);
   const [esNuevo, setEsNuevo] = useState(false);
   const [ubicacion, setUbicacion] = useState<Ubicacion>("BOX");
+  const [kilometraje, setKilometraje] = useState("");
 
   return (
     <form action={accion} className="flex max-w-2xl flex-col gap-6">
@@ -51,6 +52,8 @@ export function FormularioIngreso({
           name="kilometraje"
           type="number"
           min={0}
+          value={kilometraje}
+          onChange={(evento) => setKilometraje(evento.target.value)}
           inputMode="numeric"
           className={CLASES_INPUT}
         />
@@ -58,26 +61,29 @@ export function FormularioIngreso({
 
       <Campo etiqueta="Dónde queda">
         <div className="flex flex-col gap-2">
+          {/*
+            Botones y no radios: React no sincroniza el atributo `checked`, y
+            el reset que corre antes de cada acción devolvía la selección del
+            DOM a la que trajo el HTML. La píldora se veía marcada en un sitio
+            y el formulario mandaba otro. El valor va en el input oculto.
+          */}
+          <input type="hidden" name="ubicacion" value={ubicacion} />
+
           <div className="flex flex-wrap gap-2">
             {UBICACIONES.map((opcion) => (
-              <label
+              <button
                 key={opcion}
-                className={`cursor-pointer rounded-full border px-3 py-1 text-sm ${
+                type="button"
+                aria-pressed={ubicacion === opcion}
+                onClick={() => setUbicacion(opcion)}
+                className={`rounded-full border px-3 py-1 text-sm ${
                   ubicacion === opcion
                     ? "border-foreground bg-foreground text-background"
                     : "border-black/15 dark:border-white/20"
                 }`}
               >
-                <input
-                  type="radio"
-                  name="ubicacion"
-                  value={opcion}
-                  checked={ubicacion === opcion}
-                  onChange={() => setUbicacion(opcion)}
-                  className="sr-only"
-                />
                 {ETIQUETA_UBICACION[opcion]}
-              </label>
+              </button>
             ))}
           </div>
 
@@ -148,25 +154,34 @@ const ATAJOS_MOTIVO = [
 
 function MotivoConAtajos() {
   const campo = useRef<HTMLInputElement>(null);
+  // En estado y no en el DOM: React vacía los campos no controlados en cuanto
+  // se envía el formulario, y una recepción rechazada —placa repetida, box
+  // ocupado— borraba todo lo escrito.
+  const [motivo, setMotivo] = useState("");
 
   return (
     <div className="flex flex-col gap-2">
-      <input ref={campo} name="motivo" required className={CLASES_INPUT} />
+      <input
+        ref={campo}
+        name="motivo"
+        required
+        value={motivo}
+        onChange={(evento) => setMotivo(evento.target.value)}
+        className={CLASES_INPUT}
+      />
 
       <div className="flex flex-wrap gap-2">
-        {ATAJOS_MOTIVO.map((motivo) => (
+        {ATAJOS_MOTIVO.map((atajo) => (
           <button
-            key={motivo}
+            key={atajo}
             type="button"
             onClick={() => {
-              if (campo.current) {
-                campo.current.value = motivo;
-                campo.current.focus();
-              }
+              setMotivo(atajo);
+              campo.current?.focus();
             }}
             className="rounded-full border border-black/15 px-3 py-1 text-xs hover:border-black/40 dark:border-white/20 dark:hover:border-white/50"
           >
-            {motivo}
+            {atajo}
           </button>
         ))}
       </div>
@@ -299,6 +314,23 @@ function VehiculoElegido({
 }
 
 function VehiculoNuevo({ onCancelar }: { onCancelar: () => void }) {
+  // El estado vive acá dentro y sobrevive al error porque el componente no se
+  // desmonta. Con la placa repetida —el error más probable— se perdían los
+  // siete campos del vehículo y del cliente, justo lo caro de volver a tipear.
+  const [campos, setCampos] = useState({
+    placa: "",
+    tipo: "SEDAN",
+    marca: "",
+    modelo: "",
+    anio: "",
+    cliente_nombre: "",
+    cliente_telefono: "",
+  });
+
+  function cambiar(campo: keyof typeof campos, valor: string) {
+    setCampos((previos) => ({ ...previos, [campo]: valor }));
+  }
+
   return (
     <div className="flex flex-col gap-4 rounded-md border border-black/15 p-4 dark:border-white/20">
       <div className="flex items-baseline justify-between gap-3">
@@ -318,37 +350,78 @@ function VehiculoNuevo({ onCancelar }: { onCancelar: () => void }) {
             name="placa"
             required
             autoFocus
+            value={campos.placa}
+            onChange={(evento) => cambiar("placa", evento.target.value)}
             className={`${CLASES_INPUT} font-mono uppercase`}
           />
         </Campo>
 
         <Campo etiqueta="Tipo">
-          <select name="tipo" required defaultValue="SEDAN" className={CLASES_INPUT}>
+          <select
+            name="tipo"
+            required
+            value={campos.tipo}
+            onChange={(evento) => cambiar("tipo", evento.target.value)}
+            className={CLASES_INPUT}
+          >
             <option value="SEDAN">Sedán</option>
             <option value="GRANDE">Grande / camioneta</option>
           </select>
         </Campo>
 
         <Campo etiqueta="Marca">
-          <input name="marca" required className={CLASES_INPUT} />
+          <input
+            name="marca"
+            required
+            value={campos.marca}
+            onChange={(evento) => cambiar("marca", evento.target.value)}
+            className={CLASES_INPUT}
+          />
         </Campo>
 
         <Campo etiqueta="Modelo">
-          <input name="modelo" required className={CLASES_INPUT} />
+          <input
+            name="modelo"
+            required
+            value={campos.modelo}
+            onChange={(evento) => cambiar("modelo", evento.target.value)}
+            className={CLASES_INPUT}
+          />
         </Campo>
 
         <Campo etiqueta="Año" opcional>
-          <input name="anio" type="number" min={1900} max={2100} className={CLASES_INPUT} />
+          <input
+            name="anio"
+            type="number"
+            min={1900}
+            max={2100}
+            value={campos.anio}
+            onChange={(evento) => cambiar("anio", evento.target.value)}
+            className={CLASES_INPUT}
+          />
         </Campo>
       </div>
 
       <div className="grid gap-4 sm:grid-cols-2">
         <Campo etiqueta="Nombre del cliente">
-          <input name="cliente_nombre" required className={CLASES_INPUT} />
+          <input
+            name="cliente_nombre"
+            required
+            value={campos.cliente_nombre}
+            onChange={(evento) => cambiar("cliente_nombre", evento.target.value)}
+            className={CLASES_INPUT}
+          />
         </Campo>
 
         <Campo etiqueta="Teléfono">
-          <input name="cliente_telefono" required inputMode="tel" className={CLASES_INPUT} />
+          <input
+            name="cliente_telefono"
+            required
+            inputMode="tel"
+            value={campos.cliente_telefono}
+            onChange={(evento) => cambiar("cliente_telefono", evento.target.value)}
+            className={CLASES_INPUT}
+          />
         </Campo>
       </div>
     </div>

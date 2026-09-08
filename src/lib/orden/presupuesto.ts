@@ -70,6 +70,24 @@ export const ETIQUETA_CATEGORIA: Record<string, string> = {
   ESPECIALIZADO: "Especializados",
 };
 
+/**
+ * Las cuatro categorías del `check` de la tabla, en el orden de la taxonomía.
+ * La base sigue siendo la fuente de verdad; esto es su reflejo en TypeScript
+ * para poder ofrecerlas en un `select` sin escribirlas dos veces.
+ */
+export const CATEGORIAS = [
+  "MANTENIMIENTO",
+  "REPARACION",
+  "CARROCERIA",
+  "ESPECIALIZADO",
+] as const;
+
+export type Categoria = (typeof CATEGORIAS)[number];
+
+export function esCategoria(valor: string): valor is Categoria {
+  return (CATEGORIAS as readonly string[]).includes(valor);
+}
+
 export type ConfigSitio = ConfigIgv & {
   nombreTaller: string;
   whatsapp: string;

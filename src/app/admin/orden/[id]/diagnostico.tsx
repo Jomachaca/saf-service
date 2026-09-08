@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { formatearFechaHora } from "@/lib/fecha";
 import type { Diagnostico } from "@/lib/orden/presupuesto";
@@ -27,6 +27,19 @@ export function FormularioDiagnostico({
 }) {
   const [estado, accion, guardando] = useActionState(guardarDiagnostico, SIN_ERROR);
 
+  // Controlados a propósito. React vacía los campos no controlados apenas se
+  // envía el formulario: si la acción fallaba, el mecánico perdía el
+  // diagnóstico que acababa de escribir.
+  const [campos, setCampos] = useState({
+    hallazgos: diagnostico?.hallazgos ?? "",
+    recomendacion: diagnostico?.recomendacion ?? "",
+    mecanico: diagnostico?.mecanico ?? "",
+  });
+
+  function cambiar(campo: keyof typeof campos, valor: string) {
+    setCampos((previos) => ({ ...previos, [campo]: valor }));
+  }
+
   return (
     <form action={accion} className="flex max-w-2xl flex-col gap-3">
       <input type="hidden" name="orden_id" value={ordenId} />
@@ -37,7 +50,8 @@ export function FormularioDiagnostico({
           name="hallazgos"
           rows={3}
           required
-          defaultValue={diagnostico?.hallazgos ?? ""}
+          value={campos.hallazgos}
+          onChange={(evento) => cambiar("hallazgos", evento.target.value)}
           placeholder="Qué se encontró al revisar el vehículo"
           className={CLASES_CAMPO}
         />
@@ -48,7 +62,8 @@ export function FormularioDiagnostico({
         <textarea
           name="recomendacion"
           rows={2}
-          defaultValue={diagnostico?.recomendacion ?? ""}
+          value={campos.recomendacion}
+          onChange={(evento) => cambiar("recomendacion", evento.target.value)}
           placeholder="Qué conviene hacer, y con qué urgencia"
           className={CLASES_CAMPO}
         />
@@ -59,7 +74,8 @@ export function FormularioDiagnostico({
           <span className="opacity-70">Mecánico</span>
           <input
             name="mecanico"
-            defaultValue={diagnostico?.mecanico ?? ""}
+            value={campos.mecanico}
+            onChange={(evento) => cambiar("mecanico", evento.target.value)}
             className={`${CLASES_CAMPO} w-40`}
           />
         </label>

@@ -84,26 +84,28 @@ export function MoverVehiculo({
     <form action={accion} className="flex flex-col gap-3">
       <input type="hidden" name="orden_id" value={ordenId} />
 
+      {/*
+        Botones y no radios, por lo mismo que en la recepción: React no
+        sincroniza el atributo `checked`, y el reset previo a la acción hacía
+        que se enviara una ubicación distinta de la que estaba marcada.
+      */}
+      <input type="hidden" name="ubicacion" value={destino} />
+
       <div className="flex flex-wrap gap-2">
         {UBICACIONES.map((opcion) => (
-          <label
+          <button
             key={opcion}
-            className={`cursor-pointer rounded-full border px-3 py-1 text-sm ${
+            type="button"
+            aria-pressed={destino === opcion}
+            onClick={() => setDestino(opcion)}
+            className={`rounded-full border px-3 py-1 text-sm ${
               destino === opcion
                 ? "border-foreground bg-foreground text-background"
                 : "border-black/15 dark:border-white/20"
             }`}
           >
-            <input
-              type="radio"
-              name="ubicacion"
-              value={opcion}
-              checked={destino === opcion}
-              onChange={() => setDestino(opcion)}
-              className="sr-only"
-            />
             {ETIQUETA_UBICACION[opcion]}
-          </label>
+          </button>
         ))}
       </div>
 

@@ -1,6 +1,6 @@
 "use client";
 
-import { useActionState } from "react";
+import { useActionState, useState } from "react";
 
 import { responderPresupuesto, type EstadoRespuesta } from "./acciones";
 
@@ -17,6 +17,10 @@ const INICIAL: EstadoRespuesta = { error: null };
 export function FormularioRespuesta({ token }: { token: string }) {
   const [estado, accion, enviando] = useActionState(responderPresupuesto, INICIAL);
 
+  // Controlado: si la acción devuelve error React vaciaría el campo y el
+  // cliente tendría que volver a escribir su nombre desde el celular.
+  const [nombre, setNombre] = useState("");
+
   return (
     <form action={accion} className="flex flex-col gap-3">
       <input type="hidden" name="token" value={token} />
@@ -25,6 +29,8 @@ export function FormularioRespuesta({ token }: { token: string }) {
         <span className="text-sm font-medium">Tu nombre</span>
         <input
           name="nombre"
+          value={nombre}
+          onChange={(evento) => setNombre(evento.target.value)}
           required
           autoComplete="name"
           className="w-full rounded-md border border-black/15 px-3 py-2 dark:border-white/20"

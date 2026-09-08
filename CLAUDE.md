@@ -76,13 +76,13 @@ app móvil, facturación electrónica, multi-taller, roles granulares.
 
 ## Estado actual
 
-**Fase 2 casi terminada.** El modelo conceptual está cerrado y las decisiones
+**Fase 2 terminada.** El modelo conceptual está cerrado y las decisiones
 abiertas se resolvieron (`docs/DECISIONES.md` 16–23).
 
 Funcionan el tablero, la recepción rápida, el detalle de orden con cambio de
 estado, movimiento de box y bitácora, el diagnóstico, el presupuesto con líneas
-del catálogo, y la vista pública `/o/{token}` donde el cliente aprueba o
-rechaza. Falta la pantalla de catálogo editable. Las escrituras pasan por funciones de
+del catálogo, el catálogo editable en `/admin/catalogo`, y la vista pública
+`/o/{token}` donde el cliente aprueba o rechaza. Las escrituras de órdenes pasan por funciones de
 Postgres (`recepcionar_vehiculo`, `cambiar_estado_orden`, `mover_orden`) para que
 el cambio y su evento entren en la misma transacción; las reglas de transición
 siguen viviendo en `src/lib/orden/estados.ts`.
@@ -158,6 +158,22 @@ no apagar el prerenderizado con `instant = false`.
 **Conjuntos cerrados en la base.** `text` con `check`, no enums de Postgres: en
 v2 hay que agregar estados y roles, y reemplazar un check es una migración
 trivial.
+
+**Los formularios con acción se resetean solos.** Antes de ejecutar la acción,
+React llama a `requestFormReset` sobre el formulario (`startHostTransition`, en
+`react-dom`). Siempre, falle la acción o no. De ahí salen tres reglas:
+
+- Los campos de texto **van controlados** (`value` + `onChange`). Si no, un
+  error de la acción borra lo que la persona acababa de escribir —una recepción
+  entera, un diagnóstico— y hay que teclearlo todo de nuevo.
+- **Las casillas y los radios no sirven** dentro de un formulario con acción.
+  React mantiene sincronizado el atributo `value` de los inputs controlados, así
+  que el reset los deja bien, pero con `checked` no lo hace: la casilla vuelve a
+  lo que trajo el HTML y queda desfasada del estado. Se ve marcada una opción y
+  se envía otra. En su lugar va un `input type="hidden"` con el valor y un
+  `button type="button"` como control visible.
+- La excepción son los campos que **deben** vaciarse al enviar, como la nota que
+  acompaña un cambio de estado: esos se dejan sin controlar a propósito.
 
 **Un archivo `"use server"` solo exporta funciones async.** Nada de constantes ni
 objetos: rompen el módulo entero al evaluarse y se caen todas las acciones a la

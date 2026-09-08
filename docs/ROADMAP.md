@@ -2,10 +2,10 @@
 
 ## Estado actual
 
-**Fase 2 casi terminada.** Funcionan la recepción, el tablero, el detalle de
-orden, el diagnóstico, el presupuesto y la vista del cliente con aprobación por
-enlace. Falta la pantalla para editar el catálogo, y el despliegue en Vercel de
-la Fase 0.
+**Fase 2 terminada.** Funcionan la recepción, el tablero, el detalle de orden,
+el diagnóstico, el presupuesto, el catálogo editable y la vista del cliente con
+aprobación por enlace. De la Fase 0 sigue pendiente cerrar el despliegue en
+Vercel.
 
 Lo que está cerrado:
 
@@ -67,8 +67,7 @@ Es la fase que hace útil el sistema. Si solo se construye esto, ya sirve.
 
 ## Fase 2 — Diagnóstico, presupuesto y cliente
 
-- [ ] Catálogo de servicios editable `/admin/catalogo` — el catálogo ya se usa
-      desde el presupuesto, falta la pantalla para editarlo
+- [x] Catálogo de servicios editable `/admin/catalogo`
 - [x] Diagnóstico: hallazgos y recomendación
 - [x] Presupuesto con líneas (catálogo + libres), total en céntimos, tiempo estimado
 - [x] Generación de token público
@@ -79,6 +78,21 @@ Es la fase que hace útil el sistema. Si solo se construye esto, ya sirve.
 `config_sitio` se adelantó desde la Fase 3 porque ahí viven la configuración del
 IGV y las plantillas de mensaje. La tabla existe con valores por defecto; la
 pantalla que la edita sigue siendo de la Fase 3.
+
+### Lo verificado en el navegador
+
+Con una cuenta de staff temporal —creada y borrada en el momento— se recorrió
+`/admin/catalogo` de punta a punta: editar un precio y verlo en la base, dar de
+alta un servicio, retirarlo y comprobar que la clave pública deja de verlo.
+
+Ahí apareció un fallo que afectaba a **todos** los formularios del panel, no
+solo al nuevo: React resetea el formulario antes de ejecutar la acción, así que
+un error devolvía la pantalla en blanco de lo que se había escrito. En la
+recepción eso significaba perder los siete campos de un vehículo nuevo por una
+placa repetida, y —peor— enviar una ubicación distinta de la que se veía
+marcada. Está arreglado y explicado en `CLAUDE.md`.
+
+Sigue sin recorrerse con una sesión real el flujo de diagnóstico y presupuesto.
 
 ## Fase 3 — Landing configurable
 
