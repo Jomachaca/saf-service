@@ -10,7 +10,7 @@ import { SIN_ERROR } from "../../estado-formulario";
 import { guardarDiagnostico } from "../../acciones-presupuesto";
 
 const CLASES_CAMPO =
-  "w-full rounded-md border border-black/15 px-3 py-2 text-sm dark:border-white/20";
+  "w-full rounded-lg border border-borde bg-fondo-alto px-3 py-2 text-sm";
 
 /**
  * Hallazgos y recomendación, separados a propósito: lo que se encontró es un
@@ -83,13 +83,13 @@ export function FormularioDiagnostico({
         <button
           type="submit"
           disabled={guardando}
-          className="rounded-md border border-black/20 px-3 py-1.5 text-sm font-medium disabled:opacity-50 dark:border-white/25"
+          className="rounded-lg border border-borde-fuerte px-3 py-1.5 text-sm font-medium disabled:opacity-50"
         >
           {guardando ? "Guardando…" : diagnostico ? "Actualizar" : "Guardar diagnóstico"}
         </button>
 
         {diagnostico ? (
-          <span className="text-xs opacity-50">
+          <span className="text-xs text-tinta-tenue">
             última edición {formatearFechaHora(diagnostico.actualizado_en)}
           </span>
         ) : null}

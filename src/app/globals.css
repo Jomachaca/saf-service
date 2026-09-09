@@ -1,26 +1,162 @@
 @import "tailwindcss";
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
+/*
+  Sistema visual de SAF Service.
+
+  Los dos colores salen del logo: el granate de la «S» y el azul marino de
+  «AF SERVICE». No son intercambiables y conviene no mezclarlos al azar:
+
+    granate  = acción      → botones primarios, enlaces, lo que se pulsa
+    marino   = estructura  → cabeceras, secciones oscuras, fondos de peso
+
+  Radios, una sola escala y sin excepciones:
+
+    rounded-lg    (8px)   controles: botones, inputs, selects
+    rounded-2xl   (16px)  contenedores: tarjetas, paneles, imágenes
+    rounded-full          píldoras e insignias
+
+  Los tokens semánticos (--fondo, --tinta, --borde…) cambian con el modo
+  claro/oscuro; las rampas de marca no cambian, para que el granate siga
+  siendo el granate del logo en los dos modos.
+*/
+
+@theme {
+  --color-vino-50: #fbf1f3;
+  --color-vino-100: #f5dee3;
+  --color-vino-200: #e9bdc6;
+  --color-vino-300: #d78f9e;
+  --color-vino-400: #bd5568;
+  --color-vino-500: #9b2f44;
+  --color-vino-600: #7e1f32;
+  --color-vino-700: #6a1929;
+  --color-vino-800: #55131f;
+  --color-vino-900: #3f0e19;
+
+  --color-marino-50: #eef2f9;
+  --color-marino-100: #dce4f1;
+  --color-marino-200: #b9c7e0;
+  --color-marino-300: #8ba0c8;
+  --color-marino-400: #4a6698;
+  --color-marino-500: #2f4a75;
+  --color-marino-600: #22375c;
+  --color-marino-700: #1a2b49;
+  --color-marino-800: #14213a;
+  --color-marino-900: #0d1626;
+
+  --font-sans: var(--fuente-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-display: var(--fuente-display), var(--fuente-sans), sans-serif;
+  --font-mono: var(--fuente-mono), ui-monospace, monospace;
+
+  /* Una sola curva de salida para todo lo que se mueve. */
+  --ease-salida: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
-@theme inline {
-  --color-background: var(--background);
-  --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+:root {
+  --fondo: #f4f6fa;
+  --fondo-alto: #ffffff;
+  --fondo-hondo: #e9eef7;
+  --tinta: #131a26;
+  --tinta-suave: #4d5a70;
+  --tinta-tenue: #6b7891;
+  --borde: #dbe2ee;
+  --borde-fuerte: #c3cddf;
+  --marca: #7e1f32;
+  --marca-viva: #9b2f44;
+  --sobre-marca: #ffffff;
+  --estructura: #14213a;
+  --sobre-estructura: #eef2f9;
+
+  /* Compatibilidad con las pantallas del panel, escritas antes del sistema. */
+  --background: var(--fondo);
+  --foreground: var(--tinta);
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --fondo: #0d1420;
+    --fondo-alto: #141d2c;
+    --fondo-hondo: #090f18;
+    --tinta: #e9edf5;
+    --tinta-suave: #a4b2c9;
+    --tinta-tenue: #7d8ca6;
+    --borde: #24314a;
+    --borde-fuerte: #33425f;
+    --marca: #bd5568;
+    --marca-viva: #d78f9e;
+    --sobre-marca: #2a0a12;
+    --estructura: #0d1626;
+    --sobre-estructura: #dce4f1;
   }
 }
 
+@theme inline {
+  --color-fondo: var(--fondo);
+  --color-fondo-alto: var(--fondo-alto);
+  --color-fondo-hondo: var(--fondo-hondo);
+  --color-tinta: var(--tinta);
+  --color-tinta-suave: var(--tinta-suave);
+  --color-tinta-tenue: var(--tinta-tenue);
+  --color-borde: var(--borde);
+  --color-borde-fuerte: var(--borde-fuerte);
+  --color-marca: var(--marca);
+  --color-marca-viva: var(--marca-viva);
+  --color-sobre-marca: var(--sobre-marca);
+  --color-estructura: var(--estructura);
+  --color-sobre-estructura: var(--sobre-estructura);
+
+  --color-background: var(--fondo);
+  --color-foreground: var(--tinta);
+}
+
 body {
-  background: var(--background);
-  color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  background: var(--fondo);
+  color: var(--tinta);
+  font-family: var(--font-sans);
+}
+
+/*
+  La huella de neumático del logo, como textura. Se usa donde todavía no hay
+  foto y en franjas de separación: da carácter sin pedirle un archivo al taller.
+*/
+.trama-neumatico {
+  background-image: repeating-linear-gradient(
+    115deg,
+    color-mix(in oklab, var(--color-marino-600) 22%, transparent) 0 6px,
+    transparent 6px 13px
+  );
+}
+
+/*
+  Aparición al entrar en pantalla, en CSS y sin JavaScript. El estado inicial
+  solo se aplica si el navegador entiende la animación por scroll; donde no,
+  el contenido se ve normal desde el principio en vez de quedarse invisible.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  @supports (animation-timeline: view()) {
+    .al-entrar {
+      animation: aparecer linear both;
+      animation-timeline: view();
+      /* Termina de aparecer en cuanto el elemento entra: usar el rango
+         `cover` deja a medio camino lo que queda al final de la página,
+         donde ya no hay scroll para completar la animación. */
+      animation-range: entry 5% entry 65%;
+    }
+  }
+}
+
+@keyframes aparecer {
+  from {
+    opacity: 0;
+    transform: translateY(18px);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* El foco se ve siempre, y con el color de la marca. */
+:focus-visible {
+  outline: 2px solid var(--marca-viva);
+  outline-offset: 2px;
 }

@@ -2,10 +2,14 @@
 
 ## Estado actual
 
-**Fase 2 terminada.** Funcionan la recepción, el tablero, el detalle de orden,
-el diagnóstico, el presupuesto, el catálogo editable y la vista del cliente con
-aprobación por enlace. De la Fase 0 sigue pendiente cerrar el despliegue en
-Vercel.
+**Fase 3 terminada.** El taller tiene sitio público y panel para editarlo.
+Funcionan la recepción, el tablero, el detalle de orden, el diagnóstico, el
+presupuesto, el catálogo editable, la vista del cliente por enlace, el landing
+con los datos reales del taller y `/admin/config` con el botón de publicar.
+
+El sistema visual sale del logo: granate para lo que se pulsa, azul marino para
+la estructura, Barlow Condensed en los titulares. Está escrito una sola vez, en
+`src/app/globals.css`, y lo usan por igual el sitio y el panel.
 
 Lo que está cerrado:
 
@@ -28,11 +32,13 @@ Lo que está cerrado:
 - [x] Seed: 4 boxes sedán + 1 grande, catálogo básico de servicios
 - [x] Auth de staff y layout protegido de `/admin`
 - [x] Proyecto en Supabase creado, migraciones aplicadas y seed cargado
-- [ ] Despliegue en Vercel funcionando desde el día uno
+- [x] Despliegue en Vercel funcionando desde el día uno
 
-### Lo que falta para cerrar la fase
+### Lo que queda del despliegue
 
-Solo el despliegue en Vercel; los pasos están en `PUESTA_EN_MARCHA.md` §7.
+El sitio está en línea en la URL de Vercel. Falta apuntar el dominio propio y
+poner `NEXT_PUBLIC_SITE_URL` con esa dirección, que es la que se mete en los
+enlaces de WhatsApp que recibe el cliente.
 
 Lo verificado contra el proyecto remoto: las tres migraciones aplicadas, 5 boxes
 y 14 servicios en el seed, la cuenta de staff con su fila en `perfil`, la clave
@@ -96,11 +102,29 @@ Sigue sin recorrerse con una sesión real el flujo de diagnóstico y presupuesto
 
 ## Fase 3 — Landing configurable
 
-- [ ] `config_sitio` con esquema fijo
-- [ ] `/admin/config` — campos, logo, galería, horarios, plantillas de mensaje
-- [ ] Subida de imágenes a Storage con redimensionado y límite de peso
-- [ ] Landing consumiendo config + botón "Publicar cambios" (decisión 2)
+- [x] `config_sitio` con esquema fijo
+- [x] `/admin/config` — campos, logo, galería, horarios, plantillas de mensaje
+- [x] Subida de imágenes a Storage con redimensionado y límite de peso
+- [x] Landing consumiendo config + botón "Publicar cambios" (decisión 2)
+- [x] Sistema visual de la marca, aplicado también al panel
 - [ ] Página pública de servicios desde el catálogo
+
+### Sobre la página de servicios
+
+Los servicios del catálogo ya salen en el landing, agrupados por categoría en la
+sección «Servicios». Una ruta `/servicios` aparte, como aparece en
+`ARQUITECTURA.md` §10, no se construyó: con el catálogo actual repetiría lo que
+ya se ve en la portada. Si el catálogo crece hasta no caber ahí, se hace.
+
+### Lo verificado en el navegador
+
+Con una cuenta de staff temporal se recorrió `/admin/config` entero y se
+comprobó lo que sostiene la decisión 17: al guardar un cambio en el titular, la
+base queda con el texto nuevo y **el sitio público sigue mostrando el viejo**;
+al pulsar «Publicar cambios», el sitio pasa al nuevo. La cuenta se borró después.
+
+Falta cargar contenido real: fotos, horarios y el enlace del mapa. Sin ellos las
+secciones no se muestran, que es el comportamiento buscado.
 
 ## Fase 4 — Reservas
 

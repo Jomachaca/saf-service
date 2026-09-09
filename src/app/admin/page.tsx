@@ -21,10 +21,10 @@ export default function PaginaTablero() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex items-center gap-4">
-        <h1 className="text-lg font-semibold">Tablero</h1>
+        <h1 className="font-display text-2xl font-bold uppercase tracking-tight">Tablero</h1>
         <Link
           href="/admin/ingreso"
-          className="rounded-md bg-foreground px-3 py-1.5 text-sm font-medium text-background"
+          className="rounded-lg bg-marca px-4 py-2 font-display text-sm font-semibold uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px"
         >
           Recibir vehículo
         </Link>
@@ -38,7 +38,7 @@ export default function PaginaTablero() {
 }
 
 function Cargando() {
-  return <p className="text-sm opacity-40">Cargando el taller…</p>;
+  return <p className="text-sm text-tinta-tenue">Cargando el taller…</p>;
 }
 
 async function Contenido() {
@@ -57,9 +57,9 @@ async function Contenido() {
             .map((estado) => (
               <div
                 key={estado}
-                className="flex min-w-28 flex-col gap-1 rounded-lg border border-black/10 px-3 py-2 dark:border-white/15"
+                className="flex min-w-28 flex-col gap-1 rounded-lg border border-borde bg-fondo-alto px-3 py-2"
               >
-                <dt className="text-xs opacity-60">{ETIQUETA_ESTADO[estado]}</dt>
+                <dt className="text-xs text-tinta-tenue">{ETIQUETA_ESTADO[estado]}</dt>
                 <dd className="text-xl font-semibold tabular-nums">
                   {contadores[estado]}
                 </dd>
@@ -76,15 +76,15 @@ async function Contenido() {
             return (
               <li
                 key={box.id}
-                className={`flex flex-col gap-1.5 rounded-lg border p-3 ${
+                className={`flex flex-col items-start gap-1.5 rounded-lg border p-3 ${
                   orden
-                    ? "border-black/20 dark:border-white/25"
-                    : "border-dashed border-black/15 dark:border-white/15"
+                    ? "border-borde-fuerte bg-fondo-alto"
+                    : "border-dashed border-borde"
                 } ${box.activo ? "" : "opacity-40"}`}
               >
-                <div className="flex items-baseline justify-between gap-2">
+                <div className="flex w-full items-baseline justify-between gap-2">
                   <span className="text-sm font-medium">{box.nombre}</span>
-                  <span className="text-xs opacity-50">{box.tipo}</span>
+                  <span className="text-xs text-tinta-tenue">{box.tipo}</span>
                 </div>
 
                 {orden ? (
@@ -95,7 +95,7 @@ async function Contenido() {
                     <Insignia estado={orden.estado} />
                   </>
                 ) : (
-                  <span className="text-sm opacity-40">Libre</span>
+                  <span className="text-sm text-tinta-tenue">Libre</span>
                 )}
               </li>
             );

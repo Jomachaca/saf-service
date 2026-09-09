@@ -13,10 +13,10 @@ import { Aviso } from "../componentes";
 import { CATALOGO_INICIAL, SIN_ERROR } from "../estado-formulario";
 
 const CLASES_INPUT =
-  "w-full rounded-md border border-black/15 px-2.5 py-1.5 text-sm dark:border-white/20";
+  "w-full rounded-lg border border-borde bg-fondo-alto px-2.5 py-1.5 text-sm";
 
 const CLASES_BOTON =
-  "rounded-md border border-black/20 px-3 py-1.5 text-sm font-medium disabled:opacity-40 dark:border-white/25";
+  "rounded-lg border border-borde-fuerte px-3 py-1.5 text-sm font-medium disabled:opacity-40";
 
 /** Nombre · categoría · precio · minutos · activo · botón. */
 const COLUMNAS =
@@ -59,7 +59,7 @@ function OpcionesCategoria() {
 export function TablaCatalogo({ servicios }: { servicios: ServicioCatalogo[] }) {
   if (servicios.length === 0) {
     return (
-      <p className="text-sm opacity-60">
+      <p className="text-sm text-tinta-suave">
         El catálogo está vacío. Agrega el primer servicio abajo.
       </p>
     );
@@ -68,7 +68,7 @@ export function TablaCatalogo({ servicios }: { servicios: ServicioCatalogo[] }) 
   return (
     <div className="overflow-x-auto">
       <div className="min-w-3xl">
-        <div className={`${COLUMNAS} pb-1 text-xs opacity-60`}>
+        <div className={`${COLUMNAS} pb-1 text-xs text-tinta-tenue`}>
           <span>Servicio</span>
           <span>Categoría</span>
           <span>Precio S/</span>
@@ -109,7 +109,7 @@ function FilaServicio({ servicio }: { servicio: ServicioCatalogo }) {
   return (
     <form
       action={accion}
-      className={`${COLUMNAS} border-t border-black/5 py-1.5 dark:border-white/10 ${
+      className={`${COLUMNAS} border-t border-borde py-1.5 ${
         campos.activo ? "" : "opacity-60"
       }`}
     >
@@ -171,7 +171,7 @@ function FilaServicio({ servicio }: { servicio: ServicioCatalogo }) {
           className={`rounded-full border px-2.5 py-0.5 text-xs ${
             campos.activo
               ? "border-emerald-600/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
-              : "border-black/15 dark:border-white/20"
+              : "border-borde"
           }`}
         >
           {campos.activo ? "Sí" : "No"}

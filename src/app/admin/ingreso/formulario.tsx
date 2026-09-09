@@ -10,7 +10,7 @@ import { buscarVehiculos, recepcionarVehiculo } from "../acciones";
 import { SIN_ERROR } from "../estado-formulario";
 
 const CLASES_INPUT =
-  "w-full rounded-md border border-black/15 px-3 py-2 dark:border-white/20";
+  "w-full rounded-lg border border-borde bg-fondo-alto px-3 py-2";
 
 /**
  * Recepción en menos de 60 segundos (ARQUITECTURA.md §10). Es un requisito, no
@@ -78,8 +78,8 @@ export function FormularioIngreso({
                 onClick={() => setUbicacion(opcion)}
                 className={`rounded-full border px-3 py-1 text-sm ${
                   ubicacion === opcion
-                    ? "border-foreground bg-foreground text-background"
-                    : "border-black/15 dark:border-white/20"
+                    ? "border-marca bg-marca text-sobre-marca"
+                    : "border-borde"
                 }`}
               >
                 {ETIQUETA_UBICACION[opcion]}
@@ -112,7 +112,7 @@ export function FormularioIngreso({
         <button
           type="submit"
           disabled={enviando || (!elegido && !esNuevo)}
-          className="rounded-md bg-foreground px-4 py-2 font-medium text-background disabled:opacity-50"
+          className="rounded-lg bg-marca px-4 py-2 font-medium text-sobre-marca disabled:opacity-50"
         >
           {enviando ? "Creando orden…" : "Crear orden"}
         </button>
@@ -179,7 +179,7 @@ function MotivoConAtajos() {
               setMotivo(atajo);
               campo.current?.focus();
             }}
-            className="rounded-full border border-black/15 px-3 py-1 text-xs hover:border-black/40 dark:border-white/20 dark:hover:border-white/50"
+            className="rounded-full border border-borde px-3 py-1 text-xs hover:border-borde-fuerte"
           >
             {atajo}
           </button>
@@ -239,23 +239,23 @@ function Buscador({
         />
       </Campo>
 
-      {buscando ? <p className="text-sm opacity-50">Buscando…</p> : null}
+      {buscando ? <p className="text-sm text-tinta-tenue">Buscando…</p> : null}
 
       {resultados.length > 0 ? (
-        <ul className="flex flex-col divide-y divide-black/10 rounded-md border border-black/10 dark:divide-white/10 dark:border-white/15">
+        <ul className="flex flex-col divide-y divide-borde rounded-lg border border-borde">
           {resultados.map((vehiculo) => (
             <li key={vehiculo.id}>
               <button
                 type="button"
                 disabled={Boolean(vehiculo.ordenAbierta)}
                 onClick={() => onElegir(vehiculo)}
-                className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-left hover:bg-black/5 disabled:opacity-50 dark:hover:bg-white/5"
+                className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-left hover:bg-fondo-hondo disabled:opacity-50"
               >
                 <span className="font-mono font-medium">{vehiculo.placa}</span>
                 <span className="text-sm opacity-80">
                   {vehiculo.marca} {vehiculo.modelo}
                 </span>
-                <span className="text-sm opacity-60">{vehiculo.cliente.nombre}</span>
+                <span className="text-sm text-tinta-suave">{vehiculo.cliente.nombre}</span>
                 {vehiculo.ordenAbierta ? (
                   <span className="ml-auto text-xs opacity-70">
                     ya tiene abierta la {vehiculo.ordenAbierta.numero}
@@ -267,7 +267,7 @@ function Buscador({
         </ul>
       ) : null}
 
-      {sinResultados ? <p className="text-sm opacity-60">Sin resultados.</p> : null}
+      {sinResultados ? <p className="text-sm text-tinta-suave">Sin resultados.</p> : null}
 
       <div>
         <button
@@ -290,7 +290,7 @@ function VehiculoElegido({
   onQuitar: () => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-md border border-black/15 px-3 py-2.5 dark:border-white/20">
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-borde px-3 py-2.5">
       <input type="hidden" name="vehiculo_id" value={vehiculo.id} />
       <input type="hidden" name="cliente_id" value={vehiculo.cliente.id} />
 
@@ -298,7 +298,7 @@ function VehiculoElegido({
       <span className="text-sm opacity-80">
         {vehiculo.marca} {vehiculo.modelo}
       </span>
-      <span className="text-sm opacity-60">
+      <span className="text-sm text-tinta-suave">
         {vehiculo.cliente.nombre} · {vehiculo.cliente.telefono}
       </span>
 
@@ -332,7 +332,7 @@ function VehiculoNuevo({ onCancelar }: { onCancelar: () => void }) {
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-md border border-black/15 p-4 dark:border-white/20">
+    <div className="flex flex-col gap-4 rounded-lg border border-borde p-4">
       <div className="flex items-baseline justify-between gap-3">
         <h2 className="text-sm font-semibold">Vehículo nuevo</h2>
         <button

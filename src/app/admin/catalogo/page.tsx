@@ -14,7 +14,7 @@ export const metadata = {
 
 export default function PaginaCatalogo() {
   return (
-    <Suspense fallback={<p className="text-sm opacity-40">Cargando catálogo…</p>}>
+    <Suspense fallback={<p className="text-sm text-tinta-tenue">Cargando catálogo…</p>}>
       <Contenido />
     </Suspense>
   );
@@ -48,19 +48,19 @@ async function Contenido() {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <Link href="/admin" className="text-sm opacity-60 underline-offset-4 hover:underline">
+        <Link href="/admin" className="text-sm text-tinta-suave underline-offset-4 hover:underline">
           ← Tablero
         </Link>
 
-        <h1 className="text-xl font-semibold">Catálogo de servicios</h1>
+        <h1 className="font-display text-2xl font-bold uppercase tracking-tight">Catálogo de servicios</h1>
 
-        <p className="max-w-2xl text-sm opacity-70">
+        <p className="max-w-2xl text-sm text-tinta-suave">
           Estos precios son de referencia para armar presupuestos más rápido. Al
           agregar un servicio a un presupuesto el precio se copia a esa línea, así
           que cambiarlo acá no altera nada de lo que ya se presupuestó.
         </p>
 
-        <p className="max-w-2xl text-sm opacity-70">
+        <p className="max-w-2xl text-sm text-tinta-suave">
           {config.igvIncluido
             ? "Escribe los precios con IGV incluido: así están configurados."
             : `Escribe los precios sin IGV: el ${(config.igvTasaBp / 100).toFixed(0)} % se suma al armar el presupuesto.`}
@@ -70,14 +70,14 @@ async function Contenido() {
       <Seccion
         titulo="Servicios"
         accion={
-          <span className="text-xs opacity-50">
+          <span className="text-xs text-tinta-tenue">
             {activos} activos de {servicios.length}
           </span>
         }
       >
         <TablaCatalogo servicios={servicios} />
 
-        <p className="max-w-2xl text-xs opacity-50">
+        <p className="max-w-2xl text-xs text-tinta-tenue">
           Para retirar un servicio, desmarca «Activo». Deja de aparecer al armar
           presupuestos y en la web pública, pero los presupuestos donde ya se usó
           lo siguen mostrando tal como estaba.

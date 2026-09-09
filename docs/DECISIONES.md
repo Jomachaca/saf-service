@@ -328,3 +328,42 @@ presupuesto, no.
 
 **Consecuencia:** la función pura de transición acepta una tabla de adyacencia
 cerrada. Cualquier par que no esté en la tabla es un error, no un caso especial.
+
+---
+
+## 24. El sistema visual sale del logo, no de una paleta inventada
+
+**Decisión:** los dos colores de la marca son el granate de la «S» y el azul
+marino de «AF SERVICE» del logo del taller. El granate marca lo que se pulsa; el
+marino, la estructura. Titulares en Barlow Condensed, que es lo más cercano en
+Google Fonts al lettering italic condensado del logo, y Barlow para el texto.
+
+**Descartado:** elegir una paleta «bonita» por nuestra cuenta, y también usar el
+logo tal cual como única presencia de marca.
+
+**Por qué:** el taller ya tiene identidad, la usa en Facebook y en su fachada.
+Una web con otros colores se ve como de otra empresa. Y una identidad que solo
+existe dentro de un archivo PNG no sirve para pintar botones ni cabeceras.
+
+**Consecuencia:** el panel usa el mismo sistema que el sitio público. Pasar del
+landing al panel no se siente como cambiar de aplicación.
+
+---
+
+## 25. El landing se cachea entero y se invalida al publicar
+
+**Decisión:** `cargarSitio()` es un `use cache` con `cacheLife("max")` y
+`cacheTag("sitio")`. Guardar en `/admin/config` escribe en la base y no toca el
+caché; el botón «Publicar cambios» llama a `updateTag("sitio")`.
+
+**Descartado:** leer la configuración en cada visita.
+
+**Por qué:** es lo que hace real la decisión 17. Sin caché, «publicar» no
+significaría nada porque cada visita ya vería lo último guardado, incluido el
+horario a medio escribir.
+
+**Consecuencia:** hizo falta un cuarto cliente de Supabase (`publico.ts`, clave
+pública y sin cookies), porque dentro de un `use cache` no se puede leer
+`cookies()` y `server.ts` las lee siempre.
+
+---

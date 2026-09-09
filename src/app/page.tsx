@@ -1,40 +1,52 @@
-import Link from "next/link";
+import { cargarSitio } from "@/lib/sitio/contenido";
+import { enlaceWhatsApp } from "@/lib/whatsapp";
+
+import { Contacto } from "./_landing/contacto";
+import { Destacados } from "./_landing/destacados";
+import { Galeria } from "./_landing/galeria";
+import { Hero } from "./_landing/hero";
+import { Navegacion } from "./_landing/navegacion";
+import { Pie } from "./_landing/pie";
+import { Servicios } from "./_landing/servicios";
+import { Taller } from "./_landing/taller";
+
+/** Lo que aparece escrito cuando alguien abre WhatsApp desde el sitio. */
+const SALUDO = "Hola, quisiera consultar por un servicio para mi vehículo.";
 
 /**
- * Marcador de posición. El landing de verdad —contenido desde `config_sitio`,
- * galería, horarios— es la Fase 3. Esto solo reemplaza la plantilla de
- * create-next-app para que abrir el proyecto muestre algo del proyecto.
+ * El landing.
+ *
+ * Todo el contenido sale de `cargarSitio()`, que está cacheado hasta que
+ * alguien pulse "Publicar cambios" en `/admin/config` (decisión 17). Por eso la
+ * página se prerenderiza entera: no hay ninguna lectura dinámica acá.
+ *
+ * Cada sección decide si se muestra según lo que tenga cargado. Un taller que
+ * todavía no subió fotos ni horarios ve una página corta pero terminada, nunca
+ * un hueco ni un texto de relleno.
  */
-export default function PaginaInicio() {
+export default async function PaginaInicio() {
+  const { taller, hero, nosotros, destacados, galeria, servicios } = await cargarSitio();
+
+  const whatsappHref = taller.whatsapp ? enlaceWhatsApp(taller.whatsapp, SALUDO) : null;
+
+  const mapaHref = taller.direccion
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(taller.direccion)}`
+    : null;
+
   return (
-    <main className="mx-auto flex w-full max-w-xl flex-1 flex-col justify-center gap-6 px-6 py-16">
-      <div>
-        <h1 className="text-2xl font-semibold">SAF Service</h1>
-        <p className="mt-1 opacity-70">Taller automotriz</p>
-      </div>
+    <>
+      <Navegacion whatsapp={whatsappHref} logo={taller.logoUrl} nombre={taller.nombre} />
 
-      <p className="text-sm opacity-70">
-        El landing público se construye en la Fase 3: contenido editable desde el
-        panel, galería, horarios y formulario de reserva.
-      </p>
+      <main className="flex flex-col">
+        <Hero hero={hero} taller={taller} whatsappHref={whatsappHref} mapaHref={mapaHref} />
+        <Servicios servicios={servicios} />
+        <Destacados destacados={destacados} />
+        <Taller nosotros={nosotros} />
+        <Galeria fotos={galeria} />
+        <Contacto taller={taller} whatsappHref={whatsappHref} mapaHref={mapaHref} />
+      </main>
 
-      <div className="flex flex-col gap-2 text-sm">
-        <p className="font-medium">Rutas que ya existen</p>
-        <ul className="flex flex-col gap-1 opacity-80">
-          <li>
-            <Link href="/acceso" className="underline underline-offset-4">
-              /acceso
-            </Link>{" "}
-            — entrada del staff
-          </li>
-          <li>
-            <Link href="/admin" className="underline underline-offset-4">
-              /admin
-            </Link>{" "}
-            — tablero (pide sesión)
-          </li>
-        </ul>
-      </div>
-    </main>
+      <Pie taller={taller} />
+    </>
   );
 }

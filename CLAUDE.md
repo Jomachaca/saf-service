@@ -76,13 +76,15 @@ app móvil, facturación electrónica, multi-taller, roles granulares.
 
 ## Estado actual
 
-**Fase 2 terminada.** El modelo conceptual está cerrado y las decisiones
-abiertas se resolvieron (`docs/DECISIONES.md` 16–23).
+**Fase 3 terminada.** El modelo conceptual está cerrado y las decisiones
+abiertas se resolvieron (`docs/DECISIONES.md` 16–25).
 
 Funcionan el tablero, la recepción rápida, el detalle de orden con cambio de
 estado, movimiento de box y bitácora, el diagnóstico, el presupuesto con líneas
 del catálogo, el catálogo editable en `/admin/catalogo`, y la vista pública
-`/o/{token}` donde el cliente aprueba o rechaza. Las escrituras de órdenes pasan por funciones de
+`/o/{token}` donde el cliente aprueba o rechaza. También el landing público con
+los datos reales del taller y `/admin/config`, donde se edita todo lo que se ve
+en él. Las escrituras de órdenes pasan por funciones de
 Postgres (`recepcionar_vehiculo`, `cambiar_estado_orden`, `mover_orden`) para que
 el cambio y su evento entren en la misma transacción; las reglas de transición
 siguen viviendo en `src/lib/orden/estados.ts`.
@@ -148,12 +150,30 @@ o la base va detrás de un `<Suspense>`; el resto de la página prerenderiza. Si
 solución casi siempre es mover esa lectura a un componente hijo con su boundary,
 no apagar el prerenderizado con `instant = false`.
 
-**Las tres claves de Supabase no son intercambiables.**
+**Las cuatro claves de Supabase no son intercambiables.**
 
 - `client.ts` — navegador, clave pública, sujeto a RLS.
 - `server.ts` — Server Components, acciones y route handlers, sesión del staff.
+- `publico.ts` — clave pública sin cookies, para lo que se cachea del sitio
+  público. Dentro de un `use cache` no se puede leer `cookies()`, y el landing no
+  tiene sesión que leer.
 - `admin.ts` — clave de servicio, se salta RLS. **Solo** para resolver
   `/o/{token}` (decisión 7). Cualquier otro uso probablemente sea un error.
+
+**El sistema visual vive en `src/app/globals.css`.** Sale del logo y se resume
+en dos reglas: el **granate** es acción (botones primarios, enlaces, lo que se
+pulsa) y el **azul marino** es estructura (cabeceras, bloques oscuros). Los
+tokens semánticos —`--fondo`, `--tinta`, `--borde`, `--marca`— cambian con el
+modo claro/oscuro; las rampas `vino-*` y `marino-*` no cambian nunca. Los radios
+son tres y no hay más: `rounded-lg` en controles, `rounded-2xl` en contenedores,
+`rounded-full` en píldoras. Nada de `border-black/10` ni de opacidades sueltas
+para atenuar texto: eso ya se migró una vez.
+
+**Las animaciones son de CSS.** Las apariciones al hacer scroll usan
+`animation-timeline: view()` detrás de un `@supports`, así que donde el navegador
+no la entiende el contenido se ve normal en vez de quedarse invisible. No hay
+librería de animación instalada, y para un taller cuyos clientes entran desde
+WhatsApp con datos móviles eso es una decisión, no una carencia.
 
 **Conjuntos cerrados en la base.** `text` con `check`, no enums de Postgres: en
 v2 hay que agregar estados y roles, y reemplazar un check es una migración

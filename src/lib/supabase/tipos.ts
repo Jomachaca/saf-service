@@ -12,6 +12,31 @@ export type Database = {
   __InternalSupabase: {
     PostgrestVersion: "14.5"
   }
+  graphql_public: {
+    Tables: {
+      [_ in never]: never
+    }
+    Views: {
+      [_ in never]: never
+    }
+    Functions: {
+      graphql: {
+        Args: {
+          extensions?: Json
+          operationName?: string
+          query?: string
+          variables?: Json
+        }
+        Returns: Json
+      }
+    }
+    Enums: {
+      [_ in never]: never
+    }
+    CompositeTypes: {
+      [_ in never]: never
+    }
+  }
   public: {
     Tables: {
       box: {
@@ -67,51 +92,81 @@ export type Database = {
           actualizado_en: string
           descripcion: string
           direccion: string
-          galeria: Json
+          email: string
+          facebook: string
+          hero_imagen_url: string | null
+          hero_subtitulo: string
+          hero_titulo: string
           horarios: Json
           id: number
           igv_incluido: boolean
           igv_tasa_bp: number
+          instagram: string
           logo_url: string | null
+          mapa_url: string | null
           nombre_taller: string
+          nosotros_imagen_url: string | null
+          nosotros_texto: string
+          nosotros_titulo: string
           plantillas_mensaje: Json
           publicado_en: string | null
           slogan: string
           telefono: string
+          tiktok: string
           whatsapp: string
         }
         Insert: {
           actualizado_en?: string
           descripcion?: string
           direccion?: string
-          galeria?: Json
+          email?: string
+          facebook?: string
+          hero_imagen_url?: string | null
+          hero_subtitulo?: string
+          hero_titulo?: string
           horarios?: Json
           id?: number
           igv_incluido?: boolean
           igv_tasa_bp?: number
+          instagram?: string
           logo_url?: string | null
+          mapa_url?: string | null
           nombre_taller?: string
+          nosotros_imagen_url?: string | null
+          nosotros_texto?: string
+          nosotros_titulo?: string
           plantillas_mensaje?: Json
           publicado_en?: string | null
           slogan?: string
           telefono?: string
+          tiktok?: string
           whatsapp?: string
         }
         Update: {
           actualizado_en?: string
           descripcion?: string
           direccion?: string
-          galeria?: Json
+          email?: string
+          facebook?: string
+          hero_imagen_url?: string | null
+          hero_subtitulo?: string
+          hero_titulo?: string
           horarios?: Json
           id?: number
           igv_incluido?: boolean
           igv_tasa_bp?: number
+          instagram?: string
           logo_url?: string | null
+          mapa_url?: string | null
           nombre_taller?: string
+          nosotros_imagen_url?: string | null
+          nosotros_texto?: string
+          nosotros_titulo?: string
           plantillas_mensaje?: Json
           publicado_en?: string | null
           slogan?: string
           telefono?: string
+          tiktok?: string
           whatsapp?: string
         }
         Relationships: []
@@ -128,6 +183,36 @@ export type Database = {
         Update: {
           anio?: number
           ultimo?: number
+        }
+        Relationships: []
+      }
+      destacado: {
+        Row: {
+          activo: boolean
+          creado_en: string
+          icono: string
+          id: string
+          orden_visual: number
+          texto: string
+          titulo: string
+        }
+        Insert: {
+          activo?: boolean
+          creado_en?: string
+          icono?: string
+          id?: string
+          orden_visual?: number
+          texto?: string
+          titulo: string
+        }
+        Update: {
+          activo?: boolean
+          creado_en?: string
+          icono?: string
+          id?: string
+          orden_visual?: number
+          texto?: string
+          titulo?: string
         }
         Relationships: []
       }
@@ -213,6 +298,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      galeria_imagen: {
+        Row: {
+          activo: boolean
+          alt: string
+          creado_en: string
+          id: string
+          orden_visual: number
+          url: string
+        }
+        Insert: {
+          activo?: boolean
+          alt: string
+          creado_en?: string
+          id?: string
+          orden_visual?: number
+          url: string
+        }
+        Update: {
+          activo?: boolean
+          alt?: string
+          creado_en?: string
+          id?: string
+          orden_visual?: number
+          url?: string
+        }
+        Relationships: []
       }
       linea_presupuesto: {
         Row: {
@@ -709,6 +821,9 @@ export type CompositeTypes<
     : never
 
 export const Constants = {
+  graphql_public: {
+    Enums: {},
+  },
   public: {
     Enums: {},
   },

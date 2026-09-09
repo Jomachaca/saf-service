@@ -51,13 +51,13 @@ export function ListaOrdenes({
       </div>
 
       {visibles.length === 0 ? (
-        <p className="text-sm opacity-60">
+        <p className="text-sm text-tinta-suave">
           {ordenes.length === 0
             ? "No hay vehículos en el taller ahora mismo."
             : "Ninguna orden en ese estado."}
         </p>
       ) : (
-        <ul className="flex flex-col divide-y divide-black/10 dark:divide-white/10">
+        <ul className="flex flex-col divide-y divide-borde">
           {visibles.map((orden) => (
             <li key={orden.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2.5">
               <Insignia estado={orden.estado} />
@@ -75,7 +75,7 @@ export function ListaOrdenes({
                 box={orden.box_id ? nombresDeBox[orden.box_id] : null}
               />
 
-              <span className="min-w-0 flex-1 truncate text-sm opacity-60">
+              <span className="min-w-0 flex-1 truncate text-sm text-tinta-suave">
                 {orden.motivo_ingreso}
               </span>
 
@@ -106,8 +106,8 @@ function Chip({
       aria-pressed={activo}
       className={`rounded-full border px-3 py-1 text-xs transition ${
         activo
-          ? "border-foreground bg-foreground text-background"
-          : "border-black/15 hover:border-black/40 dark:border-white/20 dark:hover:border-white/50"
+          ? "border-marca bg-marca text-sobre-marca"
+          : "border-borde hover:border-borde-fuerte"
       }`}
     >
       {children}

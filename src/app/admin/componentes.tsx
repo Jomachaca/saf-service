@@ -33,7 +33,7 @@ export function Ubicada({
   box?: string | null;
 }) {
   return (
-    <span className="text-xs opacity-60">
+    <span className="text-xs text-tinta-tenue">
       {ubicacion === "BOX" && box ? box : ETIQUETA_UBICACION[ubicacion]}
     </span>
   );
@@ -51,7 +51,7 @@ export function Seccion({
   return (
     <section className="flex flex-col gap-3">
       <div className="flex items-baseline gap-3">
-        <h2 className="text-sm font-semibold uppercase tracking-wide opacity-60">
+        <h2 className="font-display text-sm font-semibold uppercase tracking-[0.12em] text-tinta-tenue">
           {titulo}
         </h2>
         {accion}

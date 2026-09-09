@@ -23,14 +23,14 @@ export default function PaginaSinPerfil() {
   return (
     <main className="mx-auto flex w-full max-w-md flex-1 flex-col justify-center gap-6 px-6 py-16">
       <div>
-        <h1 className="text-xl font-semibold">Tu cuenta no es de staff</h1>
-        <p className="mt-1 text-sm opacity-70">
+        <h1 className="font-display text-2xl font-bold uppercase tracking-tight">Tu cuenta no es de staff</h1>
+        <p className="mt-1 text-sm text-tinta-suave">
           El correo y la contraseña son correctos, pero esta cuenta no tiene un
           perfil en el taller, o está desactivado.
         </p>
       </div>
 
-      <Suspense fallback={<p className="text-sm opacity-40">Cargando…</p>}>
+      <Suspense fallback={<p className="text-sm text-tinta-tenue">Cargando…</p>}>
         <Detalle />
       </Suspense>
     </main>
@@ -46,13 +46,13 @@ async function Detalle() {
 
   return (
     <>
-      <div className="flex flex-col gap-3 rounded-md border border-amber-500/40 bg-amber-500/10 p-4 text-sm">
+      <div className="flex flex-col gap-3 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-sm">
         <p>
           Para darle acceso, un administrador tiene que ejecutar esto en el SQL
           Editor de Supabase:
         </p>
 
-        <pre className="overflow-x-auto rounded bg-black/10 p-3 text-xs dark:bg-white/10">
+        <pre className="overflow-x-auto rounded bg-fondo-hondo p-3 text-xs">
           <code>{`insert into perfil (id, nombre)
 values ('${sesion.usuarioId}', 'Nombre y apellido');`}</code>
         </pre>

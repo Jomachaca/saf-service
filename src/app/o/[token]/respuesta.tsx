@@ -33,7 +33,7 @@ export function FormularioRespuesta({ token }: { token: string }) {
           onChange={(evento) => setNombre(evento.target.value)}
           required
           autoComplete="name"
-          className="w-full rounded-md border border-black/15 px-3 py-2 dark:border-white/20"
+          className="w-full rounded-lg border border-borde bg-fondo-alto px-3 py-2"
         />
       </label>
 
@@ -43,7 +43,7 @@ export function FormularioRespuesta({ token }: { token: string }) {
           name="decision"
           value="APROBADO"
           disabled={enviando}
-          className="rounded-md bg-emerald-600 px-4 py-2 font-medium text-white disabled:opacity-50"
+          className="rounded-lg bg-emerald-600 px-4 py-2 font-medium text-white disabled:opacity-50"
         >
           {enviando ? "Enviando…" : "Aprobar el trabajo"}
         </button>
@@ -53,7 +53,7 @@ export function FormularioRespuesta({ token }: { token: string }) {
           name="decision"
           value="RECHAZADO"
           disabled={enviando}
-          className="rounded-md border border-black/20 px-4 py-2 font-medium disabled:opacity-50 dark:border-white/25"
+          className="rounded-lg border border-borde-fuerte px-4 py-2 font-medium disabled:opacity-50"
         >
           No por ahora
         </button>

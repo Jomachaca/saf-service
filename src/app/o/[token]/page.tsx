@@ -18,7 +18,7 @@ type Parametros = PageProps<"/o/[token]">["params"];
 
 export default function PaginaPublica({ params }: PageProps<"/o/[token]">) {
   return (
-    <Suspense fallback={<p className="p-8 text-sm opacity-40">Cargando…</p>}>
+    <Suspense fallback={<p className="p-8 text-sm text-tinta-tenue">Cargando…</p>}>
       <Contenido params={params} />
     </Suspense>
   );
@@ -35,11 +35,11 @@ async function Contenido({ params }: { params: Parametros }) {
   return (
     <main className="mx-auto flex w-full max-w-2xl flex-col gap-8 px-6 py-10">
       <header className="flex flex-col gap-1">
-        <p className="text-sm opacity-60">{orden.taller.nombre}</p>
+        <p className="text-sm text-tinta-suave">{orden.taller.nombre}</p>
         <h1 className="text-2xl font-semibold">
           {orden.vehiculo.marca} {orden.vehiculo.modelo}
         </h1>
-        <p className="text-sm opacity-70">
+        <p className="text-sm text-tinta-suave">
           <span className="font-mono">{orden.vehiculo.placa}</span>
           {orden.vehiculo.anio ? ` · ${orden.vehiculo.anio}` : ""} · ingresó el{" "}
           {formatearFecha(orden.recibidoEn)}
@@ -77,7 +77,7 @@ async function Contenido({ params }: { params: Parametros }) {
             Presupuesto
           </h2>
 
-          <ul className="flex flex-col divide-y divide-black/10 dark:divide-white/10">
+          <ul className="flex flex-col divide-y divide-borde">
             {presupuesto.lineas.map((linea, indice) => (
               <li key={indice} className="flex justify-between gap-4 py-2">
                 <span>
@@ -100,14 +100,14 @@ async function Contenido({ params }: { params: Parametros }) {
               <dt>IGV ({(presupuesto.igvTasaBp / 100).toFixed(0)} %)</dt>
               <dd className="tabular-nums">{formatearSoles(presupuesto.igvCentimos)}</dd>
             </div>
-            <div className="flex justify-between border-t border-black/10 pt-1 text-base font-semibold dark:border-white/15">
+            <div className="flex justify-between border-t border-borde pt-1 text-base font-semibold">
               <dt>Total</dt>
               <dd className="tabular-nums">{formatearSoles(presupuesto.totalCentimos)}</dd>
             </div>
           </dl>
 
           {presupuesto.tiempoEstimadoMin ? (
-            <p className="text-sm opacity-70">
+            <p className="text-sm text-tinta-suave">
               Tiempo estimado de trabajo: {presupuesto.tiempoEstimadoMin} minutos.
             </p>
           ) : null}
@@ -116,12 +116,12 @@ async function Contenido({ params }: { params: Parametros }) {
             Nunca "boleta" (regla 8): en Perú eso es un comprobante SUNAT y esto
             no lo es.
           */}
-          <p className="text-xs opacity-50">
+          <p className="text-xs text-tinta-tenue">
             Este documento es un presupuesto (proforma), no un comprobante de pago.
           </p>
 
           {presupuesto.estado === "ENVIADO" ? (
-            <div className="mt-2 flex flex-col gap-3 rounded-lg border border-black/10 p-4 dark:border-white/15">
+            <div className="mt-2 flex flex-col gap-3 rounded-lg border border-borde p-4">
               <p className="text-sm">
                 ¿Autorizas que hagamos este trabajo? Tu respuesta queda registrada
                 con la fecha y la versión del presupuesto.
@@ -129,7 +129,7 @@ async function Contenido({ params }: { params: Parametros }) {
               <FormularioRespuesta token={token} />
             </div>
           ) : (
-            <div className="mt-2 rounded-lg border border-black/10 p-4 text-sm dark:border-white/15">
+            <div className="mt-2 rounded-lg border border-borde p-4 text-sm">
               <p className="font-medium">
                 {presupuesto.estado === "APROBADO"
                   ? "Aprobaste este presupuesto."
@@ -145,7 +145,7 @@ async function Contenido({ params }: { params: Parametros }) {
           )}
         </section>
       ) : (
-        <section className="rounded-lg border border-black/10 p-4 text-sm dark:border-white/15">
+        <section className="rounded-lg border border-borde p-4 text-sm">
           <p>
             Todavía estamos revisando tu vehículo. Cuando tengamos el diagnóstico
             y el presupuesto, aparecerán acá mismo.
@@ -153,7 +153,7 @@ async function Contenido({ params }: { params: Parametros }) {
         </section>
       )}
 
-      <footer className="border-t border-black/10 pt-4 text-sm opacity-60 dark:border-white/15">
+      <footer className="border-t border-borde pt-4 text-sm text-tinta-suave">
         <p>{orden.taller.nombre}</p>
         {orden.taller.direccion ? <p>{orden.taller.direccion}</p> : null}
         {orden.taller.telefono ? <p>{orden.taller.telefono}</p> : null}

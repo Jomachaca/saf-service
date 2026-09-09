@@ -25,7 +25,7 @@ export function FormularioAcceso() {
           onChange={(evento) => setEmail(evento.target.value)}
           autoComplete="username"
           required
-          className="rounded-md border border-black/15 px-3 py-2 dark:border-white/20"
+          className="rounded-lg border border-borde px-3 py-2"
         />
       </label>
 
@@ -36,7 +36,7 @@ export function FormularioAcceso() {
           type="password"
           autoComplete="current-password"
           required
-          className="rounded-md border border-black/15 px-3 py-2 dark:border-white/20"
+          className="rounded-lg border border-borde px-3 py-2"
         />
       </label>
 
@@ -49,7 +49,7 @@ export function FormularioAcceso() {
       <button
         type="submit"
         disabled={enviando}
-        className="rounded-md bg-foreground px-4 py-2 font-medium text-background disabled:opacity-60"
+        className="rounded-lg bg-marca px-4 py-2 font-medium text-sobre-marca disabled:opacity-60"
       >
         {enviando ? "Entrando…" : "Entrar"}
       </button>

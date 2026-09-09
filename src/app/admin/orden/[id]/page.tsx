@@ -35,7 +35,7 @@ type Parametros = PageProps<"/admin/orden/[id]">["params"];
  */
 export default function PaginaOrden({ params }: PageProps<"/admin/orden/[id]">) {
   return (
-    <Suspense fallback={<p className="text-sm opacity-40">Cargando orden…</p>}>
+    <Suspense fallback={<p className="text-sm text-tinta-tenue">Cargando orden…</p>}>
       <Contenido params={params} />
     </Suspense>
   );
@@ -83,21 +83,21 @@ async function Contenido({ params }: { params: Parametros }) {
   return (
     <div className="flex flex-col gap-8">
       <div className="flex flex-col gap-2">
-        <Link href="/admin" className="text-sm opacity-60 underline-offset-4 hover:underline">
+        <Link href="/admin" className="text-sm text-tinta-suave underline-offset-4 hover:underline">
           ← Tablero
         </Link>
 
         <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-mono text-xl font-semibold">{orden.vehiculo?.placa}</h1>
+          <h1 className="font-mono text-2xl font-semibold tracking-tight">{orden.vehiculo?.placa}</h1>
           <Insignia estado={orden.estado} />
           <Ubicada
             ubicacion={orden.ubicacion}
             box={orden.box_id ? nombresDeBox[orden.box_id] : null}
           />
-          <span className="ml-auto font-mono text-sm opacity-50">{orden.numero}</span>
+          <span className="ml-auto font-mono text-sm text-tinta-tenue">{orden.numero}</span>
         </div>
 
-        <p className="text-sm opacity-70">
+        <p className="text-sm text-tinta-suave">
           {orden.vehiculo?.marca} {orden.vehiculo?.modelo}
           {orden.vehiculo?.anio ? ` · ${orden.vehiculo.anio}` : ""} ·{" "}
           {orden.vehiculo?.tipo === "GRANDE" ? "Grande" : "Sedán"}
@@ -144,13 +144,13 @@ async function Contenido({ params }: { params: Parametros }) {
           </Seccion>
 
           <Seccion titulo="Bitácora">
-            <ol className="flex flex-col divide-y divide-black/10 dark:divide-white/10">
+            <ol className="flex flex-col divide-y divide-borde">
               {eventos.map((evento) => (
                 <li key={evento.id} className="flex flex-wrap items-baseline gap-x-3 py-2">
                   <span className="text-sm font-medium">{etiquetaEvento(evento.tipo)}</span>
                   <Detalle payload={evento.payload} />
                   {evento.actor_descripcion ? (
-                    <span className="text-xs opacity-50">{evento.actor_descripcion}</span>
+                    <span className="text-xs text-tinta-tenue">{evento.actor_descripcion}</span>
                   ) : null}
                   <span className="ml-auto text-xs tabular-nums opacity-50">
                     {formatearFechaHora(evento.creado_en)}
@@ -185,11 +185,11 @@ async function Contenido({ params }: { params: Parametros }) {
           <Seccion titulo="Ingreso">
             <dl className="flex flex-col gap-2 text-sm">
               <div>
-                <dt className="text-xs opacity-50">Motivo</dt>
+                <dt className="text-xs text-tinta-tenue">Motivo</dt>
                 <dd>{orden.motivo_ingreso}</dd>
               </div>
               <div>
-                <dt className="text-xs opacity-50">Kilometraje</dt>
+                <dt className="text-xs text-tinta-tenue">Kilometraje</dt>
                 <dd>
                   {orden.kilometraje === null
                     ? "No registrado"
@@ -197,7 +197,7 @@ async function Contenido({ params }: { params: Parametros }) {
                 </dd>
               </div>
               <div>
-                <dt className="text-xs opacity-50">Recibido</dt>
+                <dt className="text-xs text-tinta-tenue">Recibido</dt>
                 <dd>
                   {formatearFechaHora(orden.recibido_en)}
                   <span className="opacity-50">
@@ -208,7 +208,7 @@ async function Contenido({ params }: { params: Parametros }) {
               </div>
               {orden.cerrado_en ? (
                 <div>
-                  <dt className="text-xs opacity-50">Cerrado</dt>
+                  <dt className="text-xs text-tinta-tenue">Cerrado</dt>
                   <dd>{formatearFechaHora(orden.cerrado_en)}</dd>
                 </div>
               ) : null}
@@ -241,5 +241,5 @@ function Detalle({ payload }: { payload: unknown }) {
 
   if (partes.length === 0) return null;
 
-  return <span className="text-sm opacity-60">{partes.join(" · ")}</span>;
+  return <span className="text-sm text-tinta-suave">{partes.join(" · ")}</span>;
 }

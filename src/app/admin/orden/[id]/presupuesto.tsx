@@ -43,7 +43,7 @@ function lineaVacia(): LineaEditable {
 }
 
 const CLASES_INPUT =
-  "w-full rounded-md border border-black/15 px-2.5 py-1.5 text-sm dark:border-white/20";
+  "w-full rounded-lg border border-borde bg-fondo-alto px-2.5 py-1.5 text-sm";
 
 /**
  * Un solo flujo de presupuesto (decisión 12 y regla 10).
@@ -168,7 +168,7 @@ export function EditorPresupuesto({
         <button
           type="button"
           onClick={() => setLineas((previas) => [...previas, lineaVacia()])}
-          className="rounded-md border border-black/20 px-3 py-1.5 text-sm dark:border-white/25"
+          className="rounded-lg border border-borde-fuerte px-3 py-1.5 text-sm"
         >
           Línea libre
         </button>
@@ -177,7 +177,7 @@ export function EditorPresupuesto({
       <div className="overflow-x-auto">
         <table className="w-full min-w-lg text-sm">
           <thead>
-            <tr className="border-b border-black/10 text-left text-xs opacity-60 dark:border-white/15">
+            <tr className="border-b border-borde text-left text-xs text-tinta-tenue">
               <th className="pb-2 font-medium">Concepto</th>
               <th className="w-20 pb-2 font-medium">Cant.</th>
               <th className="w-28 pb-2 font-medium">Precio S/</th>
@@ -192,7 +192,7 @@ export function EditorPresupuesto({
               const importe = centimos === null ? null : importeLinea(cantidad, centimos);
 
               return (
-                <tr key={linea.clave} className="border-b border-black/5 dark:border-white/10">
+                <tr key={linea.clave} className="border-b border-borde">
                   <td className="py-1.5 pr-2">
                     <input
                       value={linea.concepto}
@@ -268,7 +268,7 @@ export function EditorPresupuesto({
           <button
             type="submit"
             disabled={guardando || paraEnviar.length === 0}
-            className="rounded-md border border-black/20 px-3 py-1.5 text-sm font-medium disabled:opacity-50 dark:border-white/25"
+            className="rounded-lg border border-borde-fuerte px-3 py-1.5 text-sm font-medium disabled:opacity-50"
           >
             {guardando ? "Guardando…" : "Guardar borrador"}
           </button>
@@ -281,13 +281,13 @@ export function EditorPresupuesto({
             <button
               type="submit"
               disabled={enviando}
-              className="rounded-md bg-foreground px-3 py-1.5 text-sm font-medium text-background disabled:opacity-50"
+              className="rounded-lg bg-marca px-3 py-1.5 text-sm font-medium text-sobre-marca disabled:opacity-50"
             >
               {enviando ? "Emitiendo…" : "Emitir presupuesto"}
             </button>
           </form>
         ) : (
-          <span className="text-sm opacity-50">Guarda el borrador para poder emitirlo.</span>
+          <span className="text-sm text-tinta-tenue">Guarda el borrador para poder emitirlo.</span>
         )}
       </div>
 
@@ -314,11 +314,11 @@ function Totales({
         <dt>IGV ({(config.igvTasaBp / 100).toFixed(0)} %)</dt>
         <dd className="tabular-nums">{formatearSoles(montos.igvCentimos)}</dd>
       </div>
-      <div className="flex justify-between border-t border-black/10 pt-1 font-semibold dark:border-white/15">
+      <div className="flex justify-between border-t border-borde pt-1 font-semibold">
         <dt>Total</dt>
         <dd className="tabular-nums">{formatearSoles(montos.totalCentimos)}</dd>
       </div>
-      <p className="text-xs opacity-50">
+      <p className="text-xs text-tinta-tenue">
         {config.igvIncluido
           ? "Los precios del catálogo ya incluyen IGV."
           : "El IGV se suma a los precios del catálogo."}
@@ -333,14 +333,14 @@ function Totales({
  */
 export function PresupuestoEmitido({ presupuesto }: { presupuesto: Presupuesto }) {
   return (
-    <div className="flex flex-col gap-3 rounded-md border border-black/10 p-4 dark:border-white/15">
+    <div className="flex flex-col gap-3 rounded-lg border border-borde p-4">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="text-sm font-medium">Versión {presupuesto.version}</span>
-        <span className="text-xs opacity-60">
+        <span className="text-xs text-tinta-tenue">
           {ETIQUETA_PRESUPUESTO[presupuesto.estado]}
         </span>
         {presupuesto.enviado_en ? (
-          <span className="text-xs opacity-50">
+          <span className="text-xs text-tinta-tenue">
             enviado {formatearFechaHora(presupuesto.enviado_en)}
           </span>
         ) : null}
@@ -360,13 +360,13 @@ export function PresupuestoEmitido({ presupuesto }: { presupuesto: Presupuesto }
         ))}
       </ul>
 
-      <div className="flex justify-between border-t border-black/10 pt-2 text-sm font-semibold dark:border-white/15">
+      <div className="flex justify-between border-t border-borde pt-2 text-sm font-semibold">
         <span>Total</span>
         <span className="tabular-nums">{formatearSoles(presupuesto.total_centimos)}</span>
       </div>
 
       {presupuesto.respondido_en ? (
-        <p className="text-xs opacity-60">
+        <p className="text-xs text-tinta-tenue">
           {presupuesto.estado === "APROBADO" ? "Aprobado" : "Rechazado"} el{" "}
           {formatearFechaHora(presupuesto.respondido_en)}
           {presupuesto.respondido_por ? ` por ${presupuesto.respondido_por}` : ""}

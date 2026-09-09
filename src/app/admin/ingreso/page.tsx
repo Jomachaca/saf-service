@@ -13,14 +13,14 @@ export default function PaginaIngreso() {
   return (
     <div className="flex flex-col gap-6">
       <div>
-        <h1 className="text-lg font-semibold">Recibir vehículo</h1>
-        <p className="mt-1 text-sm opacity-60">
+        <h1 className="font-display text-2xl font-bold uppercase tracking-tight">Recibir vehículo</h1>
+        <p className="mt-1 text-sm text-tinta-suave">
           Busca por placa o teléfono. Si el vehículo ya vino antes, quedan cuatro
           campos.
         </p>
       </div>
 
-      <Suspense fallback={<p className="text-sm opacity-40">Cargando…</p>}>
+      <Suspense fallback={<p className="text-sm text-tinta-tenue">Cargando…</p>}>
         <Contenido />
       </Suspense>
     </div>

@@ -26,7 +26,7 @@ export function CambiarEstado({
   const destinos = transicionesValidas(estado);
 
   if (destinos.length === 0) {
-    return <p className="text-sm opacity-60">La orden está cerrada.</p>;
+    return <p className="text-sm text-tinta-suave">La orden está cerrada.</p>;
   }
 
   return (
@@ -37,7 +37,7 @@ export function CambiarEstado({
       <input
         name="nota"
         placeholder="Nota (opcional): queda en la bitácora"
-        className="w-full rounded-md border border-black/15 px-3 py-2 text-sm dark:border-white/20"
+        className="w-full rounded-lg border border-borde bg-fondo-alto px-3 py-2 text-sm"
       />
 
       <div className="flex flex-wrap gap-2">
@@ -48,7 +48,7 @@ export function CambiarEstado({
             name="estado_nuevo"
             value={destino}
             disabled={enviando}
-            className="rounded-md bg-foreground px-3 py-1.5 text-sm font-medium text-background disabled:opacity-50"
+            className="rounded-lg bg-marca px-3 py-1.5 text-sm font-medium text-sobre-marca disabled:opacity-50"
           >
             Pasar a {ETIQUETA_ESTADO[destino].toLowerCase()}
           </button>
@@ -100,8 +100,8 @@ export function MoverVehiculo({
             onClick={() => setDestino(opcion)}
             className={`rounded-full border px-3 py-1 text-sm ${
               destino === opcion
-                ? "border-foreground bg-foreground text-background"
-                : "border-black/15 dark:border-white/20"
+                ? "border-marca bg-marca text-sobre-marca"
+                : "border-borde"
             }`}
           >
             {ETIQUETA_UBICACION[opcion]}
@@ -114,7 +114,7 @@ export function MoverVehiculo({
           name="box_id"
           required
           defaultValue={boxId ?? ""}
-          className="w-full rounded-md border border-black/15 px-3 py-2 text-sm dark:border-white/20"
+          className="w-full rounded-lg border border-borde bg-fondo-alto px-3 py-2 text-sm"
         >
           <option value="" disabled>
             Elegir box…
@@ -137,7 +137,7 @@ export function MoverVehiculo({
         <button
           type="submit"
           disabled={enviando}
-          className="rounded-md border border-black/20 px-3 py-1.5 text-sm font-medium disabled:opacity-50 dark:border-white/25"
+          className="rounded-lg border border-borde-fuerte px-3 py-1.5 text-sm font-medium disabled:opacity-50"
         >
           {enviando ? "Moviendo…" : "Mover"}
         </button>
