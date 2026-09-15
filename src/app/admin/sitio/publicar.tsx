@@ -11,6 +11,9 @@ import { publicarCambios } from "./acciones";
  * Editar el horario, subir tres fotos y corregir el lema son varios guardados
  * seguidos. Si cada uno saliera al aire, el visitante vería la página a medio
  * hacer. Acá se guarda cuanto haga falta y se publica una vez.
+ *
+ * Vive en el layout de «Sitio web»: es la misma barra en sus tres partes. En
+ * el celular se pega debajo de la franja del menú, de ahí el `top-14`.
  */
 export function BarraPublicar({
   sinPublicar,
@@ -22,7 +25,7 @@ export function BarraPublicar({
   const [publicando, empezar] = useTransition();
 
   return (
-    <div className="sticky top-0 z-30 -mx-6 mb-2 border-b border-borde bg-fondo/95 px-6 py-3 backdrop-blur">
+    <div className="sticky top-14 z-30 -mx-4 border-b border-borde bg-fondo/95 px-4 py-3 backdrop-blur sm:-mx-6 sm:px-6 lg:top-0 lg:-mx-8 lg:px-8">
       <div className="flex flex-wrap items-center gap-x-4 gap-y-2">
         <div className="flex flex-col">
           <span className="text-sm font-medium">

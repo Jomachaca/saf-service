@@ -16,6 +16,10 @@ import {
  * Guardar escribe en la base y **no cambia el sitio público**; publicar sí
  * (decisión 17). Por eso cada acción de acá toca `actualizado_en` y solo
  * `publicarCambios` llama a `updateTag`.
+ *
+ * Revalidan el layout de «Sitio web» y no solo la página: la barra de publicar
+ * vive en el layout, y el aviso «Sin publicar» de la barra lateral se lee de
+ * las mismas dos fechas.
  */
 
 const CAMPOS_IMAGEN = {
@@ -93,7 +97,7 @@ export async function guardarIdentidad(
 
   if (error) return { error: error.message };
 
-  revalidatePath("/admin/config");
+  revalidatePath("/admin/sitio", "layout");
   return SIN_ERROR;
 }
 
@@ -120,7 +124,7 @@ export async function guardarPortada(
 
   if (error) return { error: error.message };
 
-  revalidatePath("/admin/config");
+  revalidatePath("/admin/sitio", "layout");
   return SIN_ERROR;
 }
 
@@ -143,12 +147,12 @@ export async function guardarNosotros(
 
   if (error) return { error: error.message };
 
-  revalidatePath("/admin/config");
+  revalidatePath("/admin/sitio", "layout");
   return SIN_ERROR;
 }
 
 // ---------------------------------------------------------------------------
-// Horarios
+// Horario de atención
 // ---------------------------------------------------------------------------
 
 export async function guardarHorarios(
@@ -183,120 +187,7 @@ export async function guardarHorarios(
 
   if (error) return { error: error.message };
 
-  revalidatePath("/admin/config");
-  return SIN_ERROR;
-}
-
-// ---------------------------------------------------------------------------
-// IGV y plantilla de WhatsApp
-// ---------------------------------------------------------------------------
-
-export async function guardarFacturacion(
-  _previo: EstadoFormulario,
-  datos: FormData,
-): Promise<EstadoFormulario> {
-  await requerirStaff();
-
-  const tasa = Number(texto(datos, "igv_tasa"));
-  if (!Number.isFinite(tasa) || tasa < 0 || tasa > 100) {
-    return { error: "La tasa de IGV va en porcentaje, entre 0 y 100." };
-  }
-
-  const plantilla = texto(datos, "plantilla_presupuesto");
-  if (plantilla && !plantilla.includes("{url}")) {
-    return {
-      error: "La plantilla tiene que incluir {url}: es el enlace que abre el cliente.",
-    };
-  }
-
-  const supabase = await crearClienteServidor();
-  const { data: actual } = await supabase
-    .from("config_sitio")
-    .select("plantillas_mensaje")
-    .eq("id", 1)
-    .maybeSingle();
-
-  const plantillas = (actual?.plantillas_mensaje ?? {}) as Record<string, string>;
-
-  const { error } = await supabase
-    .from("config_sitio")
-    .update(
-      conSello({
-        igv_incluido: texto(datos, "igv_incluido") === "on",
-        // En puntos básicos, enteros, como el resto del dinero (decisión 16).
-        igv_tasa_bp: Math.round(tasa * 100),
-        plantillas_mensaje: { ...plantillas, presupuesto: plantilla },
-      }),
-    )
-    .eq("id", 1);
-
-  if (error) return { error: error.message };
-
-  revalidatePath("/admin/config");
-  revalidatePath("/admin/orden/[id]", "page");
-  return SIN_ERROR;
-}
-
-// ---------------------------------------------------------------------------
-// Reservas en línea
-// ---------------------------------------------------------------------------
-
-/**
- * El interruptor, el horizonte y el mensaje para confirmar.
- *
- * El interruptor se lee en vivo: guardarlo apagado corta las reservas en ese
- * momento, sin publicar. Lo único que espera a «Publicar cambios» es el botón
- * de la portada, porque eso sí es contenido del sitio (decisión 29). Por eso
- * solo mover el interruptor marca que hay algo sin publicar.
- */
-export async function guardarReservas(
-  _previo: EstadoFormulario,
-  datos: FormData,
-): Promise<EstadoFormulario> {
-  await requerirStaff();
-
-  const activas = texto(datos, "reservas_activas") === "on";
-  const dias = Number(texto(datos, "reservas_dias"));
-
-  if (!Number.isInteger(dias) || dias < 1 || dias > 60) {
-    return { error: "Los días hacia adelante van de 1 a 60." };
-  }
-
-  const supabase = await crearClienteServidor();
-
-  const [{ data: actual }, { count: franjas }] = await Promise.all([
-    supabase
-      .from("config_sitio")
-      .select("reservas_activas, plantillas_mensaje")
-      .eq("id", 1)
-      .maybeSingle(),
-    supabase.from("franja").select("dia_semana", { count: "exact", head: true }),
-  ]);
-
-  if (activas && !franjas) {
-    return {
-      error:
-        "Primero arma el horario en Agenda, «Horario de reservas». Sin horario no hay nada que reservar.",
-    };
-  }
-
-  const plantillas = (actual?.plantillas_mensaje ?? {}) as Record<string, string>;
-
-  const cambios = {
-    reservas_activas: activas,
-    reservas_dias: dias,
-    plantillas_mensaje: { ...plantillas, reserva: texto(datos, "plantilla_reserva") },
-  };
-
-  const { error } = await supabase
-    .from("config_sitio")
-    .update(activas === actual?.reservas_activas ? cambios : conSello(cambios))
-    .eq("id", 1);
-
-  if (error) return { error: error.message };
-
-  revalidatePath("/admin/config");
-  revalidatePath("/admin/agenda");
+  revalidatePath("/admin/sitio", "layout");
   return SIN_ERROR;
 }
 
@@ -350,7 +241,7 @@ export async function fijarImagen(campo: CampoImagen, url: string | null): Promi
     await supabase.storage.from("sitio").remove([anterior]);
   }
 
-  revalidatePath("/admin/config");
+  revalidatePath("/admin/sitio", "layout");
 }
 
 // ---------------------------------------------------------------------------
@@ -389,7 +280,7 @@ export async function crearDestacado(
   if (error) return { ..._previo, error: error.message };
 
   await marcarActualizado();
-  revalidatePath("/admin/config");
+  revalidatePath("/admin/sitio", "layout");
   return { error: null, creado: data.id };
 }
 
@@ -418,7 +309,7 @@ export async function actualizarDestacado(
   if (error) return { error: error.message };
 
   await marcarActualizado();
-  revalidatePath("/admin/config");
+  revalidatePath("/admin/sitio", "layout");
   return SIN_ERROR;
 }
 
@@ -429,7 +320,7 @@ export async function borrarDestacado(id: string): Promise<void> {
   await supabase.from("destacado").delete().eq("id", id);
 
   await marcarActualizado();
-  revalidatePath("/admin/config");
+  revalidatePath("/admin/sitio", "layout");
 }
 
 // ---------------------------------------------------------------------------
@@ -459,7 +350,7 @@ export async function agregarFoto(url: string, alt: string): Promise<void> {
   });
 
   await marcarActualizado();
-  revalidatePath("/admin/config");
+  revalidatePath("/admin/sitio", "layout");
 }
 
 export async function actualizarFoto(
@@ -482,7 +373,7 @@ export async function actualizarFoto(
   if (error) return { error: error.message };
 
   await marcarActualizado();
-  revalidatePath("/admin/config");
+  revalidatePath("/admin/sitio", "layout");
   return SIN_ERROR;
 }
 
@@ -503,7 +394,7 @@ export async function borrarFoto(id: string): Promise<void> {
   if (ruta) await supabase.storage.from("sitio").remove([ruta]);
 
   await marcarActualizado();
-  revalidatePath("/admin/config");
+  revalidatePath("/admin/sitio", "layout");
 }
 
 // ---------------------------------------------------------------------------
@@ -526,7 +417,7 @@ export async function publicarCambios(): Promise<void> {
     .eq("id", 1);
 
   updateTag(TAG_SITIO);
-  revalidatePath("/admin/config");
+  revalidatePath("/admin/sitio", "layout");
 }
 
 /**

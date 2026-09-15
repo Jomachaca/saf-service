@@ -1,5 +1,7 @@
 import "server-only";
 
+import { cache } from "react";
+
 import { crearClienteServidor } from "@/lib/supabase/server";
 
 /**
@@ -120,8 +122,26 @@ export async function cargarGaleriaPanel(): Promise<FotoPanel[]> {
   return data ?? [];
 }
 
+export type Publicacion = Pick<ConfigCompleta, "actualizadoEn" | "publicadoEn">;
+
+/**
+ * Solo las dos fechas que dicen si hay algo sin publicar. Las leen el aviso de
+ * la barra lateral y la barra de publicar de «Sitio web»; con `cache`, las dos
+ * lecturas de una misma visita salen en una sola consulta.
+ */
+export const cargarPublicacion = cache(async (): Promise<Publicacion | null> => {
+  const supabase = await crearClienteServidor();
+  const { data } = await supabase
+    .from("config_sitio")
+    .select("actualizado_en, publicado_en")
+    .eq("id", 1)
+    .maybeSingle();
+
+  return data ? { actualizadoEn: data.actualizado_en, publicadoEn: data.publicado_en } : null;
+});
+
 /** ¿Hay cambios guardados que todavía no se publicaron? (decisión 17) */
-export function haySinPublicar(config: ConfigCompleta): boolean {
-  if (!config.publicadoEn) return true;
-  return new Date(config.actualizadoEn) > new Date(config.publicadoEn);
+export function haySinPublicar(publicacion: Publicacion): boolean {
+  if (!publicacion.publicadoEn) return true;
+  return new Date(publicacion.actualizadoEn) > new Date(publicacion.publicadoEn);
 }

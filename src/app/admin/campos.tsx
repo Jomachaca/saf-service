@@ -2,10 +2,11 @@
 
 import { useState } from "react";
 
-import { Aviso } from "../componentes";
+import { Aviso } from "./componentes";
 
 /**
- * Piezas de formulario del panel de configuración.
+ * Piezas de formulario de las pantallas de configuración: el sitio web, las
+ * reservas y los presupuestos.
  *
  * Todos los campos son controlados. No es una preferencia de estilo: React
  * vacía los campos no controlados antes de ejecutar la acción, y con un error
@@ -151,7 +152,7 @@ export function Bloque({
   children,
 }: {
   titulo: string;
-  descripcion?: string;
+  descripcion?: React.ReactNode;
   sucio: boolean;
   guardando: boolean;
   error: string | null;

@@ -3,10 +3,10 @@
 import { CalendarX, X } from "@phosphor-icons/react/dist/ssr";
 import { useActionState, useState, useTransition } from "react";
 
-import { abrirDia, cerrarDia } from "../../acciones-agenda";
-import { Aviso } from "../../componentes";
-import { CLASES_CAMPO } from "../../config/campos";
-import { DIA_CERRADO_INICIAL } from "../../estado-formulario";
+import { CLASES_CAMPO } from "../campos";
+import { Aviso } from "../componentes";
+import { DIA_CERRADO_INICIAL } from "../estado-formulario";
+import { abrirDia, cerrarDia } from "./acciones";
 
 export type DiaCerradoEnPantalla = {
   fecha: string;

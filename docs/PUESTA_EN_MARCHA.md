@@ -152,7 +152,8 @@ npm run dev
 
 1. Abre <http://localhost:3000/acceso> — ahora debe salir el formulario, no el aviso.
 2. Entra con el correo y la contraseña del paso 5.
-3. Deberías caer en `/admin` con tu nombre arriba a la derecha.
+3. Deberías caer en `/admin`, con tu nombre al pie de la barra lateral (en el
+   celular, dentro del menú).
 
 Si vuelve a `/acceso`, casi siempre es el paso 5.2 sin hacer, o `activo = false`
 en la fila de `perfil`.
@@ -162,7 +163,7 @@ en la fila de `perfil`.
 > y la dirección del proyecto no responde. Se reactiva desde el dashboard con
 > **Restore project**, sin perder datos. Si Vercel desplegó mientras estaba
 > pausado, la portada pudo quedar prerenderizada sin contenido: pulsa
-> «Publicar cambios» en `/admin/config` para rearmarla.
+> «Publicar cambios» en «Sitio web» para rearmarla.
 
 ---
 
@@ -185,14 +186,15 @@ WhatsApp. Si queda en `localhost`, los clientes reciben un link que no abre.
 
 Las reservas vienen apagadas y sin horario. Son tres pasos, en este orden:
 
-1. **Agenda → Horario de reservas.** Cuántos vehículos se reciben a cada hora de
+1. **Reservas → Cupos por hora.** Cuántos vehículos se reciben a cada hora de
    cada día. El botón de horario base llena la tabla con 8:00 a 17:00, de lunes
    a sábado y 2 por hora, pero no guarda: ajústalo a lo que el taller hace de
    verdad y pulsa Guardar.
-2. **Sitio → Reservas en línea.** Enciende el interruptor y guarda. Desde ese
-   momento `/reservar` acepta reservas.
-3. **Publicar cambios.** Recién ahí aparece el botón «Reservar hora» en la
-   portada (decisión 29).
+2. **Reservas → Reservas en línea**, arriba en la misma pantalla. Enciende el
+   interruptor y guarda. Desde ese momento `/reservar` acepta reservas.
+3. **Sitio web → Publicar cambios.** Recién ahí aparece el botón «Reservar
+   hora» en la portada (decisión 29). Mientras falte, la barra lateral muestra
+   «Sin publicar» junto a «Sitio web».
 
 Para apagarlas basta el paso 2: el formulario deja de aceptar reservas en ese
 momento, sin publicar.

@@ -14,7 +14,7 @@ import { Taller } from "./_landing/taller";
  * El landing.
  *
  * Todo el contenido sale de `cargarSitio()`, que está cacheado hasta que
- * alguien pulse "Publicar cambios" en `/admin/config` (decisión 17). Por eso la
+ * alguien pulse "Publicar cambios" en `/admin/sitio` (decisión 17). Por eso la
  * página se prerenderiza entera: no hay ninguna lectura dinámica acá.
  *
  * Eso incluye el botón «Reservar hora», que sale según el interruptor de

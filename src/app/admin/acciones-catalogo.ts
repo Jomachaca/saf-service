@@ -137,3 +137,54 @@ export async function crearServicio(
   revalidatePath("/admin/catalogo");
   return { error: null, creado: data.id };
 }
+
+/**
+ * El IGV y el mensaje con el que sale el presupuesto por WhatsApp.
+ *
+ * Vivía en la pantalla del sitio, pero nada de esto se publica: afecta a los
+ * presupuestos que se armen desde ahora (decisión 31). Por eso no marca
+ * «cambios sin publicar».
+ */
+export async function guardarAjustesPresupuesto(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  await requerirStaff();
+
+  const tasa = Number(texto(datos, "igv_tasa"));
+  if (!Number.isFinite(tasa) || tasa < 0 || tasa > 100) {
+    return { error: "La tasa de IGV va en porcentaje, entre 0 y 100." };
+  }
+
+  const plantilla = texto(datos, "plantilla_presupuesto");
+  if (plantilla && !plantilla.includes("{url}")) {
+    return {
+      error: "La plantilla tiene que incluir {url}: es el enlace que abre el cliente.",
+    };
+  }
+
+  const supabase = await crearClienteServidor();
+  const { data: actual } = await supabase
+    .from("config_sitio")
+    .select("plantillas_mensaje")
+    .eq("id", 1)
+    .maybeSingle();
+
+  const plantillas = (actual?.plantillas_mensaje ?? {}) as Record<string, string>;
+
+  const { error } = await supabase
+    .from("config_sitio")
+    .update({
+      igv_incluido: texto(datos, "igv_incluido") === "on",
+      // En puntos básicos, enteros, como el resto del dinero (decisión 16).
+      igv_tasa_bp: Math.round(tasa * 100),
+      plantillas_mensaje: { ...plantillas, presupuesto: plantilla },
+    })
+    .eq("id", 1);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/catalogo");
+  revalidatePath("/admin/orden/[id]", "page");
+  return SIN_ERROR;
+}

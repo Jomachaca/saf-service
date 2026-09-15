@@ -1,11 +1,11 @@
-import Link from "next/link";
 import { Suspense } from "react";
 
 import { cargarCatalogo, cargarConfig } from "@/lib/orden/consultas";
 import { CATEGORIAS, type ServicioCatalogo } from "@/lib/orden/presupuesto";
 import { requerirStaff } from "@/lib/sesion";
 
-import { Seccion } from "../componentes";
+import { Encabezado, Seccion } from "../componentes";
+import { AjustesPresupuesto } from "./presupuestos";
 import { NuevoServicio, TablaCatalogo } from "./tabla";
 
 export const metadata = {
@@ -47,25 +47,19 @@ async function Contenido() {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
-        <Link href="/admin" className="text-sm text-tinta-suave underline-offset-4 hover:underline">
-          ← Tablero
-        </Link>
-
-        <h1 className="font-display text-2xl font-bold uppercase tracking-tight">Catálogo de servicios</h1>
-
-        <p className="max-w-2xl text-sm text-tinta-suave">
-          Estos precios son de referencia para armar presupuestos más rápido. Al
-          agregar un servicio a un presupuesto el precio se copia a esa línea, así
-          que cambiarlo acá no altera nada de lo que ya se presupuestó.
-        </p>
-
-        <p className="max-w-2xl text-sm text-tinta-suave">
-          {config.igvIncluido
-            ? "Escribe los precios con IGV incluido: así están configurados."
-            : `Escribe los precios sin IGV: el ${(config.igvTasaBp / 100).toFixed(0)} % se suma al armar el presupuesto.`}
-        </p>
-      </div>
+      <Encabezado
+        titulo="Catálogo"
+        descripcion={
+          <>
+            Precios de referencia para armar presupuestos más rápido. Al agregar un servicio a un
+            presupuesto, el precio se copia a esa línea: cambiarlo acá no altera nada de lo que ya
+            se presupuestó.{" "}
+            {config.igvIncluido
+              ? "Escribe los precios con IGV incluido, como está configurado más abajo."
+              : `Escribe los precios sin IGV: el ${(config.igvTasaBp / 100).toFixed(0)} % se suma al armar el presupuesto.`}
+          </>
+        }
+      />
 
       <Seccion
         titulo="Servicios"
@@ -87,6 +81,14 @@ async function Contenido() {
       <Seccion titulo="Agregar servicio">
         <NuevoServicio />
       </Seccion>
+
+      <div className="max-w-4xl">
+        <AjustesPresupuesto
+          igvIncluido={config.igvIncluido}
+          igvTasaBp={config.igvTasaBp}
+          plantilla={config.plantillas.presupuesto ?? ""}
+        />
+      </div>
     </div>
   );
 }

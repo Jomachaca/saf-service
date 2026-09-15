@@ -77,16 +77,17 @@ app móvil, facturación electrónica, multi-taller, roles granulares.
 ## Estado actual
 
 **Fase 4 terminada.** El modelo conceptual está cerrado y las decisiones
-abiertas se resolvieron (`docs/DECISIONES.md` 16–30).
+abiertas se resolvieron (`docs/DECISIONES.md` 16–31).
 
 Funcionan el tablero, la recepción rápida, el detalle de orden con cambio de
 estado, movimiento de box y bitácora, el diagnóstico, el presupuesto con líneas
 del catálogo, el catálogo editable en `/admin/catalogo`, y la vista pública
 `/o/{token}` donde el cliente aprueba o rechaza. También el landing público con
-los datos reales del taller y `/admin/config`, donde se edita todo lo que se ve
-en él. Y las reservas: el formulario `/reservar`, la agenda en `/admin/agenda`
-con su horario de cupos, y «Recibir», que abre la recepción con la reserva
-puesta.
+los datos reales del taller y «Sitio web» (`/admin/sitio`), donde se edita todo
+lo que se ve en él. Y las reservas: el formulario `/reservar`, la agenda en
+`/admin/agenda`, su configuración en `/admin/reservas` y «Recibir», que abre la
+recepción con la reserva puesta. El panel se recorre con una barra lateral de
+seis entradas (decisión 31).
 
 Las escrituras de órdenes pasan por funciones de Postgres
 (`recepcionar_vehiculo`, `cambiar_estado_orden`, `mover_orden`) para que el
@@ -96,8 +97,8 @@ viven en `src/lib/orden/estados.ts` y, las de la reserva, en
 `crear_reserva()`, porque esa función la llama la clave pública (decisión 26).
 
 El proyecto de Supabase está enlazado, con todas las migraciones aplicadas, y
-el sitio está desplegado en Vercel. Las reservas quedaron apagadas y sin
-horario hasta que el taller las encienda (`docs/PUESTA_EN_MARCHA.md` §8).
+el sitio está desplegado en Vercel. El taller ya cargó sus cupos y encendió las
+reservas (`docs/PUESTA_EN_MARCHA.md` §8).
 
 La aplicación arranca sin Supabase configurado: el landing se ve y `/admin`
 manda a `/acceso`, que explica qué falta. Eso es deliberado —una variable
@@ -175,6 +176,17 @@ para atenuar texto: eso ya se migró una vez.
 no la entiende el contenido se ve normal en vez de quedarse invisible. No hay
 librería de animación instalada, y para un taller cuyos clientes entran desde
 WhatsApp con datos móviles eso es una decisión, no una carencia.
+
+**El panel mide su columna, no la pantalla.** La barra lateral ocupa 15rem
+desde `lg`, así que un `lg:grid-cols-…` cree tener 1024 px donde quedan poco
+más de 720. Lo que se reacomoda según el ancho dentro de una pantalla del panel
+usa container queries (`@xl:`, `@4xl:`), medidas contra la columna que arma
+`src/app/admin/layout.tsx`.
+
+**Pocas entradas en la barra lateral.** Son seis, en dos grupos (decisión 31).
+Una pantalla nueva entra primero en una sección que ya existe, y una pantalla
+que empieza a apilar formularios se parte en partes con su propia ruta antes de
+crecer hacia abajo.
 
 **Conjuntos cerrados en la base.** `text` con `check`, no enums de Postgres: en
 v2 hay que agregar estados y roles, y reemplazar un check es una migración

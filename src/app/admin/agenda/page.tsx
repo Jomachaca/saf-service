@@ -15,7 +15,7 @@ import { ETIQUETA_TIPO_VEHICULO, motivoCompleto, type ReservaAgenda } from "@/li
 import { requerirStaff } from "@/lib/sesion";
 import { aplicarPlantilla, enlaceWhatsApp, formatearCelular } from "@/lib/whatsapp";
 
-import { Aviso, Seccion } from "../componentes";
+import { Aviso, Encabezado, Seccion } from "../componentes";
 import { FilaReserva, type ReservaEnFila } from "./fila";
 
 export const metadata = {
@@ -33,16 +33,19 @@ export const metadata = {
 export default function PaginaAgenda() {
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-wrap items-center gap-3">
-        <h1 className="font-display text-2xl font-bold uppercase tracking-tight">Agenda</h1>
-        <Link
-          href="/admin/agenda/horario"
-          className="ml-auto inline-flex items-center gap-1.5 rounded-lg border border-borde-fuerte px-3 py-1.5 text-sm font-medium transition-colors duration-200 hover:border-marca hover:text-marca"
-        >
-          <Clock size={16} />
-          Horario de reservas
-        </Link>
-      </div>
+      <Encabezado
+        titulo="Agenda"
+        descripcion="Quién dijo que venía: lo que quedó sin cerrar, hoy y lo que sigue."
+        acciones={
+          <Link
+            href="/admin/reservas"
+            className="inline-flex items-center gap-1.5 rounded-lg border border-borde-fuerte px-3 py-1.5 text-sm font-medium transition-colors duration-200 hover:border-marca hover:text-marca"
+          >
+            <Clock size={16} />
+            Horario y cupos
+          </Link>
+        }
+      />
 
       <Suspense fallback={<p className="text-sm text-tinta-tenue">Cargando la agenda…</p>}>
         <Contenido />
@@ -107,8 +110,8 @@ async function Contenido() {
       {!agenda.hayHorario ? (
         <Nota>
           Todavía no hay horario de reservas.{" "}
-          <Link href="/admin/agenda/horario" className="font-medium text-marca underline underline-offset-4">
-            Ármalo acá
+          <Link href="/admin/reservas" className="font-medium text-marca underline underline-offset-4">
+            Ármalo en Reservas
           </Link>
           : sin horario, el formulario no tiene ninguna hora para ofrecer.
         </Nota>
@@ -132,8 +135,8 @@ async function Contenido() {
       ) : (
         <Nota>
           Las reservas por la web están apagadas. Se encienden en{" "}
-          <Link href="/admin/config#reservas" className="font-medium text-marca underline underline-offset-4">
-            Sitio, «Reservas en línea»
+          <Link href="/admin/reservas" className="font-medium text-marca underline underline-offset-4">
+            Reservas
           </Link>
           .
         </Nota>

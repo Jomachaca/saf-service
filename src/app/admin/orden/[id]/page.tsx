@@ -104,7 +104,7 @@ async function Contenido({ params }: { params: Parametros }) {
         </p>
       </div>
 
-      <div className="grid gap-8 lg:grid-cols-[minmax(0,1fr)_20rem]">
+      <div className="grid gap-8 @4xl:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="flex flex-col gap-8">
           <Seccion titulo="Estado">
             <CambiarEstado ordenId={orden.id} estado={orden.estado} />

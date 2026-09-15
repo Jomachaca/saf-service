@@ -9,7 +9,7 @@ import { supabaseConfigurado } from "@/lib/supabase/env";
  * El contenido del landing, cacheado hasta que alguien publique.
  *
  * `cacheLife("max")` más `cacheTag` implementan la decisión 17: guardar en
- * `/admin/config` escribe en la base y no cambia nada de lo que se ve; el botón
+ * `/admin/sitio` escribe en la base y no cambia nada de lo que se ve; el botón
  * "Publicar cambios" llama a `updateTag(TAG_SITIO)` y recién ahí el sitio
  * público se rearma. Editar horarios y galería son varios guardados seguidos, y
  * con revalidación automática el visitante vería la página a medio hacer.

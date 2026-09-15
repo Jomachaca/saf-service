@@ -31,6 +31,19 @@ const nextConfig: NextConfig = {
   // invalida por tag, no por ruta.
   cacheComponents: true,
   images: origenDeSupabase(),
+
+  // El indicador de Next en desarrollo, abajo a la derecha: en su lugar de
+  // siempre tapaba el nombre y el botón «Salir» de la barra lateral del panel.
+  devIndicators: { position: "bottom-right" },
+
+  // Rutas que cambiaron al ordenar el panel en una barra lateral (decisión 31).
+  // Temporales: una pestaña vieja o un marcador siguen llegando a su pantalla.
+  async redirects() {
+    return [
+      { source: "/admin/config", destination: "/admin/sitio", permanent: false },
+      { source: "/admin/agenda/horario", destination: "/admin/reservas", permanent: false },
+    ];
+  },
 };
 
 export default nextConfig;

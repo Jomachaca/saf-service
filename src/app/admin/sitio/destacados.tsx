@@ -6,10 +6,10 @@ import { useActionState, useState, useTransition } from "react";
 import type { DestacadoPanel } from "@/lib/sitio/panel";
 import { CLAVES_ICONO, ICONOS, Icono } from "@/lib/sitio/iconos";
 
+import { CLASES_CAMPO, Interruptor } from "../campos";
 import { Aviso } from "../componentes";
 import { CATALOGO_INICIAL, SIN_ERROR } from "../estado-formulario";
 import { actualizarDestacado, borrarDestacado, crearDestacado } from "./acciones";
-import { CLASES_CAMPO, Interruptor } from "./campos";
 
 /**
  * Los puntos de «Cómo trabajamos».

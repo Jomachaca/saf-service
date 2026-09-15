@@ -5,12 +5,13 @@
 **Fase 4 terminada.** El taller recibe reservas por la web, con cupos por hora.
 Funcionan la recepción, el tablero, el detalle de orden, el diagnóstico, el
 presupuesto, el catálogo editable, la vista del cliente por enlace, el landing
-con los datos reales del taller, `/admin/config` con el botón de publicar, el
+con los datos reales del taller, «Sitio web» con el botón de publicar, el
 formulario `/reservar`, la agenda y su horario de cupos. Una reserva se recibe
 desde la agenda y entra por la misma recepción de siempre.
 
-Las reservas quedaron **apagadas y sin horario**, a propósito: el taller arma
-sus cupos y las enciende cuando quiera (`PUESTA_EN_MARCHA.md` §8).
+Las reservas salieron **apagadas y sin horario**, a propósito, y el taller ya
+armó sus cupos y las encendió (`PUESTA_EN_MARCHA.md` §8). El panel se recorre
+con una barra lateral de seis entradas (decisión 31).
 
 El sistema visual sale del logo: granate para lo que se pulsa, azul marino para
 la estructura, Barlow Condensed en los titulares. Está escrito una sola vez, en
@@ -108,7 +109,7 @@ Sigue sin recorrerse con una sesión real el flujo de diagnóstico y presupuesto
 ## Fase 3 — Landing configurable
 
 - [x] `config_sitio` con esquema fijo
-- [x] `/admin/config` — campos, logo, galería, horarios, plantillas de mensaje
+- [x] `/admin/config` (hoy `/admin/sitio`) — campos, logo, galería, horarios, plantillas de mensaje
 - [x] Subida de imágenes a Storage con redimensionado y límite de peso
 - [x] Landing consumiendo config + botón "Publicar cambios" (decisión 2)
 - [x] Sistema visual de la marca, aplicado también al panel
@@ -133,7 +134,7 @@ secciones no se muestran, que es el comportamiento buscado.
 
 ## Fase 4 — Reservas
 
-- [x] Tabla `reserva` y cupos configurables por día y hora (`/admin/agenda/horario`)
+- [x] Tabla `reserva` y cupos configurables por día y hora (hoy en `/admin/reservas`)
 - [x] Formulario público `/reservar` con "No sé qué tiene" como primera opción
 - [x] Agenda `/admin/agenda`
 - [x] Conversión reserva → orden desde la agenda
@@ -187,6 +188,40 @@ configuración volvieron a sus valores.
   mensaje armado, pero no se mandó a nadie: el número de prueba no existe.
 - **Un día entero con tráfico real.** Las reglas aguantan la concurrencia en
   la prueba; cuántos cupos por hora le sirven al taller se sabe usándolo.
+
+## Panel con barra lateral
+
+Entre la Fase 4 y la 5, el panel pasó de una cabecera con enlaces a una barra
+lateral de seis entradas, y las pantallas largas se partieron (decisión 31):
+«Sitio web» son tres pantallas en vez de ocho formularios seguidos, todo lo de
+las reservas se configura en una sola, y el IGV quedó al pie del catálogo.
+
+### Lo verificado
+
+En el navegador, con una cuenta de staff temporal y **sin guardar nada**: la
+base ya tenía el horario real del taller y las reservas encendidas, y una huella
+de esas tablas tomada antes y después de probar salió igual.
+
+- Las seis entradas, la encendida en cada pantalla (el detalle de una orden
+  enciende «Tablero») y las tres partes de «Sitio web», que solo aparecen dentro
+  de su sección.
+- El aviso «Sin publicar» junto a «Sitio web», con cambios guardados después de
+  la última publicación.
+- `/admin/config` redirige a `/admin/sitio`.
+- A 1024 px el detalle de orden va en una columna y a 1280 en dos; el tablero
+  reparte los boxes según el ancho que deja la barra.
+- En el celular, el cajón se abre, un enlace navega y lo cierra, un toque en el
+  fondo también lo cierra, y la barra de publicar se pega debajo de la franja
+  del menú.
+- Modo claro y oscuro.
+- `next build` pasa, con todas las rutas del panel en prerenderizado parcial.
+
+### Lo que no está verificado
+
+- **Guardar desde las pantallas nuevas.** Los formularios y sus acciones son
+  los de antes, cambiados de lugar, y TypeScript confirma que cada uno llega a
+  la suya. Pero no se envió ninguno, para no tocar el horario real, así que
+  tampoco se vio el aviso «Sin publicar» aparecer o irse después de guardar.
 
 ## Fase 5 — Fotos e historial
 

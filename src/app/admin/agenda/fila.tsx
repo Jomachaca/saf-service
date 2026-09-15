@@ -36,9 +36,12 @@ export type ReservaEnFila = {
  * Cada fila es su propia grilla, así que las columnas solo se alinean entre
  * filas si tienen ancho fijo. La de acciones lo tiene: si dependiera de cuántos
  * botones hay, una fila cancelada correría el vehículo hacia la derecha.
+ *
+ * El corte es `@4xl` y no `lg`: se mide la columna del panel, no la pantalla,
+ * porque la barra lateral se queda con parte del ancho.
  */
 const COLUMNAS =
-  "lg:grid lg:grid-cols-[6.5rem_minmax(0,1fr)_minmax(0,11rem)_20rem] lg:items-center lg:gap-4";
+  "@4xl:grid @4xl:grid-cols-[6.5rem_minmax(0,1fr)_minmax(0,11rem)_20rem] @4xl:items-center @4xl:gap-4";
 
 const BOTON =
   "rounded-lg border border-borde-fuerte px-3 py-1.5 text-sm font-medium transition-colors " +
@@ -70,7 +73,7 @@ export function FilaReserva({ reserva }: { reserva: ReservaEnFila }) {
 
   return (
     <li className={`flex flex-col gap-3 px-4 py-3.5 ${COLUMNAS} ${abierta ? "" : "text-tinta-suave"}`}>
-      <div className="flex items-baseline gap-2 lg:flex-col lg:gap-1">
+      <div className="flex items-baseline gap-2 @4xl:flex-col @4xl:gap-1">
         <span className="font-display text-lg leading-none font-semibold tabular-nums">
           {reserva.hora}
         </span>
@@ -104,7 +107,7 @@ export function FilaReserva({ reserva }: { reserva: ReservaEnFila }) {
         {reserva.vehiculo ? <span className="text-xs text-tinta-tenue">{reserva.tipo}</span> : null}
       </div>
 
-      <form action={accion} className="flex flex-wrap items-center gap-2 lg:justify-end">
+      <form action={accion} className="flex flex-wrap items-center gap-2 @4xl:justify-end">
         <input type="hidden" name="id" value={reserva.id} />
         <input type="hidden" name="estado_actual" value={reserva.estado} />
 
@@ -176,7 +179,7 @@ export function FilaReserva({ reserva }: { reserva: ReservaEnFila }) {
       </form>
 
       {resultado.error ? (
-        <div className="lg:col-span-4">
+        <div className="@4xl:col-span-4">
           <Aviso>{resultado.error}</Aviso>
         </div>
       ) : null}

@@ -250,10 +250,15 @@ Misma tabla, mismo formulario. El catálogo es solo autocompletado.
 /admin/ingreso          recepción rápida (flujo de 6 pasos); ?reserva={id} la prellena
 /admin/orden/{id}       detalle: diagnóstico, presupuesto, fotos, eventos
 /admin/agenda           de hoy en adelante, más las que quedaron sin cerrar
-/admin/agenda/horario   cupos por día y hora, días cerrados
-/admin/catalogo         servicios, precios, duraciones
-/admin/config           CMS del landing + plantillas de mensaje
+/admin/reservas         interruptor de reservas, cupos por día y hora, días cerrados
+/admin/catalogo         servicios, precios y duraciones; IGV y mensaje del presupuesto
+/admin/sitio            CMS del landing: datos y contacto, horario de atención
+/admin/sitio/portada    titular, foto de portada y «Cómo trabajamos»
+/admin/sitio/taller     presentación del taller y galería
 ```
+
+El panel se recorre con una barra lateral de seis entradas en dos grupos: lo
+del día a día arriba y la configuración abajo (decisión 31).
 
 ### Recepción rápida — objetivo: menos de 60 segundos
 ```
@@ -298,7 +303,7 @@ peso. Sin esto, el dueño sube fotos de 8 MB desde el celular y el landing tarda
 
 ## 14. Caché del landing
 
-El landing es mayormente estático. Al guardar en `/admin/config` hay que
+El landing es mayormente estático. Al guardar en `/admin/sitio` hay que
 revalidar, o el admin cambia el slogan y no ve nada.
 
 **Resuelto (decisión 17): botón explícito de "Publicar cambios".** Guardar escribe

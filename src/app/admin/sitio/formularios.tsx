@@ -1,23 +1,19 @@
 "use client";
 
 import { Plus, X } from "@phosphor-icons/react/dist/ssr";
-import Link from "next/link";
 import { useActionState, useState } from "react";
 
-import { PLANTILLA_RESERVA } from "@/lib/reserva/modelo";
 import type { ConfigCompleta } from "@/lib/sitio/panel";
 
+import { Area, Bloque, Campo, Entrada, useCampos } from "../campos";
 import { SIN_ERROR } from "../estado-formulario";
 import {
   fijarImagen,
-  guardarFacturacion,
   guardarHorarios,
   guardarIdentidad,
   guardarNosotros,
   guardarPortada,
-  guardarReservas,
 } from "./acciones";
-import { Area, Bloque, Campo, Entrada, Interruptor, useCampos } from "./campos";
 import { ImagenActual, SubirImagen } from "./subir";
 
 function distinto<T extends Record<string, string | boolean>>(campos: T, inicial: T) {
@@ -188,7 +184,7 @@ export function Identidad({ config }: { config: ConfigCompleta }) {
 
 // ---------------------------------------------------------------------------
 
-export function Portada({ config }: { config: ConfigCompleta }) {
+export function Titular({ config }: { config: ConfigCompleta }) {
   const inicial = {
     hero_titulo: config.heroTitulo,
     hero_subtitulo: config.heroSubtitulo,
@@ -200,8 +196,8 @@ export function Portada({ config }: { config: ConfigCompleta }) {
   return (
     <form action={accion}>
       <Bloque
-        titulo="Portada"
-        descripcion="Lo primero que se ve al abrir el sitio. Dos líneas como mucho en el titular: si es más largo, se ve apretado en el celular."
+        titulo="Titular y foto"
+        descripcion="Dos líneas como mucho en el titular: si es más largo, se ve apretado en el celular."
         sucio={distinto(campos, inicial)}
         guardando={guardando}
         error={estado.error}
@@ -244,7 +240,7 @@ export function Portada({ config }: { config: ConfigCompleta }) {
 
 // ---------------------------------------------------------------------------
 
-export function ElTaller({ config }: { config: ConfigCompleta }) {
+export function Presentacion({ config }: { config: ConfigCompleta }) {
   const inicial = {
     nosotros_titulo: config.nosotrosTitulo,
     nosotros_texto: config.nosotrosTexto,
@@ -256,7 +252,7 @@ export function ElTaller({ config }: { config: ConfigCompleta }) {
   return (
     <form action={accion}>
       <Bloque
-        titulo="El taller"
+        titulo="Presentación"
         descripcion="Quiénes son y qué hacen. Los saltos de línea que escribas se respetan en el sitio."
         sucio={distinto(campos, inicial)}
         guardando={guardando}
@@ -299,7 +295,7 @@ export function ElTaller({ config }: { config: ConfigCompleta }) {
 
 // ---------------------------------------------------------------------------
 
-export function Horarios({ config }: { config: ConfigCompleta }) {
+export function HorarioAtencion({ config }: { config: ConfigCompleta }) {
   const [estado, accion, guardando] = useActionState(guardarHorarios, SIN_ERROR);
   const [filas, setFilas] = useState(config.horarios);
 
@@ -317,7 +313,7 @@ export function Horarios({ config }: { config: ConfigCompleta }) {
       <input type="hidden" name="horarios" value={serializado} />
 
       <Bloque
-        titulo="Horario"
+        titulo="Horario de atención"
         descripcion="Si lo dejas vacío, la sección no aparece en el sitio. Es preferible a publicar un horario que no es."
         sucio={sucio}
         guardando={guardando}
@@ -372,140 +368,6 @@ export function Horarios({ config }: { config: ConfigCompleta }) {
           <Plus size={16} />
           Agregar día
         </button>
-      </Bloque>
-    </form>
-  );
-}
-
-// ---------------------------------------------------------------------------
-
-export function Facturacion({ config }: { config: ConfigCompleta }) {
-  const inicial = {
-    igv_incluido: config.igvIncluido,
-    igv_tasa: String(config.igvTasaBp / 100),
-    plantilla_presupuesto: config.plantillas.presupuesto ?? "",
-  };
-
-  const [estado, accion, guardando] = useActionState(guardarFacturacion, SIN_ERROR);
-  const [campos, cambiar] = useCampos(inicial);
-
-  return (
-    <form action={accion}>
-      <Bloque
-        titulo="IGV y mensaje de WhatsApp"
-        descripcion="Afecta a los presupuestos nuevos. Los ya emitidos guardan la configuración que tenían cuando se enviaron."
-        sucio={distinto(campos, inicial)}
-        guardando={guardando}
-        error={estado.error}
-      >
-        <div className="grid items-end gap-4 md:grid-cols-2">
-          <div className="flex flex-col gap-2">
-            <span className="text-sm font-medium">Los precios del catálogo</span>
-            <Interruptor
-              nombre="igv_incluido"
-              activo={campos.igv_incluido}
-              onCambiar={(v) => cambiar("igv_incluido", v)}
-              etiqueta={campos.igv_incluido ? "ya incluyen IGV" : "son sin IGV"}
-            />
-          </div>
-
-          <Campo etiqueta="Tasa de IGV" ayuda="En porcentaje. En Perú son 18.">
-            <Entrada
-              nombre="igv_tasa"
-              valor={campos.igv_tasa}
-              onCambiar={(v) => cambiar("igv_tasa", v)}
-              inputMode="decimal"
-            />
-          </Campo>
-        </div>
-
-        <Campo
-          etiqueta="Mensaje del presupuesto"
-          ayuda="Marcadores disponibles: {cliente}, {marca}, {modelo}, {placa} y {url}. El {url} es obligatorio."
-        >
-          <Area
-            nombre="plantilla_presupuesto"
-            filas={3}
-            valor={campos.plantilla_presupuesto}
-            onCambiar={(v) => cambiar("plantilla_presupuesto", v)}
-          />
-        </Campo>
-      </Bloque>
-    </form>
-  );
-}
-
-// ---------------------------------------------------------------------------
-
-export function ReservasEnLinea({ config }: { config: ConfigCompleta }) {
-  const inicial = {
-    reservas_activas: config.reservasActivas,
-    reservas_dias: String(config.reservasDias),
-    plantilla_reserva: config.plantillas.reserva || PLANTILLA_RESERVA,
-  };
-
-  const [estado, accion, guardando] = useActionState(guardarReservas, SIN_ERROR);
-  const [campos, cambiar] = useCampos(inicial);
-
-  return (
-    <form action={accion} id="reservas" className="scroll-mt-28">
-      <Bloque
-        titulo="Reservas en línea"
-        descripcion="Encenderlo abre el formulario de reservas en ese momento. El botón «Reservar hora» aparece en la portada cuando publicas."
-        sucio={distinto(campos, inicial)}
-        guardando={guardando}
-        error={estado.error}
-      >
-        <Interruptor
-          nombre="reservas_activas"
-          activo={campos.reservas_activas}
-          onCambiar={(v) => cambiar("reservas_activas", v)}
-          etiqueta={
-            campos.reservas_activas
-              ? "Se aceptan reservas por la web"
-              : "No se aceptan reservas por la web"
-          }
-        />
-
-        <div className="grid items-start gap-4 md:grid-cols-2">
-          <Campo
-            etiqueta="Días hacia adelante"
-            ayuda="Hasta cuántos días desde hoy se puede reservar. Entre 1 y 60."
-          >
-            <Entrada
-              nombre="reservas_dias"
-              valor={campos.reservas_dias}
-              onCambiar={(v) => cambiar("reservas_dias", v)}
-              inputMode="numeric"
-            />
-          </Campo>
-
-          <div className="flex flex-col gap-1.5">
-            <span className="text-sm font-medium">Horario y cupos</span>
-            <p className="text-sm text-tinta-suave">
-              Cuántos vehículos se reciben a cada hora se arma en{" "}
-              <Link
-                href="/admin/agenda/horario"
-                className="font-medium text-marca underline underline-offset-4"
-              >
-                Horario de reservas
-              </Link>
-              .
-            </p>
-          </div>
-        </div>
-
-        <Campo
-          etiqueta="Mensaje para confirmar por WhatsApp"
-          ayuda="La agenda lo abre con los datos de cada reserva. Marcadores: {cliente}, {fecha}, {hora}, {taller} y {direccion}."
-        >
-          <Area
-            nombre="plantilla_reserva"
-            filas={3}
-            valor={campos.plantilla_reserva}
-            onCambiar={(v) => cambiar("plantilla_reserva", v)}
-          />
-        </Campo>
       </Bloque>
     </form>
   );

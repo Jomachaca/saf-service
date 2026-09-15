@@ -5,7 +5,7 @@ import { cargarTablero } from "@/lib/orden/consultas";
 import { ETIQUETA_ESTADO, type Estado } from "@/lib/orden/estados";
 import { requerirStaff } from "@/lib/sesion";
 
-import { EnlaceOrden, Insignia, Seccion } from "./componentes";
+import { Encabezado, EnlaceOrden, Insignia, Seccion } from "./componentes";
 import { ListaOrdenes } from "./lista-ordenes";
 
 export const metadata = {
@@ -20,15 +20,18 @@ export const metadata = {
 export default function PaginaTablero() {
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex items-center gap-4">
-        <h1 className="font-display text-2xl font-bold uppercase tracking-tight">Tablero</h1>
-        <Link
-          href="/admin/ingreso"
-          className="rounded-lg bg-marca px-4 py-2 font-display text-sm font-semibold uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px"
-        >
-          Recibir vehículo
-        </Link>
-      </div>
+      <Encabezado
+        titulo="Tablero"
+        descripcion="Qué está pasando ahora mismo dentro del taller."
+        acciones={
+          <Link
+            href="/admin/ingreso"
+            className="rounded-lg bg-marca px-4 py-2 font-display text-sm font-semibold uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px"
+          >
+            Recibir vehículo
+          </Link>
+        }
+      />
 
       <Suspense fallback={<Cargando />}>
         <Contenido />
@@ -69,7 +72,7 @@ async function Contenido() {
       </Seccion>
 
       <Seccion titulo="Espacios">
-        <ul className="grid grid-cols-2 gap-3 sm:grid-cols-3 lg:grid-cols-5">
+        <ul className="grid grid-cols-2 gap-3 @xl:grid-cols-3 @4xl:grid-cols-5">
           {boxes.map((box) => {
             const orden = ocupacion.get(box.id);
 

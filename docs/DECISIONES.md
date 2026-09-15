@@ -496,3 +496,41 @@ formulario al nombre de un servicio la rompía el día que alguien lo renombrara
 o lo apagara.
 
 ---
+
+## 31. El panel se recorre con una barra lateral de pocas entradas
+
+**Decisión:** el panel deja la cabecera con enlaces y pasa a una barra lateral
+con seis entradas en dos grupos. Arriba, lo del día a día: Tablero, Recepción y
+Agenda. Abajo, bajo «Configuración»: Reservas, Catálogo y Sitio web. Una
+pantalla que apila formularios se parte en partes con su propia ruta, y las
+partes aparecen en la barra solo dentro de su sección.
+
+**Descartado:** conservar la cabecera y resolver lo largo con un índice que
+salta dentro de la misma página, y una entrada de la barra por cada formulario.
+
+**Por qué:** «Sitio» era una sola página con ocho formularios uno debajo de
+otro, y había que bajar hasta dar con el que se buscaba. El interruptor de las
+reservas estaba ahí, pero sus cupos colgaban de la agenda, con un enlace de ida
+y otro de vuelta. Un índice deja la página igual de larga, y una entrada por
+formulario cambia el scroll por una barra que tampoco se abarca de un vistazo.
+
+**Consecuencias:**
+
+- `/admin/reservas` junta el interruptor, los cupos por hora y los días
+  cerrados, que antes estaban en `/admin/agenda/horario` y en un bloque de
+  `/admin/config`.
+- `/admin/config` pasa a `/admin/sitio`, en tres partes: datos y contacto,
+  portada (titular y «Cómo trabajamos») y el taller (presentación y galería).
+  Las dos rutas viejas redirigen, sin marcarse como permanentes.
+- El IGV y el mensaje del presupuesto salieron del sitio y van al pie del
+  catálogo, que es donde se decide cómo se leen los precios. No salen en la web
+  pública, así que guardarlos ya no marca «cambios sin publicar».
+- El interruptor de reservas quedó fuera de «Sitio web» y sigue dejando la
+  portada pendiente de publicar (decisión 29). Por eso «Sitio web» muestra «Sin
+  publicar» en la barra desde cualquier pantalla.
+- Las pantallas miden su columna con `@container`, no la pantalla: con la barra
+  lateral, un `lg:` cree tener 1024 px donde quedan poco más de 720.
+- En el celular la barra es un cajón, un `<dialog>` modal que abre el botón de
+  la franja marina de arriba.
+
+---

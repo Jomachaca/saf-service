@@ -6,10 +6,10 @@ import { useActionState, useState, useTransition } from "react";
 
 import type { FotoPanel } from "@/lib/sitio/panel";
 
+import { CLASES_CAMPO, Interruptor } from "../campos";
 import { Aviso } from "../componentes";
 import { SIN_ERROR } from "../estado-formulario";
 import { actualizarFoto, agregarFoto, borrarFoto } from "./acciones";
-import { CLASES_CAMPO, Interruptor } from "./campos";
 import { SubirImagen } from "./subir";
 
 /**
@@ -43,7 +43,7 @@ export function Galeria({ fotos }: { fotos: FotoPanel[] }) {
           Sin fotos todavía. La sección no aparece en el sitio.
         </p>
       ) : (
-        <ul className="mt-5 grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+        <ul className="mt-5 grid gap-4 @xl:grid-cols-2 @3xl:grid-cols-3">
           {fotos.map((foto) => (
             <Tarjeta key={foto.id} foto={foto} />
           ))}

@@ -8,6 +8,7 @@ import { motivoCompleto } from "@/lib/reserva/modelo";
 import { requerirStaff } from "@/lib/sesion";
 import { formatearCelular } from "@/lib/whatsapp";
 
+import { Encabezado } from "../componentes";
 import { FormularioIngreso, type ReservaEnRecepcion } from "./formulario";
 
 export const metadata = {
@@ -19,13 +20,10 @@ type ParametrosBusqueda = PageProps<"/admin/ingreso">["searchParams"];
 export default function PaginaIngreso({ searchParams }: PageProps<"/admin/ingreso">) {
   return (
     <div className="flex flex-col gap-6">
-      <div>
-        <h1 className="font-display text-2xl font-bold uppercase tracking-tight">Recibir vehículo</h1>
-        <p className="mt-1 text-sm text-tinta-suave">
-          Busca por placa o teléfono. Si el vehículo ya vino antes, quedan cuatro
-          campos.
-        </p>
-      </div>
+      <Encabezado
+        titulo="Recibir vehículo"
+        descripcion="Busca por placa o teléfono. Si el vehículo ya vino antes, quedan cuatro campos."
+      />
 
       <Suspense fallback={<p className="text-sm text-tinta-tenue">Cargando…</p>}>
         <Contenido searchParams={searchParams} />

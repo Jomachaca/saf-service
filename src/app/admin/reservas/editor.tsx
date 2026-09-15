@@ -5,9 +5,9 @@ import { useActionState, useState } from "react";
 
 import { DIAS_SEMANA, horaCorta, type Franja } from "@/lib/reserva/modelo";
 
-import { guardarFranjas } from "../../acciones-agenda";
-import { Bloque, CLASES_CAMPO } from "../../config/campos";
-import { SIN_ERROR } from "../../estado-formulario";
+import { Bloque, CLASES_CAMPO } from "../campos";
+import { SIN_ERROR } from "../estado-formulario";
+import { guardarFranjas } from "./acciones";
 
 type Celdas = Record<string, string>;
 

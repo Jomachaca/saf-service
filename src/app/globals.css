@@ -171,3 +171,43 @@ body {
     animation: aparecer 0.45s var(--ease-salida) both;
   }
 }
+
+/*
+  El cajón del menú en el celular es un <dialog> modal: el navegador ya atrapa
+  el foco, cierra con Escape y deja inerte lo de atrás. Acá solo entra
+  deslizándose desde la izquierda, donde está la barra en pantallas grandes.
+  Donde `@starting-style` no existe, aparece sin animación.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  .cajon,
+  .cajon::backdrop {
+    transition:
+      translate 0.3s var(--ease-salida),
+      opacity 0.3s var(--ease-salida),
+      overlay 0.3s allow-discrete,
+      display 0.3s allow-discrete;
+  }
+
+  .cajon:not([open]) {
+    translate: -100% 0;
+  }
+
+  .cajon:not([open])::backdrop {
+    opacity: 0;
+  }
+
+  @starting-style {
+    .cajon[open] {
+      translate: -100% 0;
+    }
+
+    .cajon[open]::backdrop {
+      opacity: 0;
+    }
+  }
+}
+
+/* Con el cajón abierto, lo de atrás no se desplaza. */
+body:has(.cajon[open]) {
+  overflow: hidden;
+}

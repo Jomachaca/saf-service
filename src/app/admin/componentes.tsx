@@ -112,3 +112,44 @@ export function InsigniaReserva({ estado }: { estado: EstadoReserva }) {
     </span>
   );
 }
+
+/** El nombre con el lettering del logo, sobre el marino. Lleva al tablero. */
+export function MarcaPanel() {
+  return (
+    <Link
+      href="/admin"
+      className="font-display text-xl font-bold uppercase italic tracking-tight text-white"
+    >
+      <span className="text-vino-300">SAF</span> Service
+    </Link>
+  );
+}
+
+/**
+ * La cabecera de cada pantalla. `seccion` nombra la entrada de la barra lateral
+ * cuando la pantalla es una de sus partes, como las tres de «Sitio web».
+ */
+export function Encabezado({
+  titulo,
+  seccion,
+  descripcion,
+  acciones,
+}: {
+  titulo: string;
+  seccion?: string;
+  descripcion?: React.ReactNode;
+  acciones?: React.ReactNode;
+}) {
+  return (
+    <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+      <div className="flex max-w-2xl flex-col gap-2">
+        {seccion ? <p className="text-sm font-medium text-tinta-tenue">{seccion}</p> : null}
+        <h1 className="font-display text-3xl leading-none font-bold uppercase tracking-tight">
+          {titulo}
+        </h1>
+        {descripcion ? <p className="text-sm text-tinta-suave">{descripcion}</p> : null}
+      </div>
+      {acciones ? <div className="flex flex-wrap items-center gap-2">{acciones}</div> : null}
+    </div>
+  );
+}
