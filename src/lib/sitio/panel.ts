@@ -30,6 +30,8 @@ export type ConfigCompleta = {
   nosotrosImagenUrl: string | null;
   igvIncluido: boolean;
   igvTasaBp: number;
+  reservasActivas: boolean;
+  reservasDias: number;
   plantillas: Record<string, string>;
   actualizadoEn: string;
   publicadoEn: string | null;
@@ -90,6 +92,8 @@ export async function cargarConfigCompleta(): Promise<ConfigCompleta | null> {
     nosotrosImagenUrl: data.nosotros_imagen_url,
     igvIncluido: data.igv_incluido,
     igvTasaBp: data.igv_tasa_bp,
+    reservasActivas: data.reservas_activas,
+    reservasDias: data.reservas_dias,
     plantillas: (data.plantillas_mensaje ?? {}) as Record<string, string>,
     actualizadoEn: data.actualizado_en,
     publicadoEn: data.publicado_en,

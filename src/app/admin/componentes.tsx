@@ -2,6 +2,7 @@ import Link from "next/link";
 
 import { ETIQUETA_ESTADO, type Estado } from "@/lib/orden/estados";
 import { ETIQUETA_UBICACION, type Ubicacion } from "@/lib/orden/ubicacion";
+import { ETIQUETA_ESTADO_RESERVA, type EstadoReserva } from "@/lib/reserva/estados";
 
 /**
  * Los colores son los de ARQUITECTURA.md §3. Se escriben completos y no
@@ -86,5 +87,28 @@ export function Aviso({ children }: { children: React.ReactNode }) {
     <p role="alert" className="text-sm text-red-600 dark:text-red-400">
       {children}
     </p>
+  );
+}
+
+const CLASES_ESTADO_RESERVA: Record<EstadoReserva, string> = {
+  PENDIENTE: "bg-amber-500/15 text-amber-800 dark:text-amber-300",
+  CONFIRMADA: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
+  CONVERTIDA: "bg-marino-500/15 text-marino-700 dark:text-marino-200",
+  NO_ASISTIO: "bg-red-500/15 text-red-700 dark:text-red-300",
+  CANCELADA: "bg-slate-500/15 text-slate-600 dark:text-slate-300",
+};
+
+/**
+ * La insignia de la agenda. Una reserva no es una orden (decisión 1), así que
+ * tiene su propia escala: ámbar lo que falta confirmar, verde lo confirmado y
+ * marino lo que ya se convirtió en orden.
+ */
+export function InsigniaReserva({ estado }: { estado: EstadoReserva }) {
+  return (
+    <span
+      className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${CLASES_ESTADO_RESERVA[estado]}`}
+    >
+      {ETIQUETA_ESTADO_RESERVA[estado]}
+    </span>
   );
 }

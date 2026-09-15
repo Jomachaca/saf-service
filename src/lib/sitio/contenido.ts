@@ -21,6 +21,16 @@ import { supabaseConfigurado } from "@/lib/supabase/env";
 
 export const TAG_SITIO = "sitio";
 
+/** Lo que aparece escrito cuando alguien abre WhatsApp desde el sitio. */
+export const SALUDO_WHATSAPP = "Hola, quisiera consultar por un servicio para mi vehículo.";
+
+/** La dirección buscada en Google Maps, para «Cómo llegar». */
+export function enlaceComoLlegar(direccion: string): string | null {
+  return direccion
+    ? `https://www.google.com/maps/search/?api=1&query=${encodeURIComponent(direccion)}`
+    : null;
+}
+
 export type Horario = { etiqueta: string; horario: string };
 
 export type Taller = {
@@ -77,6 +87,11 @@ export type ContenidoSitio = {
   destacados: Destacado[];
   galeria: Foto[];
   servicios: ServicioPublico[];
+  /**
+   * Si la portada muestra «Reservar hora». Es el valor del interruptor tal como
+   * estaba al publicar; el formulario mira el vivo (decisión 29).
+   */
+  reservasActivas: boolean;
 };
 
 /** Lo que se ve sin Supabase configurado: la marca, y nada inventado. */
@@ -101,6 +116,7 @@ const VACIO: ContenidoSitio = {
   destacados: [],
   galeria: [],
   servicios: [],
+  reservasActivas: false,
 };
 
 /**
@@ -196,5 +212,6 @@ export async function cargarSitio(): Promise<ContenidoSitio> {
     destacados: destacados.data ?? [],
     galeria: galeria.data ?? [],
     servicios: servicios.data ?? [],
+    reservasActivas: Boolean(fila.reservas_activas),
   };
 }

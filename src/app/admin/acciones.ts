@@ -85,11 +85,15 @@ export async function recepcionarVehiculo(
     p_anio: entero(datos, "anio") ?? undefined,
     p_tipo: texto(datos, "tipo") || undefined,
     p_kilometraje: entero(datos, "kilometraje") ?? undefined,
+    // Si la recepción viene de la agenda, la misma transacción cierra la
+    // reserva (decisión 28). Sin reserva, el parámetro ni viaja.
+    p_reserva_id: texto(datos, "reserva_id") || undefined,
   });
 
   if (error) return { error: mensajeDeError(error.message) };
 
   revalidatePath("/admin");
+  if (texto(datos, "reserva_id")) revalidatePath("/admin/agenda");
   redirect(`/admin/orden/${data}`);
 }
 

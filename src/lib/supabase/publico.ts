@@ -6,13 +6,17 @@ import { claveAnonima, urlSupabase } from "./env";
 import type { Database } from "./tipos";
 
 /**
- * Cliente anónimo sin cookies, para lo que se cachea del sitio público.
+ * Cliente anónimo sin cookies, para el sitio público.
  *
  * Es el cuarto cliente y hace falta por una razón concreta: dentro de un
  * `use cache` no se puede leer `cookies()`, y `server.ts` las lee siempre para
  * recuperar la sesión. El landing no tiene sesión que recuperar —lo ve
  * cualquiera— así que se lee con la clave pública y RLS decide, igual que si la
  * consulta viniera del navegador.
+ *
+ * Por lo mismo lo usa `/reservar`, para leer cupos y para reservar. El
+ * visitante tampoco tiene sesión, y las reglas viven en las funciones de la
+ * base, no en quien las llama (decisión 26).
  *
  * Es el cliente con menos privilegios de los cuatro. Si una consulta suya
  * devuelve algo que no debería ser público, el problema está en RLS, no acá.

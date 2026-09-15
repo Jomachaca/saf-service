@@ -1,23 +1,27 @@
-import { MapPin, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
+import { CalendarCheck, MapPin, WhatsappLogo } from "@phosphor-icons/react/dist/ssr";
 
 import type { Hero as ContenidoHero, Taller } from "@/lib/sitio/contenido";
 
 import { Boton, MarcoFoto } from "./piezas";
 
 /**
- * Bloque marino con la propuesta y las dos únicas acciones que importan:
- * escribir y llegar. No hay formulario de reserva porque todavía no existe
- * (Fase 4), y prometer un botón que no funciona es peor que no tenerlo.
+ * Bloque marino con la propuesta y las dos acciones que importan.
+ *
+ * Con las reservas abiertas, esas dos son reservar y escribir. Sin reservas,
+ * escribir y llegar: un botón de reserva que no lleva a ningún formulario es
+ * peor que no ofrecerlo.
  */
 export function Hero({
   hero,
   taller,
   whatsappHref,
+  reservarHref,
   mapaHref,
 }: {
   hero: ContenidoHero;
   taller: Taller;
   whatsappHref: string | null;
+  reservarHref: string | null;
   mapaHref: string | null;
 }) {
   const titulo = hero.titulo || taller.nombre;
@@ -43,19 +47,37 @@ export function Hero({
           ) : null}
 
           <div className="flex flex-wrap gap-3">
-            {whatsappHref ? (
-              <Boton href={whatsappHref} externo>
-                <WhatsappLogo size={20} weight="fill" />
-                Escribir por WhatsApp
-              </Boton>
-            ) : null}
+            {reservarHref ? (
+              <>
+                <Boton href={reservarHref}>
+                  <CalendarCheck size={20} weight="fill" />
+                  Reservar hora
+                </Boton>
 
-            {mapaHref ? (
-              <Boton href={mapaHref} tono="claro" externo>
-                <MapPin size={20} weight="fill" />
-                Cómo llegar
-              </Boton>
-            ) : null}
+                {whatsappHref ? (
+                  <Boton href={whatsappHref} tono="claro" externo>
+                    <WhatsappLogo size={20} weight="fill" />
+                    Escribir por WhatsApp
+                  </Boton>
+                ) : null}
+              </>
+            ) : (
+              <>
+                {whatsappHref ? (
+                  <Boton href={whatsappHref} externo>
+                    <WhatsappLogo size={20} weight="fill" />
+                    Escribir por WhatsApp
+                  </Boton>
+                ) : null}
+
+                {mapaHref ? (
+                  <Boton href={mapaHref} tono="claro" externo>
+                    <MapPin size={20} weight="fill" />
+                    Cómo llegar
+                  </Boton>
+                ) : null}
+              </>
+            )}
           </div>
         </div>
 

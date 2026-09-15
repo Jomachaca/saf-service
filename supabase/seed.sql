@@ -24,9 +24,9 @@ insert into servicio_catalogo (categoria, nombre, precio_base_centimos, duracion
 
   -- 2. Reparaciones y diagnóstico
   --
-  -- "Diagnóstico con escáner" es el destino de la opción "No sé qué tiene /
-  -- suena raro" del formulario de reserva (decisión 15). Si se le cambia el
-  -- nombre, revisar ese formulario.
+  -- "No sé qué tiene / suena raro", la primera opción del formulario de
+  -- reserva (decisión 15), no apunta a ningún servicio de esta lista: entra
+  -- como una reserva sin servicio (decisión 30). Estos se pueden renombrar.
   ('REPARACION',    'Diagnóstico con escáner',                8000,  60,  10),
   ('REPARACION',    'Diagnóstico de motor y transmisión',    12000,  90,  11),
   ('REPARACION',    'Reparación de frenos y suspensión',     25000, 180,  12),

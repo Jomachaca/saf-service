@@ -160,3 +160,14 @@ body {
   outline: 2px solid var(--marca-viva);
   outline-offset: 2px;
 }
+
+/*
+  Aparición al montarse, para lo que llega por una acción y no por el scroll:
+  la confirmación de una reserva, las horas del día que se acaba de elegir.
+  Misma curva y mismo recorrido que `.al-entrar`.
+*/
+@media (prefers-reduced-motion: no-preference) {
+  .al-montar {
+    animation: aparecer 0.45s var(--ease-salida) both;
+  }
+}

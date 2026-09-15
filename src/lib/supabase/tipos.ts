@@ -110,6 +110,8 @@ export type Database = {
           nosotros_titulo: string
           plantillas_mensaje: Json
           publicado_en: string | null
+          reservas_activas: boolean
+          reservas_dias: number
           slogan: string
           telefono: string
           tiktok: string
@@ -137,6 +139,8 @@ export type Database = {
           nosotros_titulo?: string
           plantillas_mensaje?: Json
           publicado_en?: string | null
+          reservas_activas?: boolean
+          reservas_dias?: number
           slogan?: string
           telefono?: string
           tiktok?: string
@@ -164,6 +168,8 @@ export type Database = {
           nosotros_titulo?: string
           plantillas_mensaje?: Json
           publicado_en?: string | null
+          reservas_activas?: boolean
+          reservas_dias?: number
           slogan?: string
           telefono?: string
           tiktok?: string
@@ -213,6 +219,24 @@ export type Database = {
           orden_visual?: number
           texto?: string
           titulo?: string
+        }
+        Relationships: []
+      }
+      dia_cerrado: {
+        Row: {
+          creado_en: string
+          fecha: string
+          motivo: string
+        }
+        Insert: {
+          creado_en?: string
+          fecha: string
+          motivo?: string
+        }
+        Update: {
+          creado_en?: string
+          fecha?: string
+          motivo?: string
         }
         Relationships: []
       }
@@ -298,6 +322,24 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      franja: {
+        Row: {
+          cupos: number
+          dia_semana: number
+          hora: string
+        }
+        Insert: {
+          cupos: number
+          dia_semana: number
+          hora: string
+        }
+        Update: {
+          cupos?: number
+          dia_semana?: number
+          hora?: string
+        }
+        Relationships: []
       }
       galeria_imagen: {
         Row: {
@@ -530,6 +572,75 @@ export type Database = {
           },
         ]
       }
+      reserva: {
+        Row: {
+          actualizado_en: string
+          creado_en: string
+          detalle: string
+          estado: string
+          fecha: string
+          hora: string
+          id: string
+          motivo: string
+          nombre: string
+          orden_id: string | null
+          placa: string | null
+          servicio_id: string | null
+          telefono: string
+          tipo_vehiculo: string
+          vehiculo: string
+        }
+        Insert: {
+          actualizado_en?: string
+          creado_en?: string
+          detalle?: string
+          estado?: string
+          fecha: string
+          hora: string
+          id?: string
+          motivo: string
+          nombre: string
+          orden_id?: string | null
+          placa?: string | null
+          servicio_id?: string | null
+          telefono: string
+          tipo_vehiculo: string
+          vehiculo?: string
+        }
+        Update: {
+          actualizado_en?: string
+          creado_en?: string
+          detalle?: string
+          estado?: string
+          fecha?: string
+          hora?: string
+          id?: string
+          motivo?: string
+          nombre?: string
+          orden_id?: string | null
+          placa?: string | null
+          servicio_id?: string | null
+          telefono?: string
+          tipo_vehiculo?: string
+          vehiculo?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "reserva_orden_id_fkey"
+            columns: ["orden_id"]
+            isOneToOne: true
+            referencedRelation: "orden_servicio"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "reserva_servicio_id_fkey"
+            columns: ["servicio_id"]
+            isOneToOne: false
+            referencedRelation: "servicio_catalogo"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       servicio_catalogo: {
         Row: {
           activo: boolean
@@ -634,6 +745,28 @@ export type Database = {
         }
         Returns: string
       }
+      crear_reserva: {
+        Args: {
+          p_detalle?: string
+          p_fecha: string
+          p_hora: string
+          p_nombre: string
+          p_placa?: string
+          p_servicio_id?: string
+          p_telefono: string
+          p_tipo_vehiculo: string
+          p_vehiculo?: string
+        }
+        Returns: undefined
+      }
+      disponibilidad_reservas: {
+        Args: never
+        Returns: {
+          fecha: string
+          hora: string
+          libres: number
+        }[]
+      }
       enviar_presupuesto: {
         Args: { p_presupuesto_id: string }
         Returns: string
@@ -649,6 +782,7 @@ export type Database = {
         }
         Returns: string
       }
+      guardar_franjas: { Args: { p_franjas: Json }; Returns: undefined }
       guardar_presupuesto: {
         Args: {
           p_igv_centimos: number
@@ -678,6 +812,7 @@ export type Database = {
           p_modelo?: string
           p_motivo: string
           p_placa?: string
+          p_reserva_id?: string
           p_tipo?: string
           p_ubicacion: string
           p_vehiculo_id?: string

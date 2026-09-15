@@ -38,6 +38,13 @@ export function aplicarPlantilla(
   });
 }
 
+/** "987654321" → "987 654 321", como se dicta un celular en Perú. */
+export function formatearCelular(telefono: string): string {
+  const digitos = telefono.replace(/\D/g, "").replace(/^51(?=9\d{8}$)/, "");
+  if (digitos.length !== 9) return telefono;
+  return `${digitos.slice(0, 3)} ${digitos.slice(3, 6)} ${digitos.slice(6)}`;
+}
+
 export function enlaceWhatsApp(telefono: string, mensaje: string): string | null {
   const numero = normalizarTelefono(telefono);
   if (!numero) return null;

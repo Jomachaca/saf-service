@@ -110,7 +110,7 @@ export async function crearServicio(
   await requerirStaff();
 
   const lectura = leerCampos(datos);
-  if (!lectura.ok) return { error: lectura.motivo, creado: null };
+  if (!lectura.ok) return { error: lectura.motivo, creado: _previo.creado };
 
   const supabase = await crearClienteServidor();
 
@@ -132,7 +132,7 @@ export async function crearServicio(
     .select("id")
     .single();
 
-  if (error) return { error: error.message, creado: null };
+  if (error) return { error: error.message, creado: _previo.creado };
 
   revalidatePath("/admin/catalogo");
   return { error: null, creado: data.id };

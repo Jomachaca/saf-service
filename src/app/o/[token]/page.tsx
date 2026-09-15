@@ -8,7 +8,7 @@ import { resolverToken } from "@/lib/publico";
 import { FormularioRespuesta } from "./respuesta";
 
 export const metadata = {
-  title: "Tu vehículo · SAF Service",
+  title: "Tu vehículo",
   // Detrás de este enlace hay placa, nombre y el detalle del trabajo. No tiene
   // por qué acabar en un buscador (decisión 7).
   robots: { index: false, follow: false },

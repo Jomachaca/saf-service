@@ -9,7 +9,7 @@ import { Seccion } from "../componentes";
 import { NuevoServicio, TablaCatalogo } from "./tabla";
 
 export const metadata = {
-  title: "Catálogo · SAF Service",
+  title: "Catálogo",
 };
 
 export default function PaginaCatalogo() {

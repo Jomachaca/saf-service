@@ -76,27 +76,28 @@ app móvil, facturación electrónica, multi-taller, roles granulares.
 
 ## Estado actual
 
-**Fase 3 terminada.** El modelo conceptual está cerrado y las decisiones
-abiertas se resolvieron (`docs/DECISIONES.md` 16–25).
+**Fase 4 terminada.** El modelo conceptual está cerrado y las decisiones
+abiertas se resolvieron (`docs/DECISIONES.md` 16–30).
 
 Funcionan el tablero, la recepción rápida, el detalle de orden con cambio de
 estado, movimiento de box y bitácora, el diagnóstico, el presupuesto con líneas
 del catálogo, el catálogo editable en `/admin/catalogo`, y la vista pública
 `/o/{token}` donde el cliente aprueba o rechaza. También el landing público con
 los datos reales del taller y `/admin/config`, donde se edita todo lo que se ve
-en él. Las escrituras de órdenes pasan por funciones de
-Postgres (`recepcionar_vehiculo`, `cambiar_estado_orden`, `mover_orden`) para que
-el cambio y su evento entren en la misma transacción; las reglas de transición
-siguen viviendo en `src/lib/orden/estados.ts`.
+en él. Y las reservas: el formulario `/reservar`, la agenda en `/admin/agenda`
+con su horario de cupos, y «Recibir», que abre la recepción con la reserva
+puesta.
 
-Ya existen: el proyecto Next.js, los tres clientes de Supabase, las migraciones
-de `perfil`, `cliente`, `vehiculo`, `box`, `servicio_catalogo`, `orden_servicio`
-y `evento_orden` con su RLS, el seed, los módulos puros de estados, ubicación,
-dinero y fechas, y la autenticación del staff con `/admin` protegido.
+Las escrituras de órdenes pasan por funciones de Postgres
+(`recepcionar_vehiculo`, `cambiar_estado_orden`, `mover_orden`) para que el
+cambio y su evento entren en la misma transacción; las reglas de transición
+viven en `src/lib/orden/estados.ts` y, las de la reserva, en
+`src/lib/reserva/estados.ts`. Las reglas de cupo son la excepción y viven en
+`crear_reserva()`, porque esa función la llama la clave pública (decisión 26).
 
-El proyecto de Supabase está creado y enlazado, con las migraciones aplicadas y
-el seed cargado. De la Fase 0 solo queda el despliegue en Vercel
-(`docs/PUESTA_EN_MARCHA.md` §7).
+El proyecto de Supabase está enlazado, con todas las migraciones aplicadas, y
+el sitio está desplegado en Vercel. Las reservas quedaron apagadas y sin
+horario hasta que el taller las encienda (`docs/PUESTA_EN_MARCHA.md` §8).
 
 La aplicación arranca sin Supabase configurado: el landing se ve y `/admin`
 manda a `/acceso`, que explica qué falta. Eso es deliberado —una variable
@@ -154,9 +155,9 @@ no apagar el prerenderizado con `instant = false`.
 
 - `client.ts` — navegador, clave pública, sujeto a RLS.
 - `server.ts` — Server Components, acciones y route handlers, sesión del staff.
-- `publico.ts` — clave pública sin cookies, para lo que se cachea del sitio
-  público. Dentro de un `use cache` no se puede leer `cookies()`, y el landing no
-  tiene sesión que leer.
+- `publico.ts` — clave pública sin cookies, para el sitio público: lo que se
+  cachea del landing y lo que hace `/reservar`. Dentro de un `use cache` no se
+  puede leer `cookies()`, y el visitante no tiene sesión que leer.
 - `admin.ts` — clave de servicio, se salta RLS. **Solo** para resolver
   `/o/{token}` (decisión 7). Cualquier otro uso probablemente sea un error.
 
@@ -178,6 +179,21 @@ WhatsApp con datos móviles eso es una decisión, no una carencia.
 **Conjuntos cerrados en la base.** `text` con `check`, no enums de Postgres: en
 v2 hay que agregar estados y roles, y reemplazar un check es una migración
 trivial.
+
+**Lo que puede llamar la clave pública lleva las reglas adentro.**
+`crear_reserva()` y `disponibilidad_reservas()` son `SECURITY DEFINER` y las
+ejecuta anon. Validar solo en la acción de Next no protege nada, porque la clave
+pública está en el navegador y cualquiera llama a la base sin pasar por Next
+(decisión 26). Una función así fija `search_path`, devuelve números o nada, y
+se le quita `EXECUTE` a `public` antes de dárselo a `anon`. Ojo al revés:
+Supabase le concede `EXECUTE` a anon en toda función nueva, así que las que son
+solo de staff llevan su `revoke ... from anon` explícito.
+
+**Las fechas que se leen se arman en el servidor.** Un componente de cliente que
+formatea con `Intl` al renderizar puede escribir «set.» en el servidor y
+«sept.» en el navegador, y la hidratación falla. `/reservar`, la agenda y la
+recepción reciben el texto ya formateado desde `src/lib/fecha.ts`; el cliente
+solo elige entre opciones.
 
 **Los formularios con acción se resetean solos.** Antes de ejecutar la acción,
 React llama a `requestFormReset` sobre el formulario (`startHostTransition`, en

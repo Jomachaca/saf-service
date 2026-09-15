@@ -7,7 +7,6 @@ import { requerirStaff } from "@/lib/sesion";
 import { crearClienteServidor } from "@/lib/supabase/server";
 
 import {
-  CATALOGO_INICIAL,
   SIN_ERROR,
   type EstadoCatalogo,
   type EstadoFormulario,
@@ -239,6 +238,69 @@ export async function guardarFacturacion(
 }
 
 // ---------------------------------------------------------------------------
+// Reservas en línea
+// ---------------------------------------------------------------------------
+
+/**
+ * El interruptor, el horizonte y el mensaje para confirmar.
+ *
+ * El interruptor se lee en vivo: guardarlo apagado corta las reservas en ese
+ * momento, sin publicar. Lo único que espera a «Publicar cambios» es el botón
+ * de la portada, porque eso sí es contenido del sitio (decisión 29). Por eso
+ * solo mover el interruptor marca que hay algo sin publicar.
+ */
+export async function guardarReservas(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  await requerirStaff();
+
+  const activas = texto(datos, "reservas_activas") === "on";
+  const dias = Number(texto(datos, "reservas_dias"));
+
+  if (!Number.isInteger(dias) || dias < 1 || dias > 60) {
+    return { error: "Los días hacia adelante van de 1 a 60." };
+  }
+
+  const supabase = await crearClienteServidor();
+
+  const [{ data: actual }, { count: franjas }] = await Promise.all([
+    supabase
+      .from("config_sitio")
+      .select("reservas_activas, plantillas_mensaje")
+      .eq("id", 1)
+      .maybeSingle(),
+    supabase.from("franja").select("dia_semana", { count: "exact", head: true }),
+  ]);
+
+  if (activas && !franjas) {
+    return {
+      error:
+        "Primero arma el horario en Agenda, «Horario de reservas». Sin horario no hay nada que reservar.",
+    };
+  }
+
+  const plantillas = (actual?.plantillas_mensaje ?? {}) as Record<string, string>;
+
+  const cambios = {
+    reservas_activas: activas,
+    reservas_dias: dias,
+    plantillas_mensaje: { ...plantillas, reserva: texto(datos, "plantilla_reserva") },
+  };
+
+  const { error } = await supabase
+    .from("config_sitio")
+    .update(activas === actual?.reservas_activas ? cambios : conSello(cambios))
+    .eq("id", 1);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/config");
+  revalidatePath("/admin/agenda");
+  return SIN_ERROR;
+}
+
+// ---------------------------------------------------------------------------
 // Imágenes
 // ---------------------------------------------------------------------------
 
@@ -302,7 +364,7 @@ export async function crearDestacado(
   await requerirStaff();
 
   const titulo = texto(datos, "titulo");
-  if (!titulo) return { ...CATALOGO_INICIAL, error: "Falta el título." };
+  if (!titulo) return { ..._previo, error: "Falta el título." };
 
   const supabase = await crearClienteServidor();
 
@@ -324,7 +386,7 @@ export async function crearDestacado(
     .select("id")
     .single();
 
-  if (error) return { ...CATALOGO_INICIAL, error: error.message };
+  if (error) return { ..._previo, error: error.message };
 
   await marcarActualizado();
   revalidatePath("/admin/config");

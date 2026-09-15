@@ -2,10 +2,15 @@
 
 ## Estado actual
 
-**Fase 3 terminada.** El taller tiene sitio público y panel para editarlo.
+**Fase 4 terminada.** El taller recibe reservas por la web, con cupos por hora.
 Funcionan la recepción, el tablero, el detalle de orden, el diagnóstico, el
 presupuesto, el catálogo editable, la vista del cliente por enlace, el landing
-con los datos reales del taller y `/admin/config` con el botón de publicar.
+con los datos reales del taller, `/admin/config` con el botón de publicar, el
+formulario `/reservar`, la agenda y su horario de cupos. Una reserva se recibe
+desde la agenda y entra por la misma recepción de siempre.
+
+Las reservas quedaron **apagadas y sin horario**, a propósito: el taller arma
+sus cupos y las enciende cuando quiera (`PUESTA_EN_MARCHA.md` §8).
 
 El sistema visual sale del logo: granate para lo que se pulsa, azul marino para
 la estructura, Barlow Condensed en los titulares. Está escrito una sola vez, en
@@ -128,11 +133,60 @@ secciones no se muestran, que es el comportamiento buscado.
 
 ## Fase 4 — Reservas
 
-- [ ] Tabla `reserva` y cupos configurables por franja
-- [ ] Formulario público `/reservar` con "No sé qué tiene" como primera opción
-- [ ] Agenda `/admin/agenda`
-- [ ] Conversión reserva → orden en un click desde la agenda
-- [ ] Marcar no-asistencia
+- [x] Tabla `reserva` y cupos configurables por día y hora (`/admin/agenda/horario`)
+- [x] Formulario público `/reservar` con "No sé qué tiene" como primera opción
+- [x] Agenda `/admin/agenda`
+- [x] Conversión reserva → orden desde la agenda
+- [x] Marcar no-asistencia
+- [x] Días cerrados para feriados
+
+### Sobre «en un click»
+
+El botón «Recibir» de la agenda abre la recepción con la reserva puesta: la
+búsqueda arranca sola y el motivo, el nombre y el celular ya vienen escritos.
+No crea la orden sin pasar por ahí, porque una orden necesita marca, modelo y
+ubicación, y pedirlos en el formulario público espanta a quien reserva
+(decisión 28).
+
+### Lo verificado
+
+Contra la base real, con la clave pública, como un visitante:
+
+- Rechaza, cada uno con su mensaje: un domingo sin franjas, horas fuera del
+  horario, fechas a más de 14 días, horas pasadas, celulares que no son de 9
+  dígitos, placas con símbolos, tipos inventados y servicios que no existen.
+- Con 2 cupos, un mismo celular no toma dos veces la misma hora, y de **tres
+  reservas lanzadas a la vez por el último cupo entró exactamente una**.
+- La cuarta reserva pendiente de un mismo celular se rechaza.
+- Sin sesión no se lee ninguna de las tablas nuevas, y con el interruptor
+  apagado `crear_reserva()` corta antes de insertar.
+
+En el navegador, con una cuenta de staff temporal creada y borrada en el
+momento:
+
+- Horario base guardado, reservas encendidas y reserva hecha desde `/reservar`
+  en pantalla de celular, con su confirmación.
+- En la agenda: confirmar, cancelar con segundo clic, y «No asistió» oculto
+  mientras la hora no llega.
+- «Recibir» abrió la recepción prellenada; la orden salió con «vino con
+  reserva» en la bitácora y la agenda la mostró recibida, con su número.
+- Recibir otra vez la misma reserva: la pantalla avisa, y forzado contra la
+  base se rechaza sin crear orden, cliente ni vehículo y sin gastar número de
+  orden.
+- Cerrar un día con reservas avisa cuántas hay y lo saca del formulario.
+- Publicado en local, la portada muestra «Reservar hora» en la cabecera y en la
+  portada.
+
+Todo lo creado se borró después: reservas, la orden de prueba con su vehículo y
+su cliente, el horario y el día cerrado. El contador de órdenes y la
+configuración volvieron a sus valores.
+
+### Lo que no está verificado
+
+- **La confirmación por WhatsApp desde la agenda** abre `wa.me` con el
+  mensaje armado, pero no se mandó a nadie: el número de prueba no existe.
+- **Un día entero con tráfico real.** Las reglas aguantan la concurrencia en
+  la prueba; cuántos cupos por hora le sirven al taller se sabe usándolo.
 
 ## Fase 5 — Fotos e historial
 

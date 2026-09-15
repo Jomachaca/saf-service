@@ -5,8 +5,14 @@ import { Suspense } from "react";
 import { cerrarSesion } from "@/app/acceso/acciones";
 import { requerirStaff } from "@/lib/sesion";
 
+/**
+ * Tablero y agenda son dos entradas y no una pantalla con pestañas: el tablero
+ * es el presente y la agenda el futuro (ARQUITECTURA.md §11). El tablero no
+ * lleva enlace propio porque es a donde lleva el nombre del taller.
+ */
 const ENLACES = [
   { href: "/admin/ingreso", texto: "Ingreso" },
+  { href: "/admin/agenda", texto: "Agenda" },
   { href: "/admin/catalogo", texto: "Catálogo" },
   { href: "/admin/config", texto: "Sitio" },
 ];
@@ -25,7 +31,7 @@ export default function LayoutAdmin({ children }: LayoutProps<"/admin">) {
   return (
     <div className="flex min-h-full flex-col">
       <header className="sticky top-0 z-40 border-b border-white/10 bg-estructura text-white">
-        <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-6 px-5 md:px-6">
+        <div className="mx-auto flex h-16 w-full max-w-7xl items-center gap-4 px-5 md:gap-6 md:px-6">
           <Link href="/admin" className="shrink-0">
             <span className="font-display text-xl font-bold uppercase italic tracking-tight">
               <span className="text-vino-300">SAF</span>
@@ -34,15 +40,15 @@ export default function LayoutAdmin({ children }: LayoutProps<"/admin">) {
           </Link>
 
           {/*
-            Solo lo que existe. Agenda entra con la Fase 4; enlazarla antes de
-            tiempo solo produce 404 y hace dudar de si algo se rompió.
+            Con cuatro enlaces no entra todo en un celular: la fila se desliza
+            de lado en vez de partirse en dos líneas o esconderse en un menú.
           */}
-          <nav className="flex gap-1 text-sm">
+          <nav className="-mx-1 flex min-w-0 flex-1 gap-1 overflow-x-auto px-1 text-sm [scrollbar-width:none]">
             {ENLACES.map((enlace) => (
               <Link
                 key={enlace.href}
                 href={enlace.href}
-                className="rounded-lg px-3 py-1.5 text-white/75 transition-colors duration-200 hover:bg-white/10 hover:text-white"
+                className="shrink-0 rounded-lg px-3 py-1.5 text-white/75 transition-colors duration-200 hover:bg-white/10 hover:text-white"
               >
                 {enlace.texto}
               </Link>
@@ -66,14 +72,15 @@ async function BarraSesion() {
   const perfil = await requerirStaff();
 
   return (
-    <form action={cerrarSesion} className="ml-auto flex items-center gap-3">
-      <span className="hidden text-sm text-white/70 sm:inline">{perfil.nombre}</span>
+    <form action={cerrarSesion} className="ml-auto flex shrink-0 items-center gap-3">
+      <span className="hidden text-sm text-white/70 lg:inline">{perfil.nombre}</span>
       <button
         type="submit"
+        aria-label="Salir"
         className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-white/75 transition-colors duration-200 hover:bg-white/10 hover:text-white"
       >
         <SignOut size={16} />
-        Salir
+        <span className="hidden sm:inline">Salir</span>
       </button>
     </form>
   );

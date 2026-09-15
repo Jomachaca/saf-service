@@ -9,7 +9,7 @@ import { EnlaceOrden, Insignia, Seccion } from "./componentes";
 import { ListaOrdenes } from "./lista-ordenes";
 
 export const metadata = {
-  title: "Tablero · SAF Service",
+  title: "Tablero",
 };
 
 /**

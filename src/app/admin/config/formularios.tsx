@@ -1,8 +1,10 @@
 "use client";
 
 import { Plus, X } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link";
 import { useActionState, useState } from "react";
 
+import { PLANTILLA_RESERVA } from "@/lib/reserva/modelo";
 import type { ConfigCompleta } from "@/lib/sitio/panel";
 
 import { SIN_ERROR } from "../estado-formulario";
@@ -13,6 +15,7 @@ import {
   guardarIdentidad,
   guardarNosotros,
   guardarPortada,
+  guardarReservas,
 } from "./acciones";
 import { Area, Bloque, Campo, Entrada, Interruptor, useCampos } from "./campos";
 import { ImagenActual, SubirImagen } from "./subir";
@@ -425,6 +428,82 @@ export function Facturacion({ config }: { config: ConfigCompleta }) {
             filas={3}
             valor={campos.plantilla_presupuesto}
             onCambiar={(v) => cambiar("plantilla_presupuesto", v)}
+          />
+        </Campo>
+      </Bloque>
+    </form>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+export function ReservasEnLinea({ config }: { config: ConfigCompleta }) {
+  const inicial = {
+    reservas_activas: config.reservasActivas,
+    reservas_dias: String(config.reservasDias),
+    plantilla_reserva: config.plantillas.reserva || PLANTILLA_RESERVA,
+  };
+
+  const [estado, accion, guardando] = useActionState(guardarReservas, SIN_ERROR);
+  const [campos, cambiar] = useCampos(inicial);
+
+  return (
+    <form action={accion} id="reservas" className="scroll-mt-28">
+      <Bloque
+        titulo="Reservas en línea"
+        descripcion="Encenderlo abre el formulario de reservas en ese momento. El botón «Reservar hora» aparece en la portada cuando publicas."
+        sucio={distinto(campos, inicial)}
+        guardando={guardando}
+        error={estado.error}
+      >
+        <Interruptor
+          nombre="reservas_activas"
+          activo={campos.reservas_activas}
+          onCambiar={(v) => cambiar("reservas_activas", v)}
+          etiqueta={
+            campos.reservas_activas
+              ? "Se aceptan reservas por la web"
+              : "No se aceptan reservas por la web"
+          }
+        />
+
+        <div className="grid items-start gap-4 md:grid-cols-2">
+          <Campo
+            etiqueta="Días hacia adelante"
+            ayuda="Hasta cuántos días desde hoy se puede reservar. Entre 1 y 60."
+          >
+            <Entrada
+              nombre="reservas_dias"
+              valor={campos.reservas_dias}
+              onCambiar={(v) => cambiar("reservas_dias", v)}
+              inputMode="numeric"
+            />
+          </Campo>
+
+          <div className="flex flex-col gap-1.5">
+            <span className="text-sm font-medium">Horario y cupos</span>
+            <p className="text-sm text-tinta-suave">
+              Cuántos vehículos se reciben a cada hora se arma en{" "}
+              <Link
+                href="/admin/agenda/horario"
+                className="font-medium text-marca underline underline-offset-4"
+              >
+                Horario de reservas
+              </Link>
+              .
+            </p>
+          </div>
+        </div>
+
+        <Campo
+          etiqueta="Mensaje para confirmar por WhatsApp"
+          ayuda="La agenda lo abre con los datos de cada reserva. Marcadores: {cliente}, {fecha}, {hora}, {taller} y {direccion}."
+        >
+          <Area
+            nombre="plantilla_reserva"
+            filas={3}
+            valor={campos.plantilla_reserva}
+            onCambiar={(v) => cambiar("plantilla_reserva", v)}
           />
         </Campo>
       </Bloque>

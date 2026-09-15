@@ -127,18 +127,33 @@ evento_orden                     -- append-only, nunca se edita ni borra
   id, orden_id, tipo, payload (jsonb), actor, creado_en
 
 reserva
-  id, nombre, telefono, tipo_vehiculo, servicio_id?, fecha, franja
+  id, nombre, telefono (celular, 9 dígitos), placa?, vehiculo (texto libre)
+  tipo_vehiculo (SEDAN|GRANDE)
+  servicio_id?, motivo, detalle  -- motivo COPIADO; sin servicio = "No sé qué tiene" (30)
+  fecha, hora                    -- COPIADAS, no apuntan a franja (decisión 27)
   estado (PENDIENTE|CONFIRMADA|CONVERTIDA|NO_ASISTIO|CANCELADA)
-  orden_id?                      -- se llena al convertirse
+  orden_id?                      -- lo llena recepcionar_vehiculo (decisión 28)
+
+franja                           -- plantilla semanal de cupos (decisión 27)
+  dia_semana (1 = lunes … 7 = domingo), hora, cupos
+
+dia_cerrado                      -- feriados: ese día no se ofrece
+  fecha, motivo
 
 perfil                           -- staff, ligado a auth.users (decisiones 18 y 19)
   id (= auth.users.id), nombre, rol, activo
 
-config_sitio                     -- fila única, esquema fijo
-  nombre_taller, slogan, descripcion, logo_url, telefono, whatsapp,
-  direccion, horarios (jsonb), galeria (jsonb), plantillas_mensaje (jsonb)
+config_sitio                     -- fila única, esquema fijo (decisión 11)
+  nombre_taller, slogan, descripcion, logo_url, telefono, whatsapp, email,
+  direccion, mapa_url, facebook, instagram, tiktok
+  hero_titulo, hero_subtitulo, hero_imagen_url
+  nosotros_titulo, nosotros_texto, nosotros_imagen_url
+  horarios (jsonb), plantillas_mensaje (jsonb)
   igv_incluido, igv_tasa_bp                        -- decision 16
+  reservas_activas, reservas_dias                  -- decision 29
   actualizado_en, publicado_en                     -- decision 17
+
+galeria_imagen, destacado        -- contenido del landing con orden y apagado
 ```
 
 ### Sobre `evento_orden`
@@ -165,16 +180,29 @@ Es la opción que más se va a usar. No la escondas.
 
 ## 7. Reservas: cupos, no scheduling
 
-No resolver asignación de recursos. Para cada franja horaria hay un número máximo
-de cupos configurable; una reserva ocupa un cupo si hay disponibilidad.
+No resolver asignación de recursos. Para cada día de la semana y hora hay un
+número máximo de cupos configurable; una reserva ocupa un cupo si hay
+disponibilidad.
 
 ```
-franja: 08:00 | 09:00 | 10:00 | ... | 17:00
-cupos_por_franja: configurable (arranca en 2)
+franja:   lunes 08:00 → 2   lunes 09:00 → 2   …   sábado 12:00 → 1
+ocupan:   PENDIENTE, CONFIRMADA, CONVERTIDA
+liberan:  NO_ASISTIO, CANCELADA
 ```
 
 Con 5 boxes nadie nota la diferencia frente a un motor de capacidad real, y
-ahorra semanas de trabajo. Ver `DECISIONES.md` #4.
+ahorra semanas de trabajo. Ver `DECISIONES.md` #4 y #27.
+
+Las reglas viven en la base, en `crear_reserva()`: cupo libre con bloqueo por
+día y hora, dos horas de anticipación, días cerrados y tres reservas pendientes
+como mucho por celular. El formulario público solo pinta lo que devuelve
+`disponibilidad_reservas()` (decisión 26).
+
+```
+PENDIENTE ──► CONFIRMADA ──┬──► CONVERTIDA   (solo recibiendo el vehículo)
+    │                      ├──► NO_ASISTIO   (solo cuando la hora ya pasó)
+    └──────────────────────┴──► CANCELADA
+```
 
 ## 8. Flujo de WhatsApp
 
@@ -219,9 +247,10 @@ Misma tabla, mismo formulario. El catálogo es solo autocompletado.
 ### Panel
 ```
 /admin                  tablero: resumen + boxes + órdenes activas
-/admin/ingreso          recepción rápida (flujo de 6 pasos)
+/admin/ingreso          recepción rápida (flujo de 6 pasos); ?reserva={id} la prellena
 /admin/orden/{id}       detalle: diagnóstico, presupuesto, fotos, eventos
-/admin/agenda           reservas futuras
+/admin/agenda           de hoy en adelante, más las que quedaron sin cerrar
+/admin/agenda/horario   cupos por día y hora, días cerrados
 /admin/catalogo         servicios, precios, duraciones
 /admin/config           CMS del landing + plantillas de mensaje
 ```

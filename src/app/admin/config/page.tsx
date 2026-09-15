@@ -11,7 +11,14 @@ import {
 import { requerirStaff } from "@/lib/sesion";
 
 import { Destacados } from "./destacados";
-import { Facturacion, ElTaller, Horarios, Identidad, Portada } from "./formularios";
+import {
+  ElTaller,
+  Facturacion,
+  Horarios,
+  Identidad,
+  Portada,
+  ReservasEnLinea,
+} from "./formularios";
 import { Galeria } from "./galeria";
 import { BarraPublicar } from "./publicar";
 
@@ -70,6 +77,7 @@ async function Contenido() {
         <Portada config={config} />
         <ElTaller config={config} />
         <Horarios config={config} />
+        <ReservasEnLinea config={config} />
         <Destacados destacados={destacados} />
         <Galeria fotos={fotos} />
         <Facturacion config={config} />

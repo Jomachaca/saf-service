@@ -5,7 +5,7 @@ import { cerrarSesion } from "@/app/acceso/acciones";
 import { obtenerSesion } from "@/lib/sesion";
 
 export const metadata = {
-  title: "Sin perfil · SAF Service",
+  title: "Sin perfil",
 };
 
 /**

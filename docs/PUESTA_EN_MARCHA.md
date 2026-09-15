@@ -19,7 +19,8 @@ Abre <http://localhost:3000>. Sin Supabase configurado ya se puede ver:
 
 | Ruta | Qué muestra |
 |---|---|
-| `/` | Marcador de posición del landing (el real es la Fase 3) |
+| `/` | El landing con la marca, sin el contenido del taller |
+| `/reservar` | Aviso de que las reservas no están disponibles |
 | `/acceso` | Aviso de que falta conectar Supabase |
 | `/admin` | Redirige a `/acceso` |
 
@@ -66,13 +67,18 @@ variables al arrancar.
 
 ## 4. Crear las tablas
 
-El SQL está en `supabase/migrations/`, en tres archivos que corren en orden:
+El SQL está en `supabase/migrations/` y corre en orden de nombre. Las tres
+primeras crean la base; las siguientes agregan lo de cada fase:
 
 | Archivo | Qué crea |
 |---|---|
 | `…_perfil.sql` | `perfil`, la función `es_staff()` que sostiene toda la RLS |
 | `…_taller.sql` | `cliente`, `vehiculo`, `box`, `servicio_catalogo` |
 | `…_orden_servicio.sql` | `orden_servicio`, `evento_orden`, numeración y triggers |
+| `…_operaciones.sql` y las dos siguientes | Recepción, cambio de estado, ubicación y búsqueda |
+| `…_presupuesto.sql` y `…_operaciones_presupuesto.sql` | Diagnóstico, presupuesto y `config_sitio` |
+| `…_landing.sql` | Contenido del landing, galería, destacados y el bucket `sitio` |
+| `…_reservas.sql` | `reserva`, `franja`, `dia_cerrado` y sus funciones |
 
 Y `supabase/seed.sql` carga los 5 boxes y el catálogo base.
 
@@ -100,7 +106,7 @@ sobre una base que ya tiene datos, vas a duplicar boxes y servicios.
 ### Opción B — sin CLI
 
 En el dashboard, **SQL Editor → New query**, y pega el contenido de cada archivo
-por separado, **en el orden de la tabla de arriba**, ejecutando uno a la vez.
+por separado, **en orden de nombre**, ejecutando uno a la vez.
 Al final, `supabase/seed.sql`.
 
 ### Comprobar que quedó
@@ -151,11 +157,18 @@ npm run dev
 Si vuelve a `/acceso`, casi siempre es el paso 5.2 sin hacer, o `activo = false`
 en la fila de `perfil`.
 
+> **Si el proyecto de Supabase aparece pausado.** En el plan gratuito, Supabase
+> pausa los proyectos que pasan un tiempo sin actividad: el panel deja de cargar
+> y la dirección del proyecto no responde. Se reactiva desde el dashboard con
+> **Restore project**, sin perder datos. Si Vercel desplegó mientras estaba
+> pausado, la portada pudo quedar prerenderizada sin contenido: pulsa
+> «Publicar cambios» en `/admin/config` para rearmarla.
+
 ---
 
 ## 7. Desplegar en Vercel
 
-El repositorio todavía no tiene remoto. Primero súbelo a GitHub, después:
+Con el repositorio ya en GitHub:
 
 1. <https://vercel.com/new> → importar el repositorio.
 2. Framework: Next.js (lo detecta solo). No hace falta tocar los comandos.
@@ -168,12 +181,24 @@ WhatsApp. Si queda en `localhost`, los clientes reciben un link que no abre.
 
 ---
 
-## Qué falta después de esto
+## 8. Encender las reservas
 
-Con los pasos anteriores queda cerrada la Fase 0. Lo que sigue es la Fase 1
-—recepción rápida, tablero y detalle de orden—, que es la que hace útil el
-sistema. Ver `ROADMAP.md`.
+Las reservas vienen apagadas y sin horario. Son tres pasos, en este orden:
 
-Todavía no existen tablas para `diagnostico`, `presupuesto`,
-`linea_presupuesto`, `foto_orden`, `reserva` ni `config_sitio`: entran en sus
-fases correspondientes.
+1. **Agenda → Horario de reservas.** Cuántos vehículos se reciben a cada hora de
+   cada día. El botón de horario base llena la tabla con 8:00 a 17:00, de lunes
+   a sábado y 2 por hora, pero no guarda: ajústalo a lo que el taller hace de
+   verdad y pulsa Guardar.
+2. **Sitio → Reservas en línea.** Enciende el interruptor y guarda. Desde ese
+   momento `/reservar` acepta reservas.
+3. **Publicar cambios.** Recién ahí aparece el botón «Reservar hora» en la
+   portada (decisión 29).
+
+Para apagarlas basta el paso 2: el formulario deja de aceptar reservas en ese
+momento, sin publicar.
+
+---
+
+## Qué sigue
+
+La Fase 5: fotos de ingreso e historial por vehículo. Ver `ROADMAP.md`.

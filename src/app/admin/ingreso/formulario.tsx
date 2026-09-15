@@ -1,5 +1,7 @@
 "use client";
 
+import { CalendarCheck } from "@phosphor-icons/react/dist/ssr";
+import Link from "next/link";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 
 import type { Box, VehiculoEncontrado } from "@/lib/orden/consultas";
@@ -12,6 +14,18 @@ import { SIN_ERROR } from "../estado-formulario";
 const CLASES_INPUT =
   "w-full rounded-lg border border-borde bg-fondo-alto px-3 py-2";
 
+/** La reserva con la que llega el vehículo, con su texto ya armado en el servidor. */
+export type ReservaEnRecepcion = {
+  id: string;
+  nombre: string;
+  telefono: string;
+  placa: string | null;
+  vehiculo: string;
+  tipo: "SEDAN" | "GRANDE";
+  motivo: string;
+  cuando: string;
+};
+
 /**
  * Recepción en menos de 60 segundos (ARQUITECTURA.md §10). Es un requisito, no
  * una aspiración: si el recepcionista siente que tarda menos anotando en papel,
@@ -19,13 +33,19 @@ const CLASES_INPUT =
  *
  * Por eso todo va en una pantalla, sin pasos que recarguen. Si el vehículo ya
  * vino antes, quedan cuatro campos por llenar.
+ *
+ * Cuando llega desde la agenda con una reserva, la búsqueda arranca sola con la
+ * placa o el celular, y el motivo y los datos del cliente ya vienen puestos. Es
+ * la misma pantalla con menos que escribir, no un flujo aparte (decisión 28).
  */
 export function FormularioIngreso({
   boxes,
   boxesLibres,
+  reserva,
 }: {
   boxes: Box[];
   boxesLibres: string[];
+  reserva: ReservaEnRecepcion | null;
 }) {
   const [estado, accion, enviando] = useActionState(recepcionarVehiculo, SIN_ERROR);
   const [elegido, setElegido] = useState<VehiculoEncontrado | null>(null);
@@ -35,16 +55,35 @@ export function FormularioIngreso({
 
   return (
     <form action={accion} className="flex max-w-2xl flex-col gap-6">
+      {reserva ? <ConReserva reserva={reserva} /> : null}
+
       {elegido ? (
         <VehiculoElegido vehiculo={elegido} onQuitar={() => setElegido(null)} />
       ) : esNuevo ? (
-        <VehiculoNuevo onCancelar={() => setEsNuevo(false)} />
+        <VehiculoNuevo
+          onCancelar={() => setEsNuevo(false)}
+          inicial={
+            reserva
+              ? {
+                  placa: reserva.placa ?? "",
+                  tipo: reserva.tipo,
+                  cliente_nombre: reserva.nombre,
+                  cliente_telefono: reserva.telefono,
+                }
+              : undefined
+          }
+          escribio={reserva?.vehiculo || null}
+        />
       ) : (
-        <Buscador onElegir={setElegido} onNuevo={() => setEsNuevo(true)} />
+        <Buscador
+          onElegir={setElegido}
+          onNuevo={() => setEsNuevo(true)}
+          terminoInicial={reserva ? (reserva.placa ?? reserva.telefono.replace(/\s/g, "")) : ""}
+        />
       )}
 
       <Campo etiqueta="Motivo de ingreso">
-        <MotivoConAtajos />
+        <MotivoConAtajos inicial={reserva?.motivo ?? ""} />
       </Campo>
 
       <Campo etiqueta="Kilometraje" opcional>
@@ -121,6 +160,25 @@ export function FormularioIngreso({
   );
 }
 
+/**
+ * La reserva viaja en un input oculto, y la base la cierra en la misma
+ * transacción que abre la orden (decisión 28). Si alguien la canceló mientras
+ * tanto, no se crea nada.
+ */
+function ConReserva({ reserva }: { reserva: ReservaEnRecepcion }) {
+  return (
+    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-marca/30 bg-vino-50 px-3 py-2.5 text-sm dark:bg-vino-900/30">
+      <input type="hidden" name="reserva_id" value={reserva.id} />
+      <CalendarCheck size={18} weight="duotone" className="text-marca" />
+      <span className="font-medium">Reserva de {reserva.nombre}</span>
+      <span className="text-tinta-suave">{reserva.cuando}</span>
+      <Link href="/admin/ingreso" className="ml-auto underline underline-offset-4">
+        Recibir sin reserva
+      </Link>
+    </div>
+  );
+}
+
 function Campo({
   etiqueta,
   opcional,
@@ -152,12 +210,12 @@ const ATAJOS_MOTIVO = [
   "Revisión de frenos",
 ];
 
-function MotivoConAtajos() {
+function MotivoConAtajos({ inicial }: { inicial: string }) {
   const campo = useRef<HTMLInputElement>(null);
   // En estado y no en el DOM: React vacía los campos no controlados en cuanto
   // se envía el formulario, y una recepción rechazada —placa repetida, box
   // ocupado— borraba todo lo escrito.
-  const [motivo, setMotivo] = useState("");
+  const [motivo, setMotivo] = useState(inicial);
 
   return (
     <div className="flex flex-col gap-2">
@@ -192,11 +250,14 @@ function MotivoConAtajos() {
 function Buscador({
   onElegir,
   onNuevo,
+  terminoInicial,
 }: {
   onElegir: (vehiculo: VehiculoEncontrado) => void;
   onNuevo: () => void;
+  terminoInicial: string;
 }) {
-  const [termino, setTermino] = useState("");
+  // Con una reserva, arranca con su placa o su celular y la búsqueda sale sola.
+  const [termino, setTermino] = useState(terminoInicial);
   const [buscando, empezarBusqueda] = useTransition();
 
   // Se guarda junto al término que lo produjo. Así los resultados de una
@@ -267,7 +328,13 @@ function Buscador({
         </ul>
       ) : null}
 
-      {sinResultados ? <p className="text-sm text-tinta-suave">Sin resultados.</p> : null}
+      {sinResultados ? (
+        <p className="text-sm text-tinta-suave">
+          {terminoInicial && limpio === terminoInicial.trim()
+            ? "No hay ningún vehículo con los datos de la reserva. Si es la primera vez que viene, regístralo como nuevo."
+            : "Sin resultados."}
+        </p>
+      ) : null}
 
       <div>
         <button
@@ -313,11 +380,30 @@ function VehiculoElegido({
   );
 }
 
-function VehiculoNuevo({ onCancelar }: { onCancelar: () => void }) {
+type CamposVehiculo = {
+  placa: string;
+  tipo: string;
+  marca: string;
+  modelo: string;
+  anio: string;
+  cliente_nombre: string;
+  cliente_telefono: string;
+};
+
+function VehiculoNuevo({
+  onCancelar,
+  inicial,
+  escribio,
+}: {
+  onCancelar: () => void;
+  inicial?: Partial<CamposVehiculo>;
+  /** Lo que el cliente escribió en la reserva, para pasarlo a marca y modelo. */
+  escribio: string | null;
+}) {
   // El estado vive acá dentro y sobrevive al error porque el componente no se
   // desmonta. Con la placa repetida —el error más probable— se perdían los
   // siete campos del vehículo y del cliente, justo lo caro de volver a tipear.
-  const [campos, setCampos] = useState({
+  const [campos, setCampos] = useState<CamposVehiculo>({
     placa: "",
     tipo: "SEDAN",
     marca: "",
@@ -325,9 +411,13 @@ function VehiculoNuevo({ onCancelar }: { onCancelar: () => void }) {
     anio: "",
     cliente_nombre: "",
     cliente_telefono: "",
+    ...inicial,
   });
 
-  function cambiar(campo: keyof typeof campos, valor: string) {
+  // Si la placa ya vino de la reserva, lo que falta escribir empieza en la marca.
+  const empezarEnMarca = Boolean(inicial?.placa);
+
+  function cambiar(campo: keyof CamposVehiculo, valor: string) {
     setCampos((previos) => ({ ...previos, [campo]: valor }));
   }
 
@@ -344,12 +434,18 @@ function VehiculoNuevo({ onCancelar }: { onCancelar: () => void }) {
         </button>
       </div>
 
+      {escribio ? (
+        <p className="text-sm text-tinta-suave">
+          En la reserva escribió: <span className="font-medium text-tinta">«{escribio}»</span>
+        </p>
+      ) : null}
+
       <div className="grid gap-4 sm:grid-cols-2">
         <Campo etiqueta="Placa">
           <input
             name="placa"
             required
-            autoFocus
+            autoFocus={!empezarEnMarca}
             value={campos.placa}
             onChange={(evento) => cambiar("placa", evento.target.value)}
             className={`${CLASES_INPUT} font-mono uppercase`}
@@ -373,6 +469,7 @@ function VehiculoNuevo({ onCancelar }: { onCancelar: () => void }) {
           <input
             name="marca"
             required
+            autoFocus={empezarEnMarca}
             value={campos.marca}
             onChange={(evento) => cambiar("marca", evento.target.value)}
             className={CLASES_INPUT}

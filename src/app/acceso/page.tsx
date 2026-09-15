@@ -3,7 +3,7 @@ import { supabaseConfigurado } from "@/lib/supabase/env";
 import { FormularioAcceso } from "./formulario";
 
 export const metadata = {
-  title: "Acceso · SAF Service",
+  title: "Acceso",
 };
 
 export default function PaginaAcceso() {

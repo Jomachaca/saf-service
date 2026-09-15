@@ -74,3 +74,76 @@ export function fechaISOLima(valor: Date | string): string {
   }).format(aFecha(valor));
   return partes;
 }
+
+// ---------------------------------------------------------------------------
+// Días y horas de reserva
+// ---------------------------------------------------------------------------
+//
+// Las reservas se guardan como `date` y `time` sueltos, sin zona: "el martes a
+// las 10" es una hora de reloj de pared en Lima, no un instante. Estas funciones
+// traducen entre las dos cosas.
+//
+// Lo que devuelve texto conviene llamarlo en el servidor y pasarle el resultado
+// a la pantalla: el navegador puede traer otra versión de las tablas de idioma,
+// escribir "sept." donde el servidor escribió "set." y hacer que React se queje
+// al hidratar.
+
+/**
+ * Perú no tiene horario de verano (decisión 21), así que la hora de Lima es
+ * siempre UTC−5 y se puede escribir fija.
+ */
+const DESFASE_LIMA = "-05:00";
+
+/** "2026-09-16" y "10:00" → el instante en que son las 10:00 de ese día en Lima. */
+export function instanteEnLima(fechaISO: string, hora = "12:00"): Date {
+  return new Date(`${fechaISO}T${hora.slice(0, 5)}:00${DESFASE_LIMA}`);
+}
+
+/** "2026-09-16" más `dias` días. Aritmética de calendario: no pasa por ninguna zona. */
+export function sumarDias(fechaISO: string, dias: number): string {
+  const [anio, mes, dia] = fechaISO.split("-").map(Number);
+  return new Date(Date.UTC(anio, mes - 1, dia + dias)).toISOString().slice(0, 10);
+}
+
+/** "Hoy" o "Mañana" cuando corresponde. */
+export function diaRelativo(fechaISO: string, hoyISO: string): "Hoy" | "Mañana" | null {
+  if (fechaISO === hoyISO) return "Hoy";
+  if (fechaISO === sumarDias(hoyISO, 1)) return "Mañana";
+  return null;
+}
+
+const SEMANA_CORTA = new Intl.DateTimeFormat(LOCALE, { timeZone: ZONA, weekday: "short" });
+const NUMERO_DIA = new Intl.DateTimeFormat(LOCALE, { timeZone: ZONA, day: "numeric" });
+const MES_CORTO = new Intl.DateTimeFormat(LOCALE, { timeZone: ZONA, month: "short" });
+
+const DIA_COMPLETO = new Intl.DateTimeFormat(LOCALE, {
+  timeZone: ZONA,
+  weekday: "long",
+  day: "numeric",
+  month: "long",
+});
+
+/** Las piezas de un día para pintarlo como hoja de calendario: "mié", "16", "set.". */
+export function piezasDelDia(fechaISO: string): { semana: string; dia: string; mes: string } {
+  const instante = instanteEnLima(fechaISO);
+  return {
+    semana: SEMANA_CORTA.format(instante).replace(".", ""),
+    dia: NUMERO_DIA.format(instante),
+    mes: MES_CORTO.format(instante),
+  };
+}
+
+/** "miércoles 16 de setiembre". Con `mayuscula`, "Miércoles 16 de setiembre". */
+export function formatearDia(fechaISO: string, { mayuscula = false } = {}): string {
+  const partes = DIA_COMPLETO.formatToParts(instanteEnLima(fechaISO));
+  const pieza = (tipo: Intl.DateTimeFormatPartTypes) =>
+    partes.find((parte) => parte.type === tipo)?.value ?? "";
+
+  const texto = `${pieza("weekday")} ${pieza("day")} de ${pieza("month")}`;
+  return mayuscula ? texto.charAt(0).toUpperCase() + texto.slice(1) : texto;
+}
+
+/** "10:00:00" → "10:00 a. m.". La hora de una franja no trae fecha, así que se le presta una. */
+export function formatearHoraFranja(hora: string): string {
+  return SOLO_HORA.format(instanteEnLima("2026-01-01", hora));
+}

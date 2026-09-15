@@ -367,3 +367,132 @@ pública y sin cookies), porque dentro de un `use cache` no se puede leer
 `cookies()` y `server.ts` las lee siempre.
 
 ---
+
+## 26. Las reservas públicas entran por funciones de la base, no por la clave de servicio
+
+**Decisión:** `/reservar` lee los cupos con `disponibilidad_reservas()` y reserva
+con `crear_reserva()`, dos funciones `SECURITY DEFINER` que puede ejecutar la
+clave pública. Las tres tablas nuevas (`reserva`, `franja`, `dia_cerrado`) no
+tienen políticas ni privilegios para anon.
+
+**Descartado:** escribir la reserva desde la acción de Next con `admin.ts`.
+
+**Por qué:** la clave de servicio se salta RLS entera y tiene un solo uso
+justificado, resolver `/o/{token}` (decisión 7). Colgarle un formulario abierto
+al público la convertía en el punto más expuesto del sistema. Y validar solo en
+la acción no alcanza: la clave pública está en el navegador, así que cualquiera
+puede llamar a la base sin pasar por Next. Las reglas tienen que vivir donde no
+se pueden saltar.
+
+**Consecuencias:**
+
+- Cupos, anticipación, días cerrados y el tope de tres reservas pendientes por
+  celular están dentro de `crear_reserva()`. La acción solo contesta rápido lo
+  evidente.
+- Las funciones devuelven números o nada. Ni el id de la reserva sale hacia
+  quien no tiene sesión.
+- Riesgo aceptado: alguien con un script y celulares inventados podría llenar
+  cupos. Se ve en la agenda, se cancela y, si hace falta, se apagan las
+  reservas desde el panel en un clic (decisión 29). Un captcha entra cuando
+  pase, no antes.
+
+---
+
+## 27. Cupos por día de la semana y hora; la reserva copia su fecha y su hora
+
+**Decisión:** `franja (dia_semana, hora, cupos)` es una plantilla semanal. La
+reserva guarda `fecha` y `hora` como valores, sin apuntar a la franja. Ocupan
+cupo las reservas `PENDIENTE`, `CONFIRMADA` y `CONVERTIDA`; `NO_ASISTIO` y
+`CANCELADA` lo liberan. Se reserva con al menos dos horas de anticipación y
+hasta `reservas_dias` días adelante, y `dia_cerrado` saca feriados del
+formulario.
+
+**Descartado:** una sola lista de horas para toda la semana, porque un sábado
+de medio día no cabía, y cupos distintos por fecha concreta.
+
+**Por qué:** es la decisión 4 llevada a tablas: un contador, no un motor de
+capacidad. Copiar fecha y hora sigue la lógica de la decisión 5 con los
+precios: si el taller cambia su horario en noviembre, las reservas de octubre
+no se mueven ni desaparecen de la agenda.
+
+**Consecuencias:**
+
+- El conteo y la inserción van bajo un bloqueo por día y hora
+  (`pg_advisory_xact_lock`). Dos personas que piden el último cupo a la vez
+  quedan en fila, y la segunda ya ve la reserva de la primera.
+- Cerrar un día no cancela lo que ya estaba reservado. La pantalla dice cuántas
+  hay; qué hacer con ellas lo decide una persona.
+- El horario arranca vacío. El botón de horario base llena la tabla pero no
+  guarda: publicar un horario inventado es el mismo error que la decisión de no
+  inventar el del landing.
+
+---
+
+## 28. «Recibir» abre la recepción, y la conversión va en la misma transacción
+
+**Decisión:** el botón «Recibir» de la agenda lleva a
+`/admin/ingreso?reserva={id}`, con la búsqueda arrancada por la placa o el
+celular y el motivo y los datos del cliente ya puestos. `recepcionar_vehiculo()`
+recibe `p_reserva_id` y marca la reserva como `CONVERTIDA` en la misma
+transacción que crea la orden.
+
+**Descartado:** convertir con un solo clic sin pasar por la recepción, y un
+botón de «marcar recibida».
+
+**Por qué:** una orden necesita un vehículo con marca y modelo, y una reserva no
+los tiene: pedirlos en el formulario público espanta a quien reserva. La
+recepción ya es el camino de 60 segundos, y con la reserva quedan menos campos.
+Hacerlo en dos pasos separados permitiría una reserva convertida sin orden
+detrás, o una orden cuya reserva sigue apartando cupo.
+
+**Consecuencias:**
+
+- Si alguien cancela la reserva mientras se recibe el vehículo, no se crea
+  nada: ni la orden, ni el cliente, ni el vehículo.
+- `buscar_vehiculo()` compara la placa sin guiones ni espacios y el teléfono
+  solo por dígitos. Los datos de una reserva los escribe el cliente, y "abc-123"
+  tiene que encontrar a "ABC123" antes de que alguien registre el mismo auto dos
+  veces.
+
+---
+
+## 29. El interruptor de reservas se lee en vivo; el botón de la portada, al publicar
+
+**Decisión:** `config_sitio.reservas_activas` lo leen en cada visita `/reservar`
+y `crear_reserva()`. El botón «Reservar hora» del landing sale del contenido
+publicado, como el resto de la portada (decisión 25).
+
+**Descartado:** que el interruptor también esperara a publicar, y que moverlo
+publicara la portada entera.
+
+**Por qué:** apagar las reservas es una acción de emergencia (el taller se llenó,
+alguien abusa del formulario) y tiene que cortar en el momento. Publicar la
+portada al mover el interruptor, en cambio, sacaría a la luz cualquier otro
+cambio a medio hacer, que es justo lo que la decisión 17 evita.
+
+**Consecuencias:**
+
+- Entre apagar y publicar, la portada puede mostrar el botón y `/reservar`
+  responder que las reservas están pausadas, con WhatsApp al lado. Es un
+  desfase aceptable.
+- Solo mover el interruptor marca «cambios sin publicar»; los días hacia adelante
+  y el mensaje de confirmación no tocan la portada.
+- No se puede encender sin horario, ni dejar el horario vacío con las reservas
+  encendidas.
+
+---
+
+## 30. «No sé qué tiene» es una reserva sin servicio
+
+**Decisión:** la primera opción del formulario (decisión 15) guarda
+`servicio_id` en NULL y el motivo «No sé qué tiene / suena raro». Cuando el
+cliente sí elige un servicio, su nombre se copia en `reserva.motivo`.
+
+**Descartado:** apuntar esa opción a «Diagnóstico con escáner» del catálogo,
+como proponía el comentario del seed.
+
+**Por qué:** el catálogo lo edita el taller. Atar la opción más usada del
+formulario al nombre de un servicio la rompía el día que alguien lo renombrara
+o lo apagara.
+
+---

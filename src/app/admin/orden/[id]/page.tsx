@@ -24,7 +24,7 @@ import { EditorPresupuesto, PresupuestoEmitido } from "./presupuesto";
 import { BotonWhatsApp } from "./whatsapp";
 
 export const metadata = {
-  title: "Orden · SAF Service",
+  title: "Orden",
 };
 
 type Parametros = PageProps<"/admin/orden/[id]">["params"];
@@ -235,6 +235,7 @@ function Detalle({ payload }: { payload: unknown }) {
   }
   if (typeof datos.ubicacion === "string") partes.push(String(datos.ubicacion));
   if (typeof datos.motivo === "string") partes.push(String(datos.motivo));
+  if (datos.reserva_id) partes.push("vino con reserva");
   if (typeof datos.mecanico === "string" && datos.mecanico) partes.push(String(datos.mecanico));
   if (typeof datos.nombre === "string" && datos.nombre) partes.push(String(datos.nombre));
   if (typeof datos.nota === "string" && datos.nota) partes.push(`"${datos.nota}"`);
