@@ -1,8 +1,10 @@
 import { SALUDO_WHATSAPP, cargarSitio, enlaceComoLlegar } from "@/lib/sitio/contenido";
 import { enlaceWhatsApp } from "@/lib/whatsapp";
 
+import { Cinta } from "./_landing/cinta";
 import { Contacto } from "./_landing/contacto";
 import { Destacados } from "./_landing/destacados";
+import { BurbujaWhatsApp } from "./_landing/flotante";
 import { Galeria } from "./_landing/galeria";
 import { Hero } from "./_landing/hero";
 import { Navegacion } from "./_landing/navegacion";
@@ -50,6 +52,7 @@ export default async function PaginaInicio() {
           reservarHref={reservarHref}
           mapaHref={mapaHref}
         />
+        <Cinta servicios={servicios} />
         <Servicios servicios={servicios} />
         <Destacados destacados={destacados} />
         <Taller nosotros={nosotros} />
@@ -57,7 +60,15 @@ export default async function PaginaInicio() {
         <Contacto taller={taller} whatsappHref={whatsappHref} mapaHref={mapaHref} />
       </main>
 
-      <Pie taller={taller} />
+      <Pie
+        taller={taller}
+        servicios={servicios}
+        whatsappHref={whatsappHref}
+        reservarHref={reservarHref}
+        mapaHref={mapaHref}
+      />
+
+      {whatsappHref ? <BurbujaWhatsApp href={whatsappHref} /> : null}
     </>
   );
 }

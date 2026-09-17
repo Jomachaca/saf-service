@@ -139,7 +139,24 @@ body {
       /* Termina de aparecer en cuanto el elemento entra: usar el rango
          `cover` deja a medio camino lo que queda al final de la página,
          donde ya no hay scroll para completar la animación. */
-      animation-range: entry 5% entry 65%;
+      animation-range: entry 4% entry 58%;
+    }
+
+    /*
+      Escalonado. Los elementos de una lista llevan `--paso` (0, 1, 2…) y cada
+      uno entra un poco más tarde que el anterior, que es lo que hace que una
+      retícula se arme por partes en vez de aparecer de golpe. Con una línea de
+      tiempo de scroll no sirve `animation-delay`: lo que se corre es el rango.
+
+      Va en su propio `@supports` porque `calc()` dentro de `animation-range`
+      es más nuevo que el resto; donde no se entienda, entran todos juntos.
+    */
+    @supports (animation-range: entry calc(4% + 7%) entry calc(58% + 7%)) {
+      .al-entrar {
+        animation-range:
+          entry calc(4% + var(--paso, 0) * 7%)
+          entry calc(58% + var(--paso, 0) * 7%);
+      }
     }
   }
 }
@@ -147,7 +164,7 @@ body {
 @keyframes aparecer {
   from {
     opacity: 0;
-    transform: translateY(18px);
+    transform: translateY(26px) scale(0.985);
   }
   to {
     opacity: 1;
@@ -169,6 +186,147 @@ body {
 @media (prefers-reduced-motion: no-preference) {
   .al-montar {
     animation: aparecer 0.45s var(--ease-salida) both;
+  }
+}
+
+/*
+  Las utilidades propias del landing van en `@layer components`, debajo de las
+  de Tailwind. Es a propósito: una regla sin capa le gana a cualquier utilidad,
+  vaya donde vaya, y `.pulso { position: relative }` se comía el `fixed` de la
+  burbuja de WhatsApp. Dentro de la capa, la utilidad manda y `relative` queda
+  como lo que es, el valor por omisión cuando nadie dice otra cosa.
+*/
+@layer components {
+  /*
+    Subrayado que crece desde el centro al pasar el mouse. Es la respuesta de
+    los enlaces que no parecen botones —la barra de arriba y el pie—, y se
+    dibuja con un pseudo-elemento para no mover el texto al aparecer.
+  */
+  .subrayado {
+    position: relative;
+  }
+
+  .subrayado::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    bottom: -0.3rem;
+    height: 2px;
+    border-radius: 999px;
+    background: currentColor;
+    transform: scaleX(0);
+    transition: transform 0.3s var(--ease-salida);
+  }
+
+  .subrayado:hover::after,
+  .subrayado:focus-visible::after {
+    transform: scaleX(1);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .subrayado::after {
+      transition: none;
+    }
+  }
+
+  /*
+    El botón que queremos que se mire: cada cierto rato suelta un anillo y el
+    ícono se sacude. Es la única cosa de la página que se mueve sola sin que
+    nadie haga nada, así que va solo en la acción principal y no en todas.
+
+    El movimiento lo lleva el ícono y no el botón entero, para que `active`
+    siga hundiendo el botón al pulsarlo: dos animaciones sobre el mismo
+    `transform` se pisan.
+  */
+  .pulso {
+    position: relative;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    .pulso::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      border-radius: inherit;
+      pointer-events: none;
+      animation: destello 7s var(--ease-salida) 4s infinite;
+    }
+
+    .pulso > svg {
+      animation: agitar 7s var(--ease-salida) 4s infinite;
+    }
+  }
+
+  /*
+    La cinta de servicios: dos copias idénticas de la misma lista corriendo
+    hacia la izquierda. Al llegar a la mitad del riel vuelve a empezar, y como
+    las dos copias son iguales el salto no se ve. Por eso el espacio entre
+    servicios lo pone cada ítem y no un `gap` del riel: con `gap`, la mitad
+    exacta cae dentro de un hueco y la vuelta al inicio da un tirón.
+
+    Se detiene con el mouse encima y con el teclado dentro, para poder leerla.
+  */
+  .cinta {
+    overflow: hidden;
+  }
+
+  .marquesina {
+    display: flex;
+    width: max-content;
+  }
+
+  @media (prefers-reduced-motion: no-preference) {
+    /* El degradado de los extremos es para que la cinta no empiece ni termine
+       de golpe mientras corre. Quieta solo cortaría el primer servicio. */
+    .cinta {
+      mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+      -webkit-mask-image: linear-gradient(to right, transparent, #000 5%, #000 95%, transparent);
+    }
+
+    .marquesina {
+      animation: correr var(--duracion, 48s) linear infinite;
+    }
+
+    .cinta:hover .marquesina,
+    .cinta:focus-within .marquesina {
+      animation-play-state: paused;
+    }
+  }
+}
+
+@keyframes destello {
+  0% {
+    box-shadow: 0 0 0 0 color-mix(in oklab, var(--marca-viva) 55%, transparent);
+  }
+  16%,
+  100% {
+    box-shadow: 0 0 0 14px transparent;
+  }
+}
+
+@keyframes agitar {
+  0%,
+  10%,
+  100% {
+    transform: none;
+  }
+  2% {
+    transform: rotate(-10deg) scale(1.08);
+  }
+  4% {
+    transform: rotate(8deg) scale(1.08);
+  }
+  6% {
+    transform: rotate(-6deg) scale(1.04);
+  }
+  8% {
+    transform: rotate(4deg);
+  }
+}
+
+@keyframes correr {
+  to {
+    transform: translateX(-50%);
   }
 }
 

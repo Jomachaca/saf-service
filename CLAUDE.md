@@ -77,7 +77,7 @@ app móvil, facturación electrónica, multi-taller, roles granulares.
 ## Estado actual
 
 **Fase 4 terminada.** El modelo conceptual está cerrado y las decisiones
-abiertas se resolvieron (`docs/DECISIONES.md` 16–31).
+abiertas se resolvieron (`docs/DECISIONES.md` 16–32).
 
 Funcionan el tablero, la recepción rápida, el detalle de orden con cambio de
 estado, movimiento de box y bitácora, el diagnóstico, el presupuesto con líneas
@@ -87,7 +87,8 @@ los datos reales del taller y «Sitio web» (`/admin/sitio`), donde se edita tod
 lo que se ve en él. Y las reservas: el formulario `/reservar`, la agenda en
 `/admin/agenda`, su configuración en `/admin/reservas` y «Recibir», que abre la
 recepción con la reserva puesta. El panel se recorre con una barra lateral de
-seis entradas (decisión 31).
+seis entradas (decisión 31), y el landing tiene su capa de movimiento en CSS
+(decisión 32).
 
 Las escrituras de órdenes pasan por funciones de Postgres
 (`recepcionar_vehiculo`, `cambiar_estado_orden`, `mover_orden`) para que el
@@ -175,7 +176,12 @@ para atenuar texto: eso ya se migró una vez.
 `animation-timeline: view()` detrás de un `@supports`, así que donde el navegador
 no la entiende el contenido se ve normal en vez de quedarse invisible. No hay
 librería de animación instalada, y para un taller cuyos clientes entran desde
-WhatsApp con datos móviles eso es una decisión, no una carencia.
+WhatsApp con datos móviles eso es una decisión, no una carencia. Las
+utilidades del landing —`.al-entrar`, `.subrayado`, `.pulso` y `.cinta`— viven
+en `@layer components`, para que una utilidad de Tailwind pueda pisarlas, y
+todo lo que se mueve solo está detrás de `prefers-reduced-motion`: con las
+animaciones apagadas en el sistema, la página se ve completa y quieta
+(decisión 32).
 
 **El panel mide su columna, no la pantalla.** La barra lateral ocupa 15rem
 desde `lg`, así que un `lg:grid-cols-…` cree tener 1024 px donde quedan poco

@@ -36,7 +36,7 @@ export const metadata: Metadata = {
  * cambian con cada reserva y no pueden esperar a que alguien publique.
  */
 export default async function PaginaReservar() {
-  const { taller } = await cargarSitio();
+  const { taller, servicios } = await cargarSitio();
 
   const whatsappHref = taller.whatsapp ? enlaceWhatsApp(taller.whatsapp, SALUDO_WHATSAPP) : null;
 
@@ -70,7 +70,13 @@ export default async function PaginaReservar() {
         </Suspense>
       </main>
 
-      <Pie taller={taller} />
+      <Pie
+        taller={taller}
+        servicios={servicios}
+        whatsappHref={whatsappHref}
+        mapaHref={enlaceComoLlegar(taller.direccion)}
+        enlacesEn="/"
+      />
     </>
   );
 }

@@ -139,6 +139,22 @@ export function mapaPermitido(url: string | null): string | null {
   }
 }
 
+/**
+ * El mapa que se incrusta en «Dónde estamos».
+ *
+ * Si el taller pegó su enlace de Google, ese manda: es el único que apunta al
+ * punto exacto del local. Si no pegó nada, se arma uno con la dirección, que
+ * Google resuelve como una búsqueda. Así el visitante ve el mapa desde el
+ * primer día, sin que nadie tenga que entrar al panel a pegar un `iframe`.
+ */
+export function mapaIncrustado(mapaUrl: string | null, direccion: string): string | null {
+  const pegado = mapaPermitido(mapaUrl);
+  if (pegado) return pegado;
+  if (!direccion.trim()) return null;
+
+  return `https://www.google.com/maps?q=${encodeURIComponent(direccion)}&hl=es&z=16&output=embed`;
+}
+
 /** El jsonb lo escribe una persona desde el panel: se valida antes de pintarlo. */
 function leerHorarios(valor: unknown): Horario[] {
   if (!Array.isArray(valor)) return [];
@@ -196,7 +212,7 @@ export async function cargarSitio(): Promise<ContenidoSitio> {
       facebook: fila.facebook,
       instagram: fila.instagram,
       tiktok: fila.tiktok,
-      mapaUrl: mapaPermitido(fila.mapa_url),
+      mapaUrl: mapaIncrustado(fila.mapa_url, fila.direccion),
       horarios: leerHorarios(fila.horarios),
     },
     hero: {

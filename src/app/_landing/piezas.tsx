@@ -27,14 +27,21 @@ export function Boton({
   href,
   tono = "marca",
   externo,
+  llamativo,
   children,
 }: {
   href: string;
   tono?: keyof typeof TONOS;
   externo?: boolean;
+  /**
+   * Suelta un anillo y sacude el ícono cada siete segundos. Va en la acción
+   * principal de la pantalla y en ninguna otra: dos cosas moviéndose solas al
+   * mismo tiempo no llaman el doble de atención, se anulan.
+   */
+  llamativo?: boolean;
   children: React.ReactNode;
 }) {
-  const clases = `${BASE_BOTON} ${TONOS[tono]}`;
+  const clases = `${BASE_BOTON} ${TONOS[tono]}${llamativo ? " pulso" : ""}`;
 
   if (externo) {
     return (
@@ -183,4 +190,16 @@ export function MarcoFoto({
       />
     </div>
   );
+}
+
+/**
+ * El turno de aparición de un elemento dentro de una lista.
+ *
+ * `.al-entrar` lo lee como `--paso` y corre su rango de scroll: el segundo
+ * ítem termina de aparecer un poco después que el primero. Con una línea de
+ * tiempo de scroll no sirve `animation-delay`, porque el tiempo lo pone el
+ * dedo de quien mira y no el reloj.
+ */
+export function paso(indice: number): React.CSSProperties {
+  return { "--paso": indice } as React.CSSProperties;
 }

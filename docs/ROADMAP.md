@@ -129,8 +129,9 @@ comprobó lo que sostiene la decisión 17: al guardar un cambio en el titular, l
 base queda con el texto nuevo y **el sitio público sigue mostrando el viejo**;
 al pulsar «Publicar cambios», el sitio pasa al nuevo. La cuenta se borró después.
 
-Falta cargar contenido real: fotos, horarios y el enlace del mapa. Sin ellos las
-secciones no se muestran, que es el comportamiento buscado.
+Falta cargar contenido real: fotos y horarios. Sin ellos las secciones no se
+muestran, que es el comportamiento buscado. El mapa ya no espera nada: si nadie
+pega un enlace de Google, sale de la dirección (decisión 32).
 
 ## Fase 4 — Reservas
 
@@ -222,6 +223,37 @@ de esas tablas tomada antes y después de probar salió igual.
   los de antes, cambiados de lugar, y TypeScript confirma que cada uno llega a
   la suya. Pero no se envió ninguno, para no tocar el horario real, así que
   tampoco se vio el aviso «Sin publicar» aparecer o irse después de guardar.
+
+## Landing con movimiento
+
+Después de la barra lateral, le tocó al sitio público (decisión 32): pie en
+cuatro columnas sin el enlace al panel, cinta de servicios en bucle, subrayados
+que crecen desde el centro, apariciones al hacer scroll más largas y
+escalonadas, anillo en el botón de reservar, burbuja de WhatsApp en el celular y
+mapa armado con la dirección.
+
+### Lo verificado
+
+- El pie en cuatro columnas a 1280 px, en dos a 800 y apilado a 375, con los
+  datos reales del taller y sin «Acceso del personal» en ninguna parte.
+- El mapa de «Dónde estamos» carga Google con el pin en Av. Fernandini 142,
+  sin que nadie haya pegado un enlace de incrustado.
+- En `/reservar` el pie apunta a la portada (`/#servicios`) y no a anclas que
+  ahí no existen.
+- La burbuja de WhatsApp queda fija abajo a la derecha en el celular y no
+  aparece en pantalla grande.
+- Las dos copias de la cinta miden exactamente lo mismo, que es lo que hace que
+  la vuelta al inicio no se vea, y el riel avanza al correr su reloj.
+- El escalonado reparte los rangos de scroll como debe (4%, 11%, 18%, 25%).
+- `next build` pasa y la portada sigue siendo estática entera.
+
+### Lo que no está verificado
+
+- **Las animaciones, corriendo.** El navegador del panel pide movimiento
+  reducido y congela el reloj de la página, así que se vio la versión quieta
+  (que es correcta y está completa) y se comprobó que cada animación quedó
+  atada donde debe, pero no se las vio moverse. Eso hay que mirarlo en un
+  navegador normal.
 
 ## Fase 5 — Fotos e historial
 

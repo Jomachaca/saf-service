@@ -13,7 +13,7 @@ const ENLACES = [
 ];
 
 const BOTON =
-  "items-center gap-2 rounded-lg bg-marca px-4 py-2.5 font-display text-sm font-semibold " +
+  "pulso items-center gap-2 rounded-lg bg-marca px-4 py-2.5 font-display text-sm font-semibold " +
   "uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida " +
   "hover:bg-marca-viva active:translate-y-px";
 
@@ -34,6 +34,9 @@ const BOTON_MOVIL =
  * En móvil el menú se abre y se cierra sin librerías: son tres enlaces, no hace
  * falta traer una librería de animación al navegador de alguien que entró desde
  * WhatsApp con datos móviles.
+ *
+ * Los enlaces se subrayan desde el centro al pasar el mouse y el botón suelta
+ * un anillo cada siete segundos (`.subrayado` y `.pulso`, en `globals.css`).
  */
 export function Navegacion({
   whatsapp,
@@ -62,7 +65,7 @@ export function Navegacion({
             <a
               key={enlace.ancla}
               href={`${enlacesEn}${enlace.ancla}`}
-              className="text-sm font-medium text-white/75 transition-colors duration-200 hover:text-white"
+              className="subrayado text-sm font-medium text-white/75 transition-colors duration-200 hover:text-white"
             >
               {enlace.texto}
             </a>

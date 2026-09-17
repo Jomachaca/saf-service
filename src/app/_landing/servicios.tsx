@@ -3,7 +3,7 @@ import { Engine, Gauge, PaintRoller, Wrench } from "@phosphor-icons/react/dist/s
 import type { ServicioPublico } from "@/lib/sitio/contenido";
 import { CATEGORIAS, ETIQUETA_CATEGORIA } from "@/lib/orden/presupuesto";
 
-import { Seccion } from "./piezas";
+import { Seccion, paso } from "./piezas";
 
 const ICONO_CATEGORIA = {
   MANTENIMIENTO: Wrench,
@@ -77,7 +77,8 @@ export function Servicios({ servicios }: { servicios: ServicioPublico[] }) {
           return (
             <article
               key={grupo.categoria}
-              className={`al-entrar flex flex-col gap-5 rounded-2xl p-6 md:p-8 ${anchos[indice]} ${tono.caja}`}
+              style={paso(indice)}
+              className={`al-entrar flex flex-col gap-5 rounded-2xl p-6 transition duration-300 ease-salida hover:-translate-y-1 md:p-8 ${anchos[indice]} ${tono.caja}`}
             >
               <Icono size={32} weight="duotone" className={tono.icono} />
 

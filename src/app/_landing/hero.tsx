@@ -49,7 +49,7 @@ export function Hero({
           <div className="flex flex-wrap gap-3">
             {reservarHref ? (
               <>
-                <Boton href={reservarHref}>
+                <Boton href={reservarHref} llamativo>
                   <CalendarCheck size={20} weight="fill" />
                   Reservar hora
                 </Boton>

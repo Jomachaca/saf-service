@@ -10,7 +10,7 @@ import {
 
 import type { Taller } from "@/lib/sitio/contenido";
 
-import { Boton, Seccion } from "./piezas";
+import { Boton, Seccion, paso } from "./piezas";
 
 const REDES = [
   { clave: "facebook", etiqueta: "Facebook", Icono: FacebookLogo },
@@ -21,10 +21,10 @@ const REDES = [
 /**
  * Datos de contacto y mapa.
  *
- * La sección cambia de forma según haya mapa cargado o no: con mapa son dos
- * columnas, y sin mapa los datos se reparten a lo ancho en vez de dejar media
- * pantalla vacía. Un taller que todavía no pegó su enlace de Google no tiene
- * por qué ver un hueco.
+ * La sección cambia de forma según haya mapa o no: con mapa son dos columnas,
+ * y sin mapa los datos se reparten a lo ancho en vez de dejar media pantalla
+ * vacía. Eso último pasa solo si tampoco hay dirección cargada, porque el mapa
+ * se arma con ella cuando nadie pegó un enlace (`mapaIncrustado`).
  */
 export function Contacto({
   taller,
@@ -41,7 +41,7 @@ export function Contacto({
   return (
     <Seccion id="contacto" titulo="Dónde estamos">
       <div className={conMapa ? "grid gap-10 md:grid-cols-2 md:gap-14" : "flex flex-col gap-10"}>
-        <div className="al-entrar flex flex-col gap-8">
+        <div className="al-entrar flex flex-col gap-8" style={paso(0)}>
           <dl className={conMapa ? "flex flex-col gap-5" : "grid gap-6 sm:grid-cols-3"}>
             {taller.direccion ? (
               <Dato Icono={MapPin} etiqueta="Dirección">
@@ -115,7 +115,28 @@ export function Contacto({
         </div>
 
         {taller.mapaUrl ? (
-          <div className="al-entrar overflow-hidden rounded-2xl border border-borde bg-fondo-hondo">
+          <figure
+            style={paso(1)}
+            className="al-entrar overflow-hidden rounded-2xl border border-borde bg-fondo-hondo shadow-lg shadow-marino-900/10"
+          >
+            <figcaption className="flex items-center justify-between gap-3 bg-estructura px-4 py-2.5 text-sm text-white/75">
+              <span className="flex min-w-0 items-center gap-2">
+                <MapPin size={16} weight="fill" className="shrink-0 text-vino-300" />
+                <span className="truncate">{taller.nombre}</span>
+              </span>
+
+              {mapaHref ? (
+                <a
+                  href={mapaHref}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="subrayado shrink-0 font-medium text-white"
+                >
+                  Cómo llegar
+                </a>
+              ) : null}
+            </figcaption>
+
             <iframe
               src={taller.mapaUrl}
               title={`Ubicación de ${taller.nombre}`}
@@ -123,7 +144,7 @@ export function Contacto({
               referrerPolicy="no-referrer-when-downgrade"
               className="aspect-4/3 w-full"
             />
-          </div>
+          </figure>
         ) : null}
       </div>
     </Seccion>

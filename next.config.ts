@@ -32,9 +32,11 @@ const nextConfig: NextConfig = {
   cacheComponents: true,
   images: origenDeSupabase(),
 
-  // El indicador de Next en desarrollo, abajo a la derecha: en su lugar de
-  // siempre tapaba el nombre y el botón «Salir» de la barra lateral del panel.
-  devIndicators: { position: "bottom-right" },
+  // El indicador de Next en desarrollo, apagado. Abajo a la izquierda tapaba
+  // el nombre y el botón «Salir» de la barra lateral del panel, y abajo a la
+  // derecha tapa la burbuja de WhatsApp del landing. Apagarlo no esconde nada
+  // importante: los errores de compilación y de ejecución se siguen mostrando.
+  devIndicators: false,
 
   // Rutas que cambiaron al ordenar el panel en una barra lateral (decisión 31).
   // Temporales: una pestaña vieja o un marcador siguen llegando a su pantalla.

@@ -119,7 +119,7 @@ export function Identidad({ config }: { config: ConfigCompleta }) {
 
         <Campo
           etiqueta="Mapa"
-          ayuda="En Google Maps: Compartir, Insertar un mapa, y copia solo la dirección que va dentro de src. Empieza con https://www.google.com/maps/embed."
+          ayuda="Opcional: vacío, el sitio arma el mapa con la dirección de arriba. Para marcar el punto exacto, en Google Maps: Compartir, Insertar un mapa, y copia solo la dirección que va dentro de src. Empieza con https://www.google.com/maps/embed."
         >
           <Entrada
             nombre="mapa_url"

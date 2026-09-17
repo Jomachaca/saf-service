@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import type { Foto } from "@/lib/sitio/contenido";
 
-import { Seccion } from "./piezas";
+import { Seccion, paso } from "./piezas";
 
 /**
  * Tira que se arrastra de lado, con anclaje.
@@ -17,17 +17,18 @@ export function Galeria({ fotos }: { fotos: Foto[] }) {
   return (
     <Seccion titulo="El taller por dentro">
       <ul className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 md:-mx-8 md:px-8">
-        {fotos.map((foto) => (
+        {fotos.map((foto, indice) => (
           <li
             key={foto.id}
-            className="relative aspect-4/3 w-72 shrink-0 snap-start overflow-hidden rounded-2xl bg-fondo-hondo md:w-96"
+            style={paso(indice)}
+            className="al-entrar group relative aspect-4/3 w-72 shrink-0 snap-start overflow-hidden rounded-2xl bg-fondo-hondo md:w-96"
           >
             <Image
               src={foto.url}
               alt={foto.alt}
               fill
               sizes="(min-width: 768px) 24rem, 18rem"
-              className="object-cover"
+              className="object-cover transition duration-500 ease-salida group-hover:scale-105"
             />
           </li>
         ))}

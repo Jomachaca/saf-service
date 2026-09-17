@@ -534,3 +534,47 @@ formulario cambia el scroll por una barra que tampoco se abarca de un vistazo.
   la franja marina de arriba.
 
 ---
+
+## 32. El landing se mueve, y el movimiento es de CSS
+
+**Decisión:** el sitio público lleva una capa de movimiento propia, toda en
+`globals.css` y sin librería. Las secciones aparecen al entrar en pantalla y
+escalonadas, los enlaces de la barra y del pie se subrayan desde el centro, una
+cinta de servicios corre en bucle debajo de la portada, y el botón principal
+suelta un anillo y sacude su ícono cada siete segundos. En el celular hay además
+una burbuja fija de WhatsApp. El pie pasa a cuatro columnas y pierde el enlace
+«Acceso del personal».
+
+**Descartado:** traer Motion o GSAP, y hacer la cinta con las fotos de la
+galería.
+
+**Por qué:** la página ya tenía apariciones al hacer scroll, pero tan cortas que
+no se notaban, y fuera de eso nada se movía. Una librería de animación pesa más
+que todo el CSS del sitio junto, y el visitante típico entra desde un estado de
+WhatsApp con datos móviles. La cinta va con servicios y no con fotos porque el
+taller tiene catorce servicios cargados y ninguna foto en la galería: un
+carrusel vacío no es un carrusel.
+
+**Consecuencias:**
+
+- Todo lo que se mueve solo está detrás de `prefers-reduced-motion`. En una
+  máquina con las animaciones apagadas (en Windows: Configuración,
+  Accesibilidad, Efectos visuales) el landing se ve entero y quieto. Es lo
+  correcto, y conviene saberlo antes de creer que algo se rompió.
+- Las utilidades nuevas viven en `@layer components`. Sin capa, una regla
+  propia le gana a cualquier utilidad de Tailwind: `.pulso` fija
+  `position: relative` y se comía el `fixed` de la burbuja.
+- El escalonado corre el rango de scroll con `--paso` en vez de usar
+  `animation-delay`, porque en una línea de tiempo de scroll el tiempo lo pone
+  el dedo de quien mira y no el reloj.
+- La cinta repite nombres que ya están en «Servicios», así que va entera con
+  `aria-hidden`: lo que aporta es visual.
+- El mapa se arma con la dirección cuando nadie pegó un enlace de Google
+  (`mapaIncrustado`). El campo «Mapa» del panel queda para marcar el punto
+  exacto, no para que el mapa exista.
+- Al panel se entra por `/admin` o `/acceso`, escribiéndolo. El enlace del pie
+  lo usaban dos personas y lo veían todas.
+- El indicador de desarrollo de Next queda apagado: abajo a la izquierda tapaba
+  el pie de la barra lateral del panel y abajo a la derecha tapa la burbuja.
+
+---

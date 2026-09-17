@@ -1,6 +1,6 @@
 import type { Nosotros } from "@/lib/sitio/contenido";
 
-import { MarcoFoto, Seccion } from "./piezas";
+import { MarcoFoto, Seccion, paso } from "./piezas";
 
 /**
  * Quiénes son, con la foto del taller al lado. El texto sale del panel y puede
@@ -22,7 +22,7 @@ export function Taller({ nosotros }: { nosotros: Nosotros }) {
           />
         </div>
 
-        <div className="al-entrar order-1 flex flex-col gap-5 md:order-2">
+        <div className="al-entrar order-1 flex flex-col gap-5 md:order-2" style={paso(1)}>
           <h2 className="font-display text-3xl font-bold uppercase tracking-tight md:text-4xl">
             {nosotros.titulo || "El taller"}
           </h2>
