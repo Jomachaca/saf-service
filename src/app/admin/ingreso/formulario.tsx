@@ -8,11 +8,13 @@ import type { Box, VehiculoEncontrado } from "@/lib/orden/consultas";
 import { UBICACIONES, ETIQUETA_UBICACION, type Ubicacion } from "@/lib/orden/ubicacion";
 
 import { Aviso } from "../componentes";
+import { Esquinas } from "../../plano";
+import { Seccion } from "../componentes";
 import { buscarVehiculos, recepcionarVehiculo } from "../acciones";
 import { SIN_ERROR } from "../estado-formulario";
 
 const CLASES_INPUT =
-  "w-full rounded-lg border border-borde bg-fondo-alto px-3 py-2";
+  "w-full  border border-borde bg-fondo-alto px-3 py-2";
 
 /** La reserva con la que llega el vehículo, con su texto ya armado en el servidor. */
 export type ReservaEnRecepcion = {
@@ -54,9 +56,10 @@ export function FormularioIngreso({
   const [kilometraje, setKilometraje] = useState("");
 
   return (
-    <form action={accion} className="flex max-w-2xl flex-col gap-6">
+    <form action={accion} className="flex max-w-[54rem] flex-col gap-7">
       {reserva ? <ConReserva reserva={reserva} /> : null}
 
+      <Seccion numero="01" titulo="Vehículo">
       {elegido ? (
         <VehiculoElegido vehiculo={elegido} onQuitar={() => setElegido(null)} />
       ) : esNuevo ? (
@@ -81,7 +84,9 @@ export function FormularioIngreso({
           terminoInicial={reserva ? (reserva.placa ?? reserva.telefono.replace(/\s/g, "")) : ""}
         />
       )}
+      </Seccion>
 
+      <Seccion numero="02" titulo="Motivo e ingreso">
       <Campo etiqueta="Motivo de ingreso">
         <MotivoConAtajos inicial={reserva?.motivo ?? ""} />
       </Campo>
@@ -115,10 +120,10 @@ export function FormularioIngreso({
                 type="button"
                 aria-pressed={ubicacion === opcion}
                 onClick={() => setUbicacion(opcion)}
-                className={`border px-3 py-1.5 text-sm ${
+                className={`border px-3.5 py-1.75 font-display text-xs font-semibold tracking-[0.1em] uppercase transition duration-200 ${
                   ubicacion === opcion
-                    ? "border-marca bg-marca text-sobre-marca"
-                    : "border-borde"
+                    ? "border-marca bg-marca text-white"
+                    : "border-borde-fuerte hover:bg-tinta/6"
                 }`}
               >
                 {ETIQUETA_UBICACION[opcion]}
@@ -151,11 +156,13 @@ export function FormularioIngreso({
         <button
           type="submit"
           disabled={enviando || (!elegido && !esNuevo)}
-          className="border border-marca bg-marca px-4 py-2.5 font-display text-sm font-semibold tracking-[0.09em] text-white uppercase transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px disabled:opacity-50"
+          className="relative inline-flex items-center gap-2.5 border border-marca bg-marca px-5.5 py-3.5 font-display text-base font-bold tracking-[0.09em] text-white uppercase transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px disabled:opacity-50"
         >
           {enviando ? "Creando orden…" : "Crear orden"}
+          <Esquinas className="text-vino-300" />
         </button>
       </div>
+      </Seccion>
     </form>
   );
 }
@@ -167,14 +174,18 @@ export function FormularioIngreso({
  */
 function ConReserva({ reserva }: { reserva: ReservaEnRecepcion }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-marca/30 bg-vino-50 px-3 py-2.5 text-sm dark:bg-vino-900/30">
+    <div className="plano flex flex-wrap items-center gap-x-3.5 gap-y-2.5 border-marca/40 bg-vino-50 px-4.5 py-3.5">
       <input type="hidden" name="reserva_id" value={reserva.id} />
-      <CalendarCheck size={18} weight="duotone" className="text-marca" />
-      <span className="font-medium">Reserva de {reserva.nombre}</span>
+      <CalendarCheck size={19} className="shrink-0 text-marca" />
+      <span className="font-semibold">Reserva de {reserva.nombre}</span>
       <span className="text-tinta-suave">{reserva.cuando}</span>
-      <Link href="/admin/ingreso" className="ml-auto underline underline-offset-4">
+      <Link
+        href="/admin/ingreso"
+        className="subrayado ms-auto font-display text-[13px] font-semibold tracking-[0.12em] uppercase"
+      >
         Recibir sin reserva
       </Link>
+      <Esquinas className="text-marca" />
     </div>
   );
 }
@@ -189,10 +200,10 @@ function Campo({
   children: React.ReactNode;
 }) {
   return (
-    <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium">
+    <label className="flex flex-col gap-2">
+      <span className="font-display text-xs font-semibold tracking-[0.16em] text-tinta-suave uppercase">
         {etiqueta}
-        {opcional ? <span className="ml-1 opacity-50">(opcional)</span> : null}
+        {opcional ? <span className="ms-1 normal-case opacity-60">(opcional)</span> : null}
       </span>
       {children}
     </label>
@@ -237,7 +248,7 @@ function MotivoConAtajos({ inicial }: { inicial: string }) {
               setMotivo(atajo);
               campo.current?.focus();
             }}
-            className="border border-borde px-3 py-1.5 text-xs transition-colors duration-200 hover:border-borde-fuerte"
+            className="border border-borde-fuerte px-3 py-1.5 font-display text-xs font-semibold tracking-[0.1em] uppercase transition duration-200 hover:bg-tinta/6"
           >
             {atajo}
           </button>
@@ -303,14 +314,14 @@ function Buscador({
       {buscando ? <p className="text-sm text-tinta-tenue">Buscando…</p> : null}
 
       {resultados.length > 0 ? (
-        <ul className="flex flex-col divide-y divide-borde rounded-lg border border-borde">
+        <ul className="flex flex-col divide-y divide-borde border border-borde-fuerte">
           {resultados.map((vehiculo) => (
             <li key={vehiculo.id}>
               <button
                 type="button"
                 disabled={Boolean(vehiculo.ordenAbierta)}
                 onClick={() => onElegir(vehiculo)}
-                className="flex w-full flex-wrap items-center gap-x-3 gap-y-1 px-3 py-2 text-left hover:bg-fondo-hondo disabled:opacity-50"
+                className="flex w-full flex-wrap items-center gap-x-4 gap-y-1 px-3.5 py-3 text-left transition-colors duration-200 hover:bg-fondo-hondo disabled:opacity-50"
               >
                 <span className="font-mono font-medium">{vehiculo.placa}</span>
                 <span className="text-sm opacity-80">
@@ -357,7 +368,7 @@ function VehiculoElegido({
   onQuitar: () => void;
 }) {
   return (
-    <div className="flex flex-wrap items-center gap-x-3 gap-y-1 rounded-lg border border-borde px-3 py-2.5">
+    <div className="flex flex-wrap items-center gap-x-4 gap-y-1 border border-borde-fuerte bg-fondo-alto px-3.5 py-3">
       <input type="hidden" name="vehiculo_id" value={vehiculo.id} />
       <input type="hidden" name="cliente_id" value={vehiculo.cliente.id} />
 
@@ -422,13 +433,15 @@ function VehiculoNuevo({
   }
 
   return (
-    <div className="flex flex-col gap-4 rounded-lg border border-borde p-4">
-      <div className="flex items-baseline justify-between gap-3">
-        <h2 className="text-sm font-semibold">Vehículo nuevo</h2>
+    <div className="plano flex flex-col gap-4 bg-fondo-alto p-5">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1">
+        <h2 className="font-display text-lg font-bold tracking-[0.1em] uppercase">
+          Vehículo nuevo
+        </h2>
         <button
           type="button"
           onClick={onCancelar}
-          className="text-sm underline underline-offset-4"
+          className="subrayado font-display text-[13px] font-semibold tracking-[0.12em] uppercase"
         >
           Buscar uno existente
         </button>
@@ -521,6 +534,8 @@ function VehiculoNuevo({
           />
         </Campo>
       </div>
+
+      <Esquinas />
     </div>
   );
 }

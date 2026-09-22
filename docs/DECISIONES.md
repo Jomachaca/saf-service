@@ -557,10 +557,16 @@ carrusel vacío no es un carrusel.
 
 **Consecuencias:**
 
-- Todo lo que se mueve solo está detrás de `prefers-reduced-motion`. En una
-  máquina con las animaciones apagadas (en Windows: Configuración,
-  Accesibilidad, Efectos visuales) el landing se ve entero y quieto. Es lo
-  correcto, y conviene saberlo antes de creer que algo se rompió.
+- ~~Todo lo que se mueve solo está detrás de `prefers-reduced-motion`.~~
+  **Revertido.** Estuvo así hasta que el taller revisó el sitio en su máquina,
+  que tiene apagadas las animaciones de Windows, y no se movía nada. Se le
+  explicó que era el comportamiento correcto y que ese ajuste también lo usan
+  las personas a las que el movimiento les provoca mareo; pidió igualmente que
+  la configuración de su sistema no afectara a la página. Es su sitio, así que
+  el sitio se mueve siempre. Lo que queda de esa idea es que la página nunca
+  se rompe si el movimiento no ocurre: las apariciones siguen detrás de un
+  `@supports`, y donde el navegador no entiende la línea de tiempo de scroll
+  el contenido se ve normal en vez de quedarse invisible.
 - Las utilidades nuevas viven en `@layer components`. Sin capa, una regla
   propia le gana a cualquier utilidad de Tailwind: `.pulso` fija
   `position: relative` y se comía el `fixed` de la burbuja.
@@ -609,10 +615,23 @@ en la misma aplicación se nota más que la diferencia de trazo entre una y otra
   `.pulso` es `.llama` (con `.llama-b` para desfasar el segundo botón).
 - El logo del taller viaja en el repositorio, en `public/marca/`, en versión de
   tinta y en blanca. Un logo cargado desde «Sitio web» le sigue ganando.
-- Del rediseño quedaron fuera dos bloques: la banda de cuatro cifras bajo la
-  portada («+12 años», «5 boxes»…) y las marcas de vehículos en «El taller».
-  Los dos piden datos que el CMS no tiene, y el landing no inventa datos del
-  negocio. Entran cuando haya campo en el panel para escribirlos.
+- **Se quitó el modo oscuro automático.** El sistema anterior invertía los
+  tokens con `prefers-color-scheme: dark`, y con el lenguaje nuevo eso deja de
+  funcionar: el contraste del diseño no está en el color del texto sino en la
+  alternancia entre las secciones de papel y los bloques marinos. Invertida la
+  paleta, el papel se vuelve marino oscuro, el bloque marino también, y la
+  página entera queda de un solo tono —que es exactamente lo que reportó el
+  taller, que tiene Windows en oscuro—. `:root` declara `color-scheme: light`
+  para que las barras de desplazamiento y los calendarios de los campos de
+  fecha salgan claros igual.
+- Los dos bloques del rediseño que piden datos del negocio —la banda de cuatro
+  cifras bajo la portada («+12 años», «5 boxes»…) y las marcas de vehículos en
+  «El taller»— están construidos, pero **no traen contenido de fábrica**. Las
+  cifras de la maqueta eran de relleno y el landing no inventa datos del
+  negocio, así que entraron como dos campos más del CMS
+  (`config_sitio.datos_portada` y `config_sitio.marcas`): vacíos, cada bloque
+  no se pinta hasta que alguien los llene desde «Sitio web». Es el mismo
+  criterio que ya rige el horario y la galería.
 - El panel entró después, por sus piezas compartidas: la barra lateral con
   filete de marca en la entrada encendida, las cabeceras con su versalita y su
   filete, los bloques de configuración como marcos de plano, los campos con

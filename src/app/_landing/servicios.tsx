@@ -46,7 +46,7 @@ export function Servicios({ servicios }: { servicios: ServicioPublico[] }) {
             <article
               key={grupo.categoria}
               style={paso(indice)}
-              className="al-entrar plano group flex min-h-68 flex-col gap-4 bg-fondo p-6 transition duration-300 ease-salida hover:-translate-y-1 hover:border-borde-fuerte"
+              className="al-entrar plano group flex min-h-68 flex-col gap-4 bg-fondo p-6 transition duration-300 ease-salida hover:-translate-y-1 hover:border-tinta-tenue"
             >
               <div className="flex items-start justify-between gap-4">
                 <Icono size={34} className="text-marca" />

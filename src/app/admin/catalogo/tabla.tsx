@@ -13,7 +13,7 @@ import { Aviso } from "../componentes";
 import { CATALOGO_INICIAL, SIN_ERROR } from "../estado-formulario";
 
 const CLASES_INPUT =
-  "w-full rounded-lg border border-borde bg-fondo-alto px-2.5 py-1.5 text-sm";
+  "w-full  border border-borde bg-fondo-alto px-2.5 py-1.5 text-sm";
 
 const CLASES_BOTON =
   "rounded-lg border border-borde-fuerte px-3 py-1.5 text-sm font-medium disabled:opacity-40";
@@ -170,7 +170,7 @@ function FilaServicio({ servicio }: { servicio: ServicioCatalogo }) {
           onClick={() => cambiar("activo", !campos.activo)}
           className={`rounded-full border px-2.5 py-0.5 text-xs ${
             campos.activo
-              ? "border-emerald-600/40 bg-emerald-500/15 text-emerald-700 dark:text-emerald-300"
+              ? "border-emerald-600/40 bg-emerald-500/15 text-emerald-700"
               : "border-borde"
           }`}
         >

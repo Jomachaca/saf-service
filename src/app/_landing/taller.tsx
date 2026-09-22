@@ -33,6 +33,24 @@ export function Taller({ nosotros }: { nosotros: Nosotros }) {
           <p className="text-lg leading-relaxed whitespace-pre-line text-tinta-suave">
             {nosotros.texto}
           </p>
+
+          {/*
+            Las marcas que el taller atiende, cada una en su recuadro. Salen del
+            panel: qué marcas toca no se deduce desde acá, y una lista inventada
+            en un taller es una promesa que alguien va a venir a cobrar.
+          */}
+          {nosotros.marcas.length > 0 ? (
+            <ul className="mt-1 flex flex-wrap gap-2">
+              {nosotros.marcas.map((marca) => (
+                <li
+                  key={marca}
+                  className="border border-borde-fuerte px-3.5 py-1.5 font-display text-[13px] font-semibold tracking-[0.11em] text-tinta-suave uppercase"
+                >
+                  {marca}
+                </li>
+              ))}
+            </ul>
+          ) : null}
         </div>
       </div>
     </Seccion>

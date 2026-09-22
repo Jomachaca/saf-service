@@ -21,8 +21,9 @@ export default function PaginaIngreso({ searchParams }: PageProps<"/admin/ingres
   return (
     <div className="flex flex-col gap-6">
       <Encabezado
-        titulo="Recibir vehículo"
-        descripcion="Busca por placa o teléfono. Si el vehículo ya vino antes, quedan cuatro campos."
+        seccion="Panel · en menos de un minuto"
+        titulo="Recepción"
+        descripcion="Busca el vehículo por placa, teléfono o nombre. Si ya vino antes, quedan cuatro campos."
       />
 
       <Suspense fallback={<p className="text-sm text-tinta-tenue">Cargando…</p>}>
@@ -75,7 +76,7 @@ async function Contenido({ searchParams }: { searchParams: ParametrosBusqueda })
   return (
     <>
       {reserva && !recibible ? (
-        <p className="max-w-2xl rounded-lg border border-borde bg-fondo-alto px-3 py-2.5 text-sm text-tinta-suave">
+        <p className="max-w-[54rem] border border-borde-fuerte bg-fondo-hondo px-4 py-3 text-sm text-tinta-suave">
           La reserva de {reserva.nombre} ya figura como «{ETIQUETA_ESTADO_RESERVA[reserva.estado]}».
           Se puede recibir el vehículo igual, sin reserva.
         </p>

@@ -42,7 +42,7 @@ export function BarraPublicar({
           href="/"
           target="_blank"
           rel="noopener noreferrer"
-          className="ml-auto inline-flex items-center gap-2 rounded-lg border border-borde-fuerte px-3 py-2 text-sm font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca"
+          className="ml-auto inline-flex items-center gap-2 border border-borde-fuerte px-3 py-2 text-sm font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca"
         >
           <ArrowSquareOut size={16} />
           Ver el sitio
@@ -52,7 +52,7 @@ export function BarraPublicar({
           type="button"
           disabled={publicando || !sinPublicar}
           onClick={() => empezar(() => publicarCambios())}
-          className="inline-flex items-center gap-2 rounded-lg bg-marca px-4 py-2 font-display text-sm font-semibold uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida hover:bg-marca-viva disabled:cursor-not-allowed disabled:opacity-40 active:translate-y-px"
+          className="inline-flex items-center gap-2 bg-marca px-4 py-2 font-display text-sm font-semibold uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida hover:bg-marca-viva disabled:cursor-not-allowed disabled:opacity-40 active:translate-y-px"
         >
           <CloudArrowUp size={18} />
           {publicando ? "Publicando…" : "Publicar cambios"}

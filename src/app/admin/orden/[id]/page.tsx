@@ -17,7 +17,14 @@ import { etiquetaEvento } from "@/lib/orden/eventos";
 import { requerirStaff } from "@/lib/sesion";
 import { aplicarPlantilla, enlacePublico, enlaceWhatsApp } from "@/lib/whatsapp";
 
-import { Insignia, Seccion, Ubicada } from "../../componentes";
+import {
+  Dato,
+  Ficha,
+  FichaLateral,
+  Insignia,
+  Rotulo,
+  Ubicada,
+} from "../../componentes";
 import { CambiarEstado, MoverVehiculo } from "./acciones-orden";
 import { FormularioDiagnostico } from "./diagnostico";
 import { EditorPresupuesto, PresupuestoEmitido } from "./presupuesto";
@@ -82,22 +89,27 @@ async function Contenido({ params }: { params: Parametros }) {
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="flex flex-col gap-2">
-        <Link href="/admin" className="text-sm text-tinta-suave underline-offset-4 hover:underline">
+      <div className="flex flex-col gap-3 border-b border-borde-fuerte pb-4">
+        <Link
+          href="/admin"
+          className="subrayado w-fit font-display text-xs font-semibold tracking-[0.18em] text-tinta-tenue uppercase"
+        >
           ← Tablero
         </Link>
 
-        <div className="flex flex-wrap items-center gap-3">
-          <h1 className="font-mono text-2xl font-semibold tracking-tight">{orden.vehiculo?.placa}</h1>
+        <div className="flex flex-wrap items-center gap-3.5">
+          <h1 className="font-mono text-[2.375rem] leading-none font-medium">
+            {orden.vehiculo?.placa}
+          </h1>
           <Insignia estado={orden.estado} />
           <Ubicada
             ubicacion={orden.ubicacion}
             box={orden.box_id ? nombresDeBox[orden.box_id] : null}
           />
-          <span className="ml-auto font-mono text-sm text-tinta-tenue">{orden.numero}</span>
+          <span className="ms-auto font-mono text-sm text-tinta-tenue">{orden.numero}</span>
         </div>
 
-        <p className="text-sm text-tinta-suave">
+        <p className="text-base text-tinta-suave">
           {orden.vehiculo?.marca} {orden.vehiculo?.modelo}
           {orden.vehiculo?.anio ? ` · ${orden.vehiculo.anio}` : ""} ·{" "}
           {orden.vehiculo?.tipo === "GRANDE" ? "Grande" : "Sedán"}
@@ -106,15 +118,16 @@ async function Contenido({ params }: { params: Parametros }) {
 
       <div className="grid gap-8 @4xl:grid-cols-[minmax(0,1fr)_20rem]">
         <div className="flex flex-col gap-8">
-          <Seccion titulo="Estado">
+          <div className="flex flex-col gap-3">
+            <Rotulo>Estado</Rotulo>
             <CambiarEstado ordenId={orden.id} estado={orden.estado} />
-          </Seccion>
+          </div>
 
-          <Seccion titulo="Diagnóstico">
+          <Ficha titulo="Diagnóstico">
             <FormularioDiagnostico ordenId={orden.id} diagnostico={diagnostico} />
-          </Seccion>
+          </Ficha>
 
-          <Seccion titulo="Presupuesto">
+          <Ficha titulo="Presupuesto">
             <div className="flex flex-col gap-5">
               {emitidos.map((presupuesto) => (
                 <PresupuestoEmitido key={presupuesto.id} presupuesto={presupuesto} />
@@ -141,38 +154,57 @@ async function Contenido({ params }: { params: Parametros }) {
                 />
               )}
             </div>
-          </Seccion>
+          </Ficha>
 
-          <Seccion titulo="Bitácora">
-            <ol className="flex flex-col divide-y divide-borde">
+          {/* La bitácora se dibuja como una línea de tiempo: un filete vertical
+              y un punto por hecho. Es lo que ya era —una lista en orden—, pero
+              se lee como lo que cuenta, que es una secuencia. */}
+          <div className="flex flex-col gap-2.5">
+            <Rotulo>Bitácora</Rotulo>
+            <ol className="flex flex-col border-l border-borde-fuerte">
               {eventos.map((evento) => (
-                <li key={evento.id} className="flex flex-wrap items-baseline gap-x-3 py-2">
-                  <span className="text-sm font-medium">{etiquetaEvento(evento.tipo)}</span>
+                <li
+                  key={evento.id}
+                  className="relative flex flex-wrap items-baseline gap-x-2.5 gap-y-1 py-2.5 ps-5"
+                >
+                  <span
+                    aria-hidden
+                    className="absolute top-[1.05rem] -left-[3px] size-[5px] bg-marca"
+                  />
+                  <span className="font-display text-[15px] font-semibold tracking-[0.06em] uppercase">
+                    {etiquetaEvento(evento.tipo)}
+                  </span>
                   <Detalle payload={evento.payload} />
                   {evento.actor_descripcion ? (
                     <span className="text-xs text-tinta-tenue">{evento.actor_descripcion}</span>
                   ) : null}
-                  <span className="ml-auto text-xs tabular-nums opacity-50">
+                  <span className="ms-auto font-mono text-xs text-tinta-tenue tabular-nums">
                     {formatearFechaHora(evento.creado_en)}
                   </span>
                 </li>
               ))}
             </ol>
-          </Seccion>
+          </div>
         </div>
 
-        <aside className="flex flex-col gap-8">
-          <Seccion titulo="Cliente">
-            <dl className="flex flex-col gap-1 text-sm">
-              <dd className="font-medium">{orden.cliente?.nombre}</dd>
-              <dd className="opacity-70">{orden.cliente?.telefono}</dd>
+        <aside className="flex flex-col gap-5">
+          <FichaLateral titulo="Cliente">
+            <dl className="m-0 flex flex-col gap-2">
+              <Dato etiqueta="Nombre">{orden.cliente?.nombre}</Dato>
+              {orden.cliente?.telefono ? (
+                <Dato etiqueta="Teléfono">
+                  <span className="tabular-nums">{orden.cliente.telefono}</span>
+                </Dato>
+              ) : null}
               {orden.cliente?.email ? (
-                <dd className="opacity-70">{orden.cliente.email}</dd>
+                <Dato etiqueta="Correo">
+                  <span className="break-all">{orden.cliente.email}</span>
+                </Dato>
               ) : null}
             </dl>
-          </Seccion>
+          </FichaLateral>
 
-          <Seccion titulo="Ubicación">
+          <FichaLateral titulo="Ubicación">
             <MoverVehiculo
               ordenId={orden.id}
               ubicacion={orden.ubicacion}
@@ -180,40 +212,28 @@ async function Contenido({ params }: { params: Parametros }) {
               boxes={boxes}
               boxesOcupados={boxesOcupados}
             />
-          </Seccion>
+          </FichaLateral>
 
-          <Seccion titulo="Ingreso">
-            <dl className="flex flex-col gap-2 text-sm">
-              <div>
-                <dt className="text-xs text-tinta-tenue">Motivo</dt>
-                <dd>{orden.motivo_ingreso}</dd>
-              </div>
-              <div>
-                <dt className="text-xs text-tinta-tenue">Kilometraje</dt>
-                <dd>
-                  {orden.kilometraje === null
-                    ? "No registrado"
-                    : `${orden.kilometraje.toLocaleString("es-PE")} km`}
-                </dd>
-              </div>
-              <div>
-                <dt className="text-xs text-tinta-tenue">Recibido</dt>
-                <dd>
-                  {formatearFechaHora(orden.recibido_en)}
-                  <span className="opacity-50">
-                    {" "}
-                    · hace {tiempoTranscurrido(orden.recibido_en, ahora)}
-                  </span>
-                </dd>
-              </div>
+          <FichaLateral titulo="Ingreso">
+            <dl className="m-0 flex flex-col gap-2">
+              <Dato etiqueta="Motivo">{orden.motivo_ingreso}</Dato>
+              <Dato etiqueta="Kilometraje">
+                {orden.kilometraje === null
+                  ? "No registrado"
+                  : `${orden.kilometraje.toLocaleString("es-PE")} km`}
+              </Dato>
+              <Dato etiqueta="Recibido">
+                {formatearFechaHora(orden.recibido_en)}
+                <span className="text-tinta-tenue">
+                  {" "}
+                  · hace {tiempoTranscurrido(orden.recibido_en, ahora)}
+                </span>
+              </Dato>
               {orden.cerrado_en ? (
-                <div>
-                  <dt className="text-xs text-tinta-tenue">Cerrado</dt>
-                  <dd>{formatearFechaHora(orden.cerrado_en)}</dd>
-                </div>
+                <Dato etiqueta="Cerrado">{formatearFechaHora(orden.cerrado_en)}</Dato>
               ) : null}
             </dl>
-          </Seccion>
+          </FichaLateral>
         </aside>
       </div>
     </div>

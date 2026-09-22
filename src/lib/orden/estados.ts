@@ -19,15 +19,6 @@ export type Estado = (typeof ESTADOS)[number];
 
 export const ESTADO_INICIAL: Estado = "RECIBIDO";
 
-/** Color semántico del estado en el tablero. Ver ARQUITECTURA.md §3. */
-export const COLOR_ESTADO: Record<Estado, string> = {
-  RECIBIDO: "verde",
-  DIAGNOSTICO: "naranja",
-  ESPERANDO_APROBACION: "morado",
-  EN_TRABAJO: "azul",
-  LISTO: "gris",
-};
-
 export const ETIQUETA_ESTADO: Record<Estado, string> = {
   RECIBIDO: "Recibido",
   DIAGNOSTICO: "En diagnóstico",

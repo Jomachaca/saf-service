@@ -24,6 +24,7 @@ export default function PaginaReservas() {
   return (
     <div className="flex max-w-4xl flex-col gap-6">
       <Encabezado
+        seccion="Panel · configuración"
         titulo="Reservas"
         descripcion="Si se aceptan reservas por la web, a qué horas y cuántas. Es un tope, no un cálculo de boxes: los vehículos que llegan sin reserva no cuentan acá."
       />

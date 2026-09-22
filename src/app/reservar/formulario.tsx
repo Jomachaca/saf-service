@@ -41,7 +41,7 @@ export type DiaParaElegir = {
 export type GrupoServicios = { categoria: string; servicios: { id: string; nombre: string }[] };
 
 const CLASES_CAMPO =
-  "w-full rounded-lg border border-borde bg-fondo-alto px-3.5 py-2.5 text-base text-tinta " +
+  "w-full  border border-borde bg-fondo-alto px-3.5 py-2.5 text-base text-tinta " +
   "placeholder:text-tinta-tenue transition-colors duration-200 focus:border-marca focus:outline-none";
 
 /** Lo elegido se pinta igual en todos los controles: fondo granate y texto claro. */
@@ -226,7 +226,7 @@ export function FormularioReserva({
                   aria-pressed={activo}
                   aria-label={lleno ? `${dia.largo}, sin horarios libres` : dia.largo}
                   onClick={() => elegirDia(dia)}
-                  className={`flex w-18 shrink-0 snap-start flex-col items-center gap-1 rounded-lg border px-2 py-2.5 disabled:opacity-40 ${PULSABLE} ${
+                  className={`flex w-18 shrink-0 snap-start flex-col items-center gap-1 border px-2 py-2.5 disabled:opacity-40 ${PULSABLE} ${
                     activo ? ELEGIDO : SIN_ELEGIR
                   }`}
                 >
@@ -369,7 +369,7 @@ export function FormularioReserva({
       </div>
 
       <aside className="flex flex-col gap-4 lg:sticky lg:top-28 lg:self-start">
-        <div className="flex flex-col gap-5 rounded-2xl border border-white/10 bg-estructura p-6 text-white">
+        <div className="flex flex-col gap-5 border border-white/10 bg-estructura p-6 text-white">
           <h2 className="font-display text-xl font-bold uppercase tracking-tight">Tu reserva</h2>
 
           <dl className="flex flex-col gap-3.5">
@@ -390,7 +390,7 @@ export function FormularioReserva({
           <button
             type="submit"
             disabled={faltan.length > 0 || enviando}
-            className="inline-flex w-full items-center justify-center gap-2 rounded-lg bg-marca px-5 py-3 font-display text-base font-semibold uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/55 disabled:active:translate-y-0"
+            className="inline-flex w-full items-center justify-center gap-2 bg-marca px-5 py-3 font-display text-base font-semibold uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px disabled:cursor-not-allowed disabled:bg-white/10 disabled:text-white/55 disabled:active:translate-y-0"
           >
             <CalendarCheck size={20} weight="fill" />
             {enviando ? "Reservando…" : "Reservar hora"}
@@ -476,9 +476,9 @@ function Opcion({
       type="button"
       aria-pressed={activa}
       onClick={onElegir}
-      className={`flex items-start gap-3.5 rounded-lg border p-4 text-left ${PULSABLE} ${
+      className={`flex items-start gap-3.5 border p-4 text-left ${PULSABLE} ${
         activa
-          ? "border-marca bg-vino-50 ring-1 ring-marca dark:bg-vino-900/30"
+          ? "border-marca bg-vino-50 ring-1 ring-marca"
           : "border-borde bg-fondo-alto hover:border-borde-fuerte"
       }`}
     >
@@ -536,7 +536,7 @@ function Confirmacion({
     : null;
 
   return (
-    <div className="al-montar flex max-w-2xl flex-col gap-7 rounded-2xl border border-borde bg-fondo-alto p-6 md:p-10">
+    <div className="al-montar flex max-w-2xl flex-col gap-7 border border-borde bg-fondo-alto p-6 md:p-10">
       <CheckCircle size={48} weight="duotone" className="text-marca" />
 
       <div className="flex flex-col gap-2">

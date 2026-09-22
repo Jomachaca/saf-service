@@ -121,7 +121,7 @@ async function Contenido({ params }: { params: Parametros }) {
           </p>
 
           {presupuesto.estado === "ENVIADO" ? (
-            <div className="mt-2 flex flex-col gap-3 rounded-lg border border-borde p-4">
+            <div className="mt-2 flex flex-col gap-3 border border-borde p-4">
               <p className="text-sm">
                 ¿Autorizas que hagamos este trabajo? Tu respuesta queda registrada
                 con la fecha y la versión del presupuesto.
@@ -129,7 +129,7 @@ async function Contenido({ params }: { params: Parametros }) {
               <FormularioRespuesta token={token} />
             </div>
           ) : (
-            <div className="mt-2 rounded-lg border border-borde p-4 text-sm">
+            <div className="mt-2 border border-borde p-4 text-sm">
               <p className="font-medium">
                 {presupuesto.estado === "APROBADO"
                   ? "Aprobaste este presupuesto."

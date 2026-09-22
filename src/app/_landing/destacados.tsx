@@ -20,7 +20,7 @@ export function Destacados({ destacados }: { destacados: Destacado[] }) {
           <div
             key={destacado.id}
             style={paso(indice)}
-            className="al-entrar group grid grid-cols-[2.5rem_2rem_minmax(0,1fr)] items-start gap-x-4 gap-y-2 border-b border-borde-fuerte px-2 py-6 md:grid-cols-[3rem_2.4rem_minmax(0,15rem)_minmax(0,1fr)] md:gap-x-6"
+            className="al-entrar group grid grid-cols-[2.5rem_2rem_minmax(0,1fr)] items-start gap-x-4 gap-y-2 border-b border-borde-fuerte bg-transparent px-2 py-6 transition duration-300 ease-salida hover:-translate-y-1 hover:border-tinta-tenue hover:bg-fondo md:grid-cols-[3rem_2.4rem_minmax(0,15rem)_minmax(0,1fr)] md:gap-x-6"
           >
             <span className="pt-1 font-mono text-sm tracking-[0.16em] text-tinta-tenue transition-colors duration-300 group-hover:text-marca">
               {`0${indice + 1}`}

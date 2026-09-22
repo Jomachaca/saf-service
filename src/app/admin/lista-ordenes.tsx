@@ -6,7 +6,7 @@ import type { OrdenEnTablero } from "@/lib/orden/consultas";
 import { ESTADOS, ETIQUETA_ESTADO, type Estado } from "@/lib/orden/estados";
 import { tiempoTranscurrido } from "@/lib/fecha";
 
-import { EnlaceOrden, Insignia, Ubicada } from "./componentes";
+import { COLOR_ESTADO, EnlaceOrden, Insignia, Seccion, Ubicada } from "./componentes";
 
 /**
  * El filtro es del lado del cliente a propósito: la lista ya está en memoria y
@@ -34,7 +34,10 @@ export function ListaOrdenes({
     ordenes.filter((o) => o.estado === estado).length;
 
   return (
-    <div className="flex flex-col gap-3">
+    <Seccion
+      titulo="Órdenes activas"
+      conteo={`${visibles.length} de ${ordenes.length}`}
+    >
       <div className="flex flex-wrap gap-2">
         <Chip activo={filtro === "TODAS"} onClick={() => setFiltro("TODAS")}>
           Todas ({ordenes.length})
@@ -61,35 +64,44 @@ export function ListaOrdenes({
           {visibles.map((orden) => (
             <li
               key={orden.id}
-              className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-borde px-1 py-3 transition-colors duration-200 hover:bg-fondo-hondo"
+              className="flex flex-wrap items-center gap-x-4 gap-y-3 border-b border-borde px-2 py-3.5 transition-colors duration-200 hover:bg-fondo-hondo"
             >
-              <Insignia estado={orden.estado} />
+              {/* El filete abre la fila con el color del estado: la lista se
+                  recorre por el margen antes que por las insignias. */}
+              <span
+                aria-hidden
+                className={`min-h-8.5 shrink-0 basis-1 self-stretch ${COLOR_ESTADO[orden.estado]}`}
+              />
 
               <EnlaceOrden id={orden.id} numero={orden.numero}>
-                <span className="font-mono font-medium">{orden.vehiculo?.placa}</span>
+                <span className="font-mono text-base font-medium">
+                  {orden.vehiculo?.placa}
+                </span>
               </EnlaceOrden>
 
-              <span className="text-sm opacity-80">
+              <span className="min-w-0 basis-44 truncate text-[15px]">
                 {orden.vehiculo?.marca} {orden.vehiculo?.modelo}
               </span>
+
+              <Insignia estado={orden.estado} />
 
               <Ubicada
                 ubicacion={orden.ubicacion}
                 box={orden.box_id ? nombresDeBox[orden.box_id] : null}
               />
 
-              <span className="min-w-0 flex-1 truncate text-sm text-tinta-suave">
+              <span className="min-w-0 flex-1 basis-48 truncate text-sm text-tinta-suave">
                 {orden.motivo_ingreso}
               </span>
 
-              <span className="text-xs tabular-nums opacity-50">
+              <span className="ms-auto font-mono text-xs text-tinta-tenue tabular-nums">
                 {tiempoTranscurrido(orden.recibido_en, new Date(ahora))}
               </span>
             </li>
           ))}
         </ul>
       )}
-    </div>
+    </Seccion>
   );
 }
 
@@ -107,7 +119,7 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={activo}
-      className={`border px-3 py-1.5 font-display text-[11px] font-semibold tracking-[0.14em] uppercase transition duration-200 ${
+      className={`border px-3.5 py-1.75 font-display text-[13px] font-semibold tracking-[0.1em] uppercase transition duration-200 ${
         activo
           ? "border-marca bg-marca text-white"
           : "border-borde text-tinta-suave hover:border-borde-fuerte hover:text-tinta"

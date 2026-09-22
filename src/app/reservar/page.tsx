@@ -172,7 +172,7 @@ function SinReservas({
   error?: boolean;
 }) {
   return (
-    <div className="al-montar flex max-w-2xl flex-col items-start gap-6 rounded-2xl border border-borde bg-fondo-alto p-6 md:p-10">
+    <div className="al-montar flex max-w-2xl flex-col items-start gap-6 border border-borde bg-fondo-alto p-6 md:p-10">
       {error ? (
         <Warning size={40} weight="duotone" className="text-marca" />
       ) : (
@@ -206,15 +206,15 @@ function Esqueleto() {
 
       <div aria-hidden className="flex flex-col gap-12">
         <div className="grid gap-3 sm:grid-cols-2">
-          <div className="h-24 rounded-lg bg-fondo-hondo motion-safe:animate-pulse" />
-          <div className="h-24 rounded-lg bg-fondo-hondo motion-safe:animate-pulse" />
+          <div className="h-24 bg-fondo-hondo motion-safe:animate-pulse" />
+          <div className="h-24 bg-fondo-hondo motion-safe:animate-pulse" />
         </div>
 
         <div className="flex gap-2 overflow-hidden">
           {Array.from({ length: 7 }, (_, indice) => (
             <div
               key={indice}
-              className="h-20 w-18 shrink-0 rounded-lg bg-fondo-hondo motion-safe:animate-pulse"
+              className="h-20 w-18 shrink-0 bg-fondo-hondo motion-safe:animate-pulse"
             />
           ))}
         </div>
@@ -226,7 +226,7 @@ function Esqueleto() {
         </div>
       </div>
 
-      <div aria-hidden className="h-80 rounded-2xl bg-fondo-hondo motion-safe:animate-pulse" />
+      <div aria-hidden className="h-80 bg-fondo-hondo motion-safe:animate-pulse" />
     </div>
   );
 }

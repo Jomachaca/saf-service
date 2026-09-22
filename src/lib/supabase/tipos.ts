@@ -90,6 +90,7 @@ export type Database = {
       config_sitio: {
         Row: {
           actualizado_en: string
+          datos_portada: Json
           descripcion: string
           direccion: string
           email: string
@@ -103,6 +104,7 @@ export type Database = {
           igv_tasa_bp: number
           instagram: string
           logo_url: string | null
+          marcas: Json
           mapa_url: string | null
           nombre_taller: string
           nosotros_imagen_url: string | null
@@ -119,6 +121,7 @@ export type Database = {
         }
         Insert: {
           actualizado_en?: string
+          datos_portada?: Json
           descripcion?: string
           direccion?: string
           email?: string
@@ -132,6 +135,7 @@ export type Database = {
           igv_tasa_bp?: number
           instagram?: string
           logo_url?: string | null
+          marcas?: Json
           mapa_url?: string | null
           nombre_taller?: string
           nosotros_imagen_url?: string | null
@@ -148,6 +152,7 @@ export type Database = {
         }
         Update: {
           actualizado_en?: string
+          datos_portada?: Json
           descripcion?: string
           direccion?: string
           email?: string
@@ -161,6 +166,7 @@ export type Database = {
           igv_tasa_bp?: number
           instagram?: string
           logo_url?: string | null
+          marcas?: Json
           mapa_url?: string | null
           nombre_taller?: string
           nosotros_imagen_url?: string | null

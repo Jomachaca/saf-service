@@ -68,14 +68,14 @@ function Fila({ destacado }: { destacado: DestacadoPanel }) {
   return (
     <form
       action={accion}
-      className={`flex flex-col gap-3 rounded-lg border border-borde p-4 ${
+      className={`flex flex-col gap-3 border border-borde p-4 ${
         campos.activo ? "" : "opacity-60"
       }`}
     >
       <input type="hidden" name="id" value={destacado.id} />
 
       <div className="flex flex-wrap items-start gap-3">
-        <span className="mt-1 shrink-0 rounded-lg bg-vino-50 p-2 text-marca dark:bg-vino-900/40">
+        <span className="mt-1 shrink-0 bg-vino-50 p-2 text-marca">
           <Icono clave={campos.icono} size={22} weight="duotone" />
         </span>
 
@@ -123,7 +123,7 @@ function Fila({ destacado }: { destacado: DestacadoPanel }) {
         <button
           type="submit"
           disabled={!sucio || guardando}
-          className="ml-auto rounded-lg border border-borde-fuerte px-3 py-2 text-sm font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca disabled:opacity-40"
+          className="ml-auto border border-borde-fuerte px-3 py-2 text-sm font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca disabled:opacity-40"
         >
           {guardando ? "Guardando…" : sucio ? "Guardar" : "Guardado"}
         </button>
@@ -208,7 +208,7 @@ function CamposNuevo({
       <button
         type="submit"
         disabled={enviando}
-        className="inline-flex w-fit items-center gap-2 rounded-lg border border-borde-fuerte px-3 py-2 text-sm font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca disabled:opacity-40"
+        className="inline-flex w-fit items-center gap-2 border border-borde-fuerte px-3 py-2 text-sm font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca disabled:opacity-40"
       >
         <Plus size={16} />
         {enviando ? "Agregando…" : "Agregar punto"}

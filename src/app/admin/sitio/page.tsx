@@ -19,7 +19,7 @@ export default function PaginaDatos() {
   return (
     <>
       <Encabezado
-        seccion="Sitio web"
+        seccion="Panel · lo que ve el cliente"
         titulo="Datos y contacto"
         descripcion="Cómo se llama el taller y cómo encontrarlo. Guardar deja el cambio anotado; el sitio recién cambia cuando pulsas «Publicar cambios»."
       />

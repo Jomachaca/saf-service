@@ -22,6 +22,14 @@
      WhatsApp y de reserva, que son las dos acciones que el negocio quiere que
      se pulsen.
 
+  5. La hoja no consulta ningún ajuste del sistema operativo. No hay
+     `prefers-color-scheme` ni `prefers-reduced-motion`: el sitio se ve y se
+     mueve igual en todas las máquinas. Lo pidió el taller después de ver su
+     propia página oscura y quieta por tener Windows en modo oscuro y con las
+     animaciones apagadas (decisiones 32 y 33). Lo que sí se consulta es
+     `@supports`, que pregunta qué sabe hacer el navegador y no qué prefiere
+     quien mira: son cosas distintas.
+
   Los dos colores siguen saliendo del logo: el granate de la «S» y el azul
   marino de «AF SERVICE». No son intercambiables:
 
@@ -69,7 +77,24 @@
   --ease-salida: cubic-bezier(0.16, 1, 0.3, 1);
 }
 
+/*
+  El sitio es de papel blanco, siempre.
+
+  Hubo un modo oscuro automático y se quitó. El lenguaje de plano técnico está
+  dibujado sobre papel: el contraste lo pone la alternancia entre las secciones
+  blancas y los bloques marinos, y al invertir la paleta esa alternancia
+  desaparece —el papel se vuelve marino oscuro, el bloque marino también, y la
+  página entera queda de un solo tono—. No es el mismo diseño en otro color: es
+  otro diseño, y peor.
+
+  `color-scheme: light` además le dice al navegador que pinte claros los
+  controles que dibuja él —barras de desplazamiento, el calendario de un campo
+  de fecha, los desplegables—, que si no salen oscuros dentro de un formulario
+  blanco.
+*/
 :root {
+  color-scheme: light;
+
   --fondo: #ffffff;
   --fondo-alto: #ffffff;
   --fondo-hondo: #f5f7fb;
@@ -86,24 +111,6 @@
 
   --background: var(--fondo);
   --foreground: var(--tinta);
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --fondo: #0d1420;
-    --fondo-alto: #141d2c;
-    --fondo-hondo: #090f18;
-    --tinta: #e9edf5;
-    --tinta-suave: #a4b2c9;
-    --tinta-tenue: #7d8ca6;
-    --borde: rgba(233, 237, 245, 0.18);
-    --borde-fuerte: rgba(233, 237, 245, 0.34);
-    --marca: #bd5568;
-    --marca-viva: #d78f9e;
-    --sobre-marca: #2a0a12;
-    --estructura: #0d1626;
-    --sobre-estructura: #dce4f1;
-  }
 }
 
 @theme inline {
@@ -131,9 +138,25 @@ body {
   font-family: var(--font-sans);
 }
 
-/* Los titulares del sistema: condensada, mayúsculas, apretada. */
-.font-display {
-  letter-spacing: -0.02em;
+/*
+  Los titulares van apretados. La regla vive en `@layer base` y apunta a los
+  encabezados, no a la clase `.font-display`, y las dos cosas importan.
+
+  Apuntaba a la clase y estaba fuera de toda capa, así que le ganaba a las
+  utilidades de Tailwind: cada `font-display tracking-[0.24em]` —las
+  versalitas de las secciones, las entradas de la barra lateral, las
+  insignias, los botones— terminaba con −0.02em en vez de su interletrado
+  ancho. Se veía lo contrario de lo que pedía el diseño: apretado donde tenía
+  que respirar. Dentro de `base`, cualquier `tracking-*` escrito en un
+  componente vuelve a mandar.
+*/
+@layer base {
+  h1,
+  h2,
+  h3,
+  h4 {
+    letter-spacing: -0.02em;
+  }
 }
 
 /* El foco se ve siempre, y con el color de la marca. */
@@ -241,12 +264,6 @@ body {
     transform: scale(1.04);
   }
 
-  @media (prefers-reduced-motion: reduce) {
-    .duotono > img {
-      transition: none;
-    }
-  }
-
   /*
     ── Subrayado desde la izquierda ────────────────────────────────────────
     La respuesta de los enlaces que no parecen botones. Se dibuja con un
@@ -290,30 +307,47 @@ body {
     position: relative;
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    .llama::before {
-      content: "";
-      position: absolute;
-      inset: -1px;
-      pointer-events: none;
-      animation: anillo 8s var(--ease-salida) 2.5s infinite;
-    }
-
-    .llama > svg {
-      transform-origin: 50% 60%;
-      animation: agitar 8s var(--ease-salida) 2.5s infinite;
-    }
-
-    .llama-b::before,
-    .llama-b > svg {
-      animation-delay: 8.5s;
-    }
-
-    .llama:hover::before,
-    .llama:hover > svg {
-      animation-play-state: paused;
-    }
+  .llama::before {
+    content: "";
+    position: absolute;
+    inset: -1px;
+    pointer-events: none;
+    animation: anillo 8s var(--ease-salida) 2.5s infinite;
   }
+
+  .llama > svg {
+    transform-origin: 50% 60%;
+    animation: agitar 8s var(--ease-salida) 2.5s infinite;
+  }
+
+  .llama-b::before,
+  .llama-b > svg {
+    animation-delay: 6s;
+  }
+
+  .llama:hover::before,
+  .llama:hover > svg {
+    animation-play-state: paused;
+  }
+
+  /*
+    La burbuja del celular late además por su cuenta, más lento y más ancho
+    que el anillo del botón. Son dos cadencias distintas a propósito: la
+    burbuja está sola contra la esquina de la pantalla y el pulso largo es lo
+    que la despega del fondo, mientras el anillo corto es el que llama.
+  */
+  .burbuja::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    animation: latir 6s var(--ease-salida) 3s infinite;
+  }
+
+  .burbuja:hover::after {
+    animation-play-state: paused;
+  }
+  
 
   /*
     ── Cinta de servicios ──────────────────────────────────────────────────
@@ -332,21 +366,20 @@ body {
     width: max-content;
   }
 
-  @media (prefers-reduced-motion: no-preference) {
-    .cinta {
-      mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-      -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
-    }
-
-    .marquesina {
-      animation: correr var(--duracion, 54s) linear infinite;
-    }
-
-    .cinta:hover .marquesina,
-    .cinta:focus-within .marquesina {
-      animation-play-state: paused;
-    }
+  .cinta {
+    mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
+    -webkit-mask-image: linear-gradient(to right, transparent, #000 6%, #000 94%, transparent);
   }
+
+  .marquesina {
+    animation: correr var(--duracion, 54s) linear infinite;
+  }
+
+  .cinta:hover .marquesina,
+  .cinta:focus-within .marquesina {
+    animation-play-state: paused;
+  }
+  
 }
 
 /*
@@ -357,40 +390,38 @@ body {
   Las marcas de registro de un bloque que aparece entran después que el bloque,
   como si alguien las hubiera dibujado encima al terminar.
 */
-@media (prefers-reduced-motion: no-preference) {
-  @supports (animation-timeline: view()) {
+@supports (animation-timeline: view()) {
+  .al-entrar {
+    animation: aparecer linear both;
+    animation-timeline: view();
+    animation-range: entry 4% entry 58%;
+  }
+
+  .al-entrar .esquina {
+    animation: marcar linear both;
+    animation-timeline: view();
+    animation-range: entry 30% entry 70%;
+  }
+
+  /*
+    Escalonado. Los elementos de una lista llevan `--paso` (0, 1, 2…) y cada
+    uno entra un poco más tarde que el anterior. Con una línea de tiempo de
+    scroll no sirve `animation-delay`: lo que se corre es el rango.
+  */
+  @supports (animation-range: entry calc(4% + 7%) entry calc(58% + 7%)) {
     .al-entrar {
-      animation: aparecer linear both;
-      animation-timeline: view();
-      animation-range: entry 4% entry 58%;
-    }
-
-    .al-entrar .esquina {
-      animation: marcar linear both;
-      animation-timeline: view();
-      animation-range: entry 30% entry 70%;
-    }
-
-    /*
-      Escalonado. Los elementos de una lista llevan `--paso` (0, 1, 2…) y cada
-      uno entra un poco más tarde que el anterior. Con una línea de tiempo de
-      scroll no sirve `animation-delay`: lo que se corre es el rango.
-    */
-    @supports (animation-range: entry calc(4% + 7%) entry calc(58% + 7%)) {
-      .al-entrar {
-        animation-range:
-          entry calc(4% + var(--paso, 0) * 7%)
-          entry calc(58% + var(--paso, 0) * 7%);
-      }
+      animation-range:
+        entry calc(4% + var(--paso, 0) * 7%)
+        entry calc(58% + var(--paso, 0) * 7%);
     }
   }
+}
 
-  /* Aparición al montarse, para lo que llega por una acción y no por el
-     scroll: la confirmación de una reserva, las horas del día recién
-     elegido. Misma curva y mismo recorrido. */
-  .al-montar {
-    animation: aparecer 0.45s var(--ease-salida) both;
-  }
+/* Aparición al montarse, para lo que llega por una acción y no por el
+   scroll: la confirmación de una reserva, las horas del día recién
+   elegido. Misma curva y mismo recorrido. */
+.al-montar {
+  animation: aparecer 0.45s var(--ease-salida) both;
 }
 
 @keyframes aparecer {
@@ -406,6 +437,11 @@ body {
 @keyframes anillo {
   0% { box-shadow: 0 0 0 0 var(--eco, color-mix(in oklab, var(--marca) 45%, transparent)); }
   14%, 100% { box-shadow: 0 0 0 13px transparent; }
+}
+
+@keyframes latir {
+  0% { box-shadow: 0 0 0 0 color-mix(in oklab, var(--marca) 50%, transparent); }
+  18%, 100% { box-shadow: 0 0 0 18px transparent; }
 }
 
 @keyframes agitar {
@@ -426,23 +462,21 @@ body {
   deslizándose desde la izquierda. Donde `@starting-style` no existe, aparece
   sin animación.
 */
-@media (prefers-reduced-motion: no-preference) {
-  .cajon,
-  .cajon::backdrop {
-    transition:
-      translate 0.3s var(--ease-salida),
-      opacity 0.3s var(--ease-salida),
-      overlay 0.3s allow-discrete,
-      display 0.3s allow-discrete;
-  }
+.cajon,
+.cajon::backdrop {
+  transition:
+    translate 0.3s var(--ease-salida),
+    opacity 0.3s var(--ease-salida),
+    overlay 0.3s allow-discrete,
+    display 0.3s allow-discrete;
+}
 
-  .cajon:not([open]) { translate: -100% 0; }
-  .cajon:not([open])::backdrop { opacity: 0; }
+.cajon:not([open]) { translate: -100% 0; }
+.cajon:not([open])::backdrop { opacity: 0; }
 
-  @starting-style {
-    .cajon[open] { translate: -100% 0; }
-    .cajon[open]::backdrop { opacity: 0; }
-  }
+@starting-style {
+  .cajon[open] { translate: -100% 0; }
+  .cajon[open]::backdrop { opacity: 0; }
 }
 
 /* Con el cajón abierto, lo de atrás no se desplaza. */

@@ -49,16 +49,21 @@ export type Taller = {
   horarios: Horario[];
 };
 
+/** Un dato duro de la banda de la portada. El número de orden lo pone el sitio. */
+export type DatoPortada = { valor: string; etiqueta: string };
+
 export type Hero = {
   titulo: string;
   subtitulo: string;
   imagenUrl: string | null;
+  datos: DatoPortada[];
 };
 
 export type Nosotros = {
   titulo: string;
   texto: string;
   imagenUrl: string | null;
+  marcas: string[];
 };
 
 export type Destacado = {
@@ -111,8 +116,8 @@ const VACIO: ContenidoSitio = {
     mapaUrl: null,
     horarios: [],
   },
-  hero: { titulo: "", subtitulo: "", imagenUrl: null },
-  nosotros: { titulo: "", texto: "", imagenUrl: null },
+  hero: { titulo: "", subtitulo: "", imagenUrl: null, datos: [] },
+  nosotros: { titulo: "", texto: "", imagenUrl: null, marcas: [] },
   destacados: [],
   galeria: [],
   servicios: [],
@@ -168,6 +173,28 @@ function leerHorarios(valor: unknown): Horario[] {
   });
 }
 
+/** La banda de la portada. Una fila a medio llenar no se pinta. */
+function leerDatosPortada(valor: unknown): DatoPortada[] {
+  if (!Array.isArray(valor)) return [];
+
+  return valor.flatMap((fila) => {
+    if (typeof fila !== "object" || fila === null) return [];
+    const { valor: dato, etiqueta } = fila as Record<string, unknown>;
+    if (typeof dato !== "string" || typeof etiqueta !== "string") return [];
+    if (!dato.trim() || !etiqueta.trim()) return [];
+    return [{ valor: dato.trim(), etiqueta: etiqueta.trim() }];
+  });
+}
+
+/** Las marcas de vehículo, que en la base son una lista de textos a secas. */
+function leerMarcas(valor: unknown): string[] {
+  if (!Array.isArray(valor)) return [];
+
+  return valor.flatMap((marca) =>
+    typeof marca === "string" && marca.trim() ? [marca.trim()] : [],
+  );
+}
+
 export async function cargarSitio(): Promise<ContenidoSitio> {
   "use cache";
   cacheLife("max");
@@ -219,11 +246,13 @@ export async function cargarSitio(): Promise<ContenidoSitio> {
       titulo: fila.hero_titulo,
       subtitulo: fila.hero_subtitulo,
       imagenUrl: fila.hero_imagen_url,
+      datos: leerDatosPortada(fila.datos_portada),
     },
     nosotros: {
       titulo: fila.nosotros_titulo,
       texto: fila.nosotros_texto,
       imagenUrl: fila.nosotros_imagen_url,
+      marcas: leerMarcas(fila.marcas),
     },
     destacados: destacados.data ?? [],
     galeria: galeria.data ?? [],

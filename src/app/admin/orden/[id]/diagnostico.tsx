@@ -10,7 +10,7 @@ import { SIN_ERROR } from "../../estado-formulario";
 import { guardarDiagnostico } from "../../acciones-presupuesto";
 
 const CLASES_CAMPO =
-  "w-full rounded-lg border border-borde bg-fondo-alto px-3 py-2 text-sm";
+  "w-full  border border-borde bg-fondo-alto px-3 py-2 text-sm";
 
 /**
  * Hallazgos y recomendación, separados a propósito: lo que se encontró es un

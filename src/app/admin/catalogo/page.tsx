@@ -48,6 +48,7 @@ async function Contenido() {
   return (
     <div className="flex flex-col gap-8">
       <Encabezado
+        seccion="Panel · precios de referencia"
         titulo="Catálogo"
         descripcion={
           <>

@@ -43,3 +43,7 @@ next-env.d.ts
 
 # el proyecto de diseño que se importó para rehacer el landing: se queda local
 /diseno/
+
+# Configuración local del asistente. Se queda en la máquina: no es del
+# proyecto y no tiene por qué aparecer en el repositorio público.
+/.claude/

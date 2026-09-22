@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // Utilidades de línea de comandos: Node puro, con `require`, y no forman
+    // parte del bundle de la aplicación.
+    "scripts/**",
     // El proyecto de diseño importado: es material de referencia, no código
     // del sitio, y no se sube al repositorio.
     "diseno/**",

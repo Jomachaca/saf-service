@@ -16,7 +16,7 @@ export function BurbujaWhatsApp({ href }: { href: string }) {
       href={href}
       target="_blank"
       rel="noopener noreferrer"
-      className="llama fixed right-5 bottom-5 z-40 inline-flex items-center gap-2.5 border border-marca bg-marca px-5 py-3.5 font-display font-bold tracking-[0.09em] text-white uppercase shadow-lg shadow-marino-900/25 transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px lg:hidden"
+      className="llama burbuja fixed right-5 bottom-5 z-40 inline-flex items-center gap-2.5 border border-marca bg-marca px-5 py-3.5 font-display font-bold tracking-[0.09em] text-white uppercase shadow-lg shadow-marino-900/25 transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px lg:hidden"
     >
       <WhatsappLogo size={21} />
       WhatsApp

@@ -9,11 +9,14 @@ import { Area, Bloque, Campo, Entrada, useCampos } from "../campos";
 import { SIN_ERROR } from "../estado-formulario";
 import {
   fijarImagen,
+  guardarDatosPortada,
   guardarHorarios,
   guardarIdentidad,
+  guardarMarcas,
   guardarNosotros,
   guardarPortada,
 } from "./acciones";
+import { MAXIMO_DATOS_PORTADA } from "./limites";
 import { ImagenActual, SubirImagen } from "./subir";
 
 function distinto<T extends Record<string, string | boolean>>(campos: T, inicial: T) {
@@ -158,7 +161,7 @@ export function Identidad({ config }: { config: ConfigCompleta }) {
           </Campo>
         </div>
 
-        <div className="flex flex-col gap-3 rounded-lg border border-borde p-4">
+        <div className="flex flex-col gap-3 border border-borde p-4">
           <span className="text-sm font-medium">Logo</span>
           <p className="text-xs text-tinta-tenue">
             Va sobre la barra azul oscuro, así que conviene un PNG con fondo
@@ -220,7 +223,7 @@ export function Titular({ config }: { config: ConfigCompleta }) {
           />
         </Campo>
 
-        <div className="flex flex-col gap-3 rounded-lg border border-borde p-4">
+        <div className="flex flex-col gap-3 border border-borde p-4">
           <span className="text-sm font-medium">Foto de portada</span>
           <ImagenActual
             url={config.heroImagenUrl}
@@ -275,7 +278,7 @@ export function Presentacion({ config }: { config: ConfigCompleta }) {
           />
         </Campo>
 
-        <div className="flex flex-col gap-3 rounded-lg border border-borde p-4">
+        <div className="flex flex-col gap-3 border border-borde p-4">
           <span className="text-sm font-medium">Foto de la sección</span>
           <ImagenActual
             url={config.nosotrosImagenUrl}
@@ -353,7 +356,7 @@ export function HorarioAtencion({ config }: { config: ConfigCompleta }) {
               type="button"
               onClick={() => setFilas((previas) => previas.filter((_, i) => i !== indice))}
               aria-label="Quitar fila"
-              className="mb-1 rounded-lg border border-borde p-2 text-tinta-tenue transition-colors duration-200 hover:border-marca hover:text-marca"
+              className="mb-1 border border-borde p-2 text-tinta-tenue transition-colors duration-200 hover:border-marca hover:text-marca"
             >
               <X size={16} />
             </button>
@@ -363,11 +366,133 @@ export function HorarioAtencion({ config }: { config: ConfigCompleta }) {
         <button
           type="button"
           onClick={() => setFilas((previas) => [...previas, { etiqueta: "", horario: "" }])}
-          className="inline-flex w-fit items-center gap-2 rounded-lg border border-borde-fuerte px-3 py-2 text-sm font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca"
+          className="inline-flex w-fit items-center gap-2 border border-borde-fuerte px-3 py-2 text-sm font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca"
         >
           <Plus size={16} />
           Agregar día
         </button>
+      </Bloque>
+    </form>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+/**
+ * La banda de datos que va bajo el titular de la portada: hasta cuatro pares
+ * de valor y etiqueta. El número de orden («01», «02»…) lo pone el sitio, así
+ * que acá no se escribe.
+ */
+export function DatosPortada({ config }: { config: ConfigCompleta }) {
+  const [estado, accion, guardando] = useActionState(guardarDatosPortada, SIN_ERROR);
+  const [filas, setFilas] = useState(config.datosPortada);
+
+  const serializado = JSON.stringify(filas);
+  const sucio = serializado !== JSON.stringify(config.datosPortada);
+
+  function editar(indice: number, campo: "valor" | "etiqueta", valor: string) {
+    setFilas((previas) =>
+      previas.map((fila, i) => (i === indice ? { ...fila, [campo]: valor } : fila)),
+    );
+  }
+
+  return (
+    <form action={accion}>
+      <input type="hidden" name="datos_portada" value={serializado} />
+
+      <Bloque
+        titulo="Datos de la portada"
+        descripcion="La franja que cierra la portada. Si la dejas vacía, no aparece: es preferible a publicar un dato que no es."
+        sucio={sucio}
+        guardando={guardando}
+        error={estado.error}
+      >
+        {filas.length === 0 ? (
+          <p className="text-sm text-tinta-tenue">
+            Sin datos cargados. La portada cierra sin la franja.
+          </p>
+        ) : null}
+
+        {filas.map((fila, indice) => (
+          <div key={indice} className="flex items-end gap-2">
+            <div className="flex-1">
+              <Campo etiqueta={indice === 0 ? "Dato" : ""}>
+                <Entrada
+                  nombre={`valor_${indice}`}
+                  valor={fila.valor}
+                  onCambiar={(v) => editar(indice, "valor", v)}
+                  placeholder="+12 años"
+                />
+              </Campo>
+            </div>
+
+            <div className="flex-[1.6]">
+              <Campo etiqueta={indice === 0 ? "Qué significa" : ""}>
+                <Entrada
+                  nombre={`etiqueta_${indice}`}
+                  valor={fila.etiqueta}
+                  onCambiar={(v) => editar(indice, "etiqueta", v)}
+                  placeholder="atendiendo en Arequipa"
+                />
+              </Campo>
+            </div>
+
+            <button
+              type="button"
+              onClick={() => setFilas((previas) => previas.filter((_, i) => i !== indice))}
+              aria-label="Quitar dato"
+              className="mb-1 border border-borde p-2 text-tinta-tenue transition-colors duration-200 hover:border-marca hover:text-marca"
+            >
+              <X size={16} />
+            </button>
+          </div>
+        ))}
+
+        {filas.length < MAXIMO_DATOS_PORTADA ? (
+          <button
+            type="button"
+            onClick={() => setFilas((previas) => [...previas, { valor: "", etiqueta: "" }])}
+            className="inline-flex w-fit items-center gap-2 border border-borde-fuerte px-3 py-2 text-sm font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca"
+          >
+            <Plus size={16} />
+            Agregar dato
+          </button>
+        ) : (
+          <p className="text-sm text-tinta-tenue">
+            Son cuatro como máximo: con más, la franja se parte en dos filas desparejas.
+          </p>
+        )}
+      </Bloque>
+    </form>
+  );
+}
+
+// ---------------------------------------------------------------------------
+
+/** Las marcas de vehículo que atiende el taller, en un solo campo. */
+export function Marcas({ config }: { config: ConfigCompleta }) {
+  const inicial = { marcas: config.marcas.join(", ") };
+
+  const [estado, accion, guardando] = useActionState(guardarMarcas, SIN_ERROR);
+  const [campos, cambiar] = useCampos(inicial);
+
+  return (
+    <form action={accion}>
+      <Bloque
+        titulo="Marcas que atienden"
+        descripcion="Aparecen como recuadros debajo del texto del taller. Si lo dejas vacío, no aparecen."
+        sucio={distinto(campos, inicial)}
+        guardando={guardando}
+        error={estado.error}
+      >
+        <Campo etiqueta="Marcas" ayuda="Separadas por comas, en el orden en que quieres que salgan.">
+          <Entrada
+            nombre="marcas"
+            valor={campos.marcas}
+            onCambiar={(v) => cambiar("marcas", v)}
+            placeholder="Toyota, Hyundai, Mitsubishi, Nissan"
+          />
+        </Campo>
       </Bloque>
     </form>
   );

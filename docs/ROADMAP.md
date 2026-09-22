@@ -269,11 +269,113 @@ claro y oscuro: portada, servicios, «Cómo trabajamos», «El taller», contact
 el mapa cargando, pie, y también `/reservar` y `/acceso`, que heredan los
 tokens sin romperse. TypeScript y ESLint pasan.
 
+### La segunda pasada
+
+Comparando la maqueta bloque por bloque contra lo implementado aparecieron
+cuatro diferencias, y las cuatro se cerraron:
+
+- La **banda de datos** de la portada y las **marcas de vehículo** de «El
+  taller», que faltaban enteras. Entraron con sus campos en el panel
+  (decisión 33), así que arrancan vacías y se llenan desde «Sitio web».
+- El **anillo de los botones llamativos** salía granate en todos. Ahora los de
+  filete declaran su propio `--eco`: acero sobre papel y blanco sobre el bloque
+  marino, que es lo que hace la maqueta.
+- La **burbuja de WhatsApp** del celular late además por su cuenta (`.burbuja`,
+  seis segundos), aparte del anillo corto del botón.
+
+### La tercera pasada
+
+El taller revisó el sitio en su propia máquina y encontró dos cosas más. Las
+dos venían de ajustes de su Windows, no del navegador ni del código:
+
+- **Se veía todo azul marino.** Tiene Windows en modo oscuro, y el sistema
+  visual todavía invertía los tokens. Se quitó el modo oscuro (decisión 33).
+- **Nada se movía**, ni la cinta ni las apariciones al bajar. Tiene apagado
+  «Mostrar animaciones en Windows», que Chrome traduce a
+  `prefers-reduced-motion: reduce`. Pidió que ningún ajuste de su sistema
+  afectara a la página, así que se quitaron las cinco condiciones de
+  `prefers-reduced-motion` del CSS: ahora el sitio se mueve siempre y en todas
+  las máquinas (decisión 32, revertida en ese punto).
+- Y una que sí era del código: las filas de «Cómo trabajamos» solo cambiaban el
+  color del número al pasar el mouse. Ahora se levantan y se aclaran, como las
+  fichas de servicio y como la maqueta.
+
+`next build` lo corrió el taller con el servidor de desarrollo apagado y pasó
+limpio: diecisiete páginas, la portada y `/reservar` prerenderizadas, el resto
+del panel en prerenderizado parcial. TypeScript y ESLint pasan.
+
+### La cuarta pasada: el tablero, contra la maqueta
+
+El taller comparó el panel con el rediseño y el tablero no coincidía. Se rehizo
+bloque por bloque contra el `.dc.html`:
+
+- «En el taller» dejó de ser una retícula de cifras sueltas. Ahora es una
+  **barra de proporción**, donde cada tramo mide lo que pesa su estado, y
+  debajo una leyenda con el punto de color, la cifra grande y la etiqueta.
+- Los colores macizos de los cinco estados salieron de la insignia a dos
+  constantes compartidas (`COLOR_ESTADO` y `SOBRE_COLOR_ESTADO`, en
+  `admin/componentes.tsx`), porque ahora los usan la barra, el punto de la
+  leyenda y el filete de cada fila de órdenes.
+- Los **espacios** libres van con filete punteado y leyenda «Sin vehículo»; los
+  ocupados, con filete lleno y la placa en monoespaciada grande.
+- Cada **fila de órdenes** abre con un filete de 4 px del color de su estado, y
+  el conteo de la sección («2 de 6») se movió dentro de la lista, porque cambia
+  con el filtro y el filtro es del cliente.
+- El encabezado del tablero recuperó su versalita («Panel · ahora mismo») y el
+  botón primario, sus marcas de registro. La agenda recuperó la suya
+  («Panel · lo que viene») y sus dos botones cuadrados.
+
+### La quinta pasada: el panel entero
+
+Con el tablero ya rehecho, se recorrieron las demás pantallas contra la maqueta:
+
+- **Detalle de orden.** La placa pasa a monoespaciada de 38 px; el diagnóstico
+  y el presupuesto viven en fichas de plano con sus marcas de registro, igual
+  que la columna lateral (cliente, ubicación, ingreso); y la bitácora se dibuja
+  como una línea de tiempo, con filete vertical y un punto granate por hecho.
+- **Recepción.** Se parte en dos pasos numerados —«01 Vehículo» y «02 Motivo e
+  ingreso»—, el aviso de reserva es una ficha de plano en granate y el botón de
+  crear orden lleva marcas de registro.
+- **Las siete pantallas** tienen ahora su versalita: «Panel · ahora mismo»,
+  «· lo que viene», «· en menos de un minuto», «· precios de referencia»,
+  «· configuración» y «· lo que ve el cliente».
+- Se quitaron **52 clases `rounded-*` muertas** y el mapa `COLOR_ESTADO` viejo
+  de `lib/orden/estados.ts`, que todavía decía verde, naranja y morado.
+
+### El interletrado, que estaba al revés
+
+Buscando otra cosa apareció un fallo que afectaba a todo el sitio, no solo al
+panel. La regla `.font-display { letter-spacing: -0.02em }` estaba **fuera de
+toda capa**, así que le ganaba a las utilidades de Tailwind: cada
+`font-display tracking-[0.24em]` —las versalitas de sección, las entradas de la
+barra lateral, las insignias, los botones, la cinta del landing— terminaba con
+interletrado **negativo** en vez de ancho. Se veía apretado exactamente donde
+el diseño pedía aire.
+
+Ahora la regla vive en `@layer base` y apunta a los encabezados, como en la
+maqueta. Medido después del cambio: `tracking-[0.24em]` a 11 px da 2.64 px, y
+el `h1` conserva su −0.02em.
+
+### Datos de prueba
+
+`scripts/datos-prueba.js` llena la base para poder mirar el panel con
+contenido: seis vehículos repartidos por los cuatro estados, uno con
+diagnóstico y presupuesto enviado, y cuatro reservas. Las órdenes se abren con
+`recepcionar_vehiculo` y se mueven con `cambiar_estado_orden`, las mismas
+funciones que usa el panel, así que cada una queda con su bitácora de verdad.
+`node scripts/datos-prueba.js quitar` borra exactamente eso y nada más: busca
+por las placas y los teléfonos que él mismo escribió.
+
 ### Lo que no está verificado
 
-- **`next build`.** El servidor de desarrollo del taller estaba ocupando el
-  puerto y la carpeta `.next`, y lanzar una compilación encima se la habría
-  llevado puesta. Hay que correrlo con el servidor apagado.
+- **El movimiento, visto moverse.** El navegador que usa el asistente fuerza
+  `prefers-reduced-motion` y congela `document.timeline`, así que se puede
+  comprobar que las animaciones están enganchadas y en `running`, pero no
+  verlas avanzar. Eso hay que mirarlo en un navegador de verdad.
+- ~~La migración `20260922120000_datos_portada_y_marcas.sql`.~~ **Aplicada.**
+  El taller ya cargó además las marcas que atiende, y salen en «El taller».
+  La banda de datos de la portada sigue vacía: es lo único de los dos bloques
+  nuevos que falta llenar.
 - **El detalle de orden y la recepción, a fondo.** Se revisaron en el
   navegador y se ven del mismo lenguaje, pero no se rehicieron bloque por
   bloque como el tablero: el rediseño propone para ellos una columna de

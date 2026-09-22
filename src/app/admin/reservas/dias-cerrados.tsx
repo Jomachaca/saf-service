@@ -38,7 +38,7 @@ export function DiasCerrados({ cerrados, hoy }: { cerrados: DiaCerradoEnPantalla
       {cerrados.length === 0 ? (
         <p className="mb-5 text-sm text-tinta-tenue">No hay días cerrados por delante.</p>
       ) : (
-        <ul className="mb-5 flex flex-col divide-y divide-borde rounded-lg border border-borde">
+        <ul className="mb-5 flex flex-col divide-y divide-borde border border-borde">
           {cerrados.map((dia) => (
             <FilaDiaCerrado key={dia.fecha} dia={dia} />
           ))}
@@ -60,7 +60,7 @@ export function DiasCerrados({ cerrados, hoy }: { cerrados: DiaCerradoEnPantalla
       ) : null}
 
       {estado.aviso ? (
-        <p role="status" className="mt-3 text-sm text-amber-800 dark:text-amber-300">
+        <p role="status" className="mt-3 text-sm text-amber-800">
           {estado.aviso}
         </p>
       ) : null}
@@ -77,7 +77,7 @@ function FilaDiaCerrado({ dia }: { dia: DiaCerradoEnPantalla }) {
       <span className="font-medium">{dia.etiqueta}</span>
       {dia.motivo ? <span className="text-sm text-tinta-suave">{dia.motivo}</span> : null}
       {dia.reservas > 0 ? (
-        <span className="text-sm text-amber-800 dark:text-amber-300">
+        <span className="text-sm text-amber-800">
           {dia.reservas === 1 ? "1 reserva de antes del cierre" : `${dia.reservas} reservas de antes del cierre`}
         </span>
       ) : null}
@@ -86,7 +86,7 @@ function FilaDiaCerrado({ dia }: { dia: DiaCerradoEnPantalla }) {
         type="button"
         disabled={abriendo}
         onClick={() => empezar(() => abrirDia(dia.fecha))}
-        className="ml-auto inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-sm text-tinta-suave transition-colors duration-200 hover:text-marca disabled:opacity-50"
+        className="ml-auto inline-flex items-center gap-1.5 px-2.5 py-1 text-sm text-tinta-suave transition-colors duration-200 hover:text-marca disabled:opacity-50"
       >
         <X size={14} />
         {abriendo ? "Abriendo…" : "Abrir de nuevo"}

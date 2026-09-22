@@ -37,7 +37,7 @@ export function CambiarEstado({
       <input
         name="nota"
         placeholder="Nota (opcional): queda en la bitácora"
-        className="w-full rounded-lg border border-borde bg-fondo-alto px-3 py-2 text-sm"
+        className="w-full border border-borde bg-fondo-alto px-3 py-2 text-sm"
       />
 
       <div className="flex flex-wrap gap-2">
@@ -114,7 +114,7 @@ export function MoverVehiculo({
           name="box_id"
           required
           defaultValue={boxId ?? ""}
-          className="w-full rounded-lg border border-borde bg-fondo-alto px-3 py-2 text-sm"
+          className="w-full border border-borde bg-fondo-alto px-3 py-2 text-sm"
         >
           <option value="" disabled>
             Elegir box…

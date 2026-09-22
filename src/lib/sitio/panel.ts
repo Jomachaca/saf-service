@@ -27,9 +27,11 @@ export type ConfigCompleta = {
   heroTitulo: string;
   heroSubtitulo: string;
   heroImagenUrl: string | null;
+  datosPortada: { valor: string; etiqueta: string }[];
   nosotrosTitulo: string;
   nosotrosTexto: string;
   nosotrosImagenUrl: string | null;
+  marcas: string[];
   igvIncluido: boolean;
   igvTasaBp: number;
   reservasActivas: boolean;
@@ -67,6 +69,27 @@ function horariosDe(valor: unknown): { etiqueta: string; horario: string }[] {
   });
 }
 
+/**
+ * El panel muestra las filas tal como están guardadas, a medio llenar
+ * incluidas: quien está editando tiene que ver lo que dejó a medias. Es el
+ * sitio público el que se queda solo con las completas.
+ */
+function datosPortadaDe(valor: unknown): { valor: string; etiqueta: string }[] {
+  if (!Array.isArray(valor)) return [];
+
+  return valor.flatMap((fila) => {
+    if (typeof fila !== "object" || fila === null) return [];
+    const { valor: dato, etiqueta } = fila as Record<string, unknown>;
+    if (typeof dato !== "string" || typeof etiqueta !== "string") return [];
+    return [{ valor: dato, etiqueta }];
+  });
+}
+
+function marcasDe(valor: unknown): string[] {
+  if (!Array.isArray(valor)) return [];
+  return valor.filter((marca): marca is string => typeof marca === "string");
+}
+
 export async function cargarConfigCompleta(): Promise<ConfigCompleta | null> {
   const supabase = await crearClienteServidor();
   const { data } = await supabase.from("config_sitio").select("*").eq("id", 1).maybeSingle();
@@ -89,9 +112,11 @@ export async function cargarConfigCompleta(): Promise<ConfigCompleta | null> {
     heroTitulo: data.hero_titulo,
     heroSubtitulo: data.hero_subtitulo,
     heroImagenUrl: data.hero_imagen_url,
+    datosPortada: datosPortadaDe(data.datos_portada),
     nosotrosTitulo: data.nosotros_titulo,
     nosotrosTexto: data.nosotros_texto,
     nosotrosImagenUrl: data.nosotros_imagen_url,
+    marcas: marcasDe(data.marcas),
     igvIncluido: data.igv_incluido,
     igvTasaBp: data.igv_tasa_bp,
     reservasActivas: data.reservas_activas,

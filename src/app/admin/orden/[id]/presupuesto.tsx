@@ -43,7 +43,7 @@ function lineaVacia(): LineaEditable {
 }
 
 const CLASES_INPUT =
-  "w-full rounded-lg border border-borde bg-fondo-alto px-2.5 py-1.5 text-sm";
+  "w-full  border border-borde bg-fondo-alto px-2.5 py-1.5 text-sm";
 
 /**
  * Un solo flujo de presupuesto (decisión 12 y regla 10).
@@ -333,7 +333,7 @@ function Totales({
  */
 export function PresupuestoEmitido({ presupuesto }: { presupuesto: Presupuesto }) {
   return (
-    <div className="flex flex-col gap-3 rounded-lg border border-borde p-4">
+    <div className="flex flex-col gap-3 border border-borde p-4">
       <div className="flex flex-wrap items-baseline gap-x-3 gap-y-1">
         <span className="text-sm font-medium">Versión {presupuesto.version}</span>
         <span className="text-xs text-tinta-tenue">

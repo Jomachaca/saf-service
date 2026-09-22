@@ -4,7 +4,7 @@ import { cargarConfigCompleta, cargarGaleriaPanel } from "@/lib/sitio/panel";
 import { requerirStaff } from "@/lib/sesion";
 
 import { Encabezado } from "../../componentes";
-import { Presentacion } from "../formularios";
+import { Marcas, Presentacion } from "../formularios";
 import { Galeria } from "../galeria";
 
 export const metadata = {
@@ -15,7 +15,7 @@ export default function PaginaTaller() {
   return (
     <>
       <Encabezado
-        seccion="Sitio web"
+        seccion="Panel · lo que ve el cliente"
         titulo="El taller"
         descripcion="Quiénes son, qué hacen y cómo se ve el taller por dentro."
       />
@@ -36,6 +36,7 @@ async function Contenido() {
   return (
     <div className="flex max-w-4xl flex-col gap-5">
       <Presentacion config={config} />
+      <Marcas config={config} />
       <Galeria fotos={fotos} />
     </div>
   );

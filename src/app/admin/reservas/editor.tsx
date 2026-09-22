@@ -12,7 +12,7 @@ import { guardarFranjas } from "./acciones";
 type Celdas = Record<string, string>;
 
 const SECUNDARIO =
-  "inline-flex items-center gap-2 rounded-lg border border-borde-fuerte px-3 py-2 text-sm " +
+  "inline-flex items-center gap-2  border border-borde-fuerte px-3 py-2 text-sm " +
   "font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca " +
   "disabled:opacity-40 disabled:hover:border-borde-fuerte disabled:hover:text-tinta";
 
@@ -120,7 +120,7 @@ export function EditorFranjas({ franjas }: { franjas: Franja[] }) {
         error={estado.error}
       >
         {horas.length === 0 ? (
-          <div className="flex flex-col items-start gap-3 rounded-lg border border-dashed border-borde-fuerte p-4">
+          <div className="flex flex-col items-start gap-3 border border-dashed border-borde-fuerte p-4">
             <p className="text-sm text-tinta-suave">
               Todavía no hay horas. Agrégalas abajo, o empieza con un horario base y ajústalo
               antes de guardar.
@@ -168,7 +168,7 @@ export function EditorFranjas({ franjas }: { franjas: Franja[] }) {
                             onChange={(evento) => cambiarCelda(dia.dia, hora, evento.target.value)}
                             inputMode="numeric"
                             aria-label={`${dia.largo} a las ${hora}, cupos`}
-                            className={`w-full min-w-11 rounded-lg border px-1 py-1.5 text-center tabular-nums transition-colors duration-200 focus:border-marca focus:outline-none ${
+                            className={`w-full min-w-11 border px-1 py-1.5 text-center tabular-nums transition-colors duration-200 focus:border-marca focus:outline-none ${
                               abierta
                                 ? "border-borde-fuerte bg-fondo-alto font-semibold text-tinta"
                                 : "border-borde bg-fondo text-tinta-tenue"

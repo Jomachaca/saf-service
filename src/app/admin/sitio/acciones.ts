@@ -11,6 +11,7 @@ import {
   type EstadoCatalogo,
   type EstadoFormulario,
 } from "../estado-formulario";
+import { MAXIMO_DATOS_PORTADA } from "./limites";
 
 /**
  * Guardar escribe en la base y **no cambia el sitio público**; publicar sí
@@ -431,4 +432,82 @@ async function marcarActualizado(): Promise<void> {
     .from("config_sitio")
     .update({ actualizado_en: new Date().toISOString() })
     .eq("id", 1);
+}
+
+// ---------------------------------------------------------------------------
+// Banda de datos de la portada
+// ---------------------------------------------------------------------------
+
+/**
+ * Los cuatro datos duros que van bajo el titular. Son del taller, no del
+ * sistema: cuántos años lleva abierto o cuántos boxes tiene no se deduce de
+ * ninguna tabla, así que se escriben acá o la banda no existe.
+ */
+export async function guardarDatosPortada(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  await requerirStaff();
+
+  let filas: unknown;
+  try {
+    filas = JSON.parse(texto(datos, "datos_portada") || "[]");
+  } catch {
+    return { error: "No se pudieron leer los datos." };
+  }
+
+  if (!Array.isArray(filas)) return { error: "No se pudieron leer los datos." };
+
+  // Una fila a medio llenar no se guarda: en la portada se vería una celda con
+  // un número y sin qué es, o al revés.
+  const limpias = filas.flatMap((fila) => {
+    if (typeof fila !== "object" || fila === null) return [];
+    const { valor, etiqueta } = fila as Record<string, unknown>;
+    if (typeof valor !== "string" || typeof etiqueta !== "string") return [];
+    if (!valor.trim() || !etiqueta.trim()) return [];
+    return [{ valor: valor.trim(), etiqueta: etiqueta.trim() }];
+  });
+
+  const supabase = await crearClienteServidor();
+  const { error } = await supabase
+    .from("config_sitio")
+    .update(conSello({ datos_portada: limpias.slice(0, MAXIMO_DATOS_PORTADA) }))
+    .eq("id", 1);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/sitio", "layout");
+  return SIN_ERROR;
+}
+
+// ---------------------------------------------------------------------------
+// Marcas que atiende el taller
+// ---------------------------------------------------------------------------
+
+/**
+ * Se escriben separadas por comas en un solo campo. Son valores de una
+ * palabra y hasta diez: un editor de filas, una por marca, sería más
+ * formulario que contenido.
+ */
+export async function guardarMarcas(
+  _previo: EstadoFormulario,
+  datos: FormData,
+): Promise<EstadoFormulario> {
+  await requerirStaff();
+
+  const marcas = texto(datos, "marcas")
+    .split(",")
+    .map((marca) => marca.trim())
+    .filter(Boolean);
+
+  const supabase = await crearClienteServidor();
+  const { error } = await supabase
+    .from("config_sitio")
+    .update(conSello({ marcas }))
+    .eq("id", 1);
+
+  if (error) return { error: error.message };
+
+  revalidatePath("/admin/sitio", "layout");
+  return SIN_ERROR;
 }

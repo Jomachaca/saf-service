@@ -152,8 +152,8 @@ perfil                           -- staff, ligado a auth.users (decisiones 18 y 
 config_sitio                     -- fila única, esquema fijo (decisión 11)
   nombre_taller, slogan, descripcion, logo_url, telefono, whatsapp, email,
   direccion, mapa_url, facebook, instagram, tiktok   -- mapa_url opcional (decisión 32)
-  hero_titulo, hero_subtitulo, hero_imagen_url
-  nosotros_titulo, nosotros_texto, nosotros_imagen_url
+  hero_titulo, hero_subtitulo, hero_imagen_url, datos_portada (jsonb)
+  nosotros_titulo, nosotros_texto, nosotros_imagen_url, marcas (jsonb)
   horarios (jsonb), plantillas_mensaje (jsonb)
   igv_incluido, igv_tasa_bp                        -- decision 16
   reservas_activas, reservas_dias                  -- decision 29

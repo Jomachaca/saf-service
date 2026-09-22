@@ -32,6 +32,19 @@ const TAMANOS = {
   chico: "px-4 py-2.5 text-sm",
 } as const;
 
+/**
+ * El color del anillo que suelta un botón `llamativo`.
+ *
+ * El granate del anillo se ve sobre papel, pero alrededor de un botón de
+ * filete blanco sobre el bloque marino queda como una mancha: ahí el eco tiene
+ * que ser del color del botón. El primario no declara nada y usa el granate,
+ * que es el valor por omisión de la animación en `globals.css`.
+ */
+const ECOS: Partial<Record<keyof typeof TONOS, string>> = {
+  linea: "color-mix(in oklab, var(--estructura) 32%, transparent)",
+  clara: "rgb(255 255 255 / 0.4)",
+};
+
 export function Boton({
   href,
   tono = "marca",
@@ -56,6 +69,11 @@ export function Boton({
   const llamada = llamativo ? (llamativo === "b" ? " llama llama-b" : " llama") : "";
   const clases = `${BASE_BOTON} ${TONOS[tono]} ${TAMANOS[tamano]}${llamada}`;
 
+  const eco =
+    llamativo && ECOS[tono]
+      ? ({ "--eco": ECOS[tono] } as React.CSSProperties)
+      : undefined;
+
   // El primario es el único objeto sólido del tablero, así que lleva las
   // marcas de registro como cualquier otra pieza enmarcada.
   const marcas =
@@ -63,7 +81,13 @@ export function Boton({
 
   if (externo) {
     return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={clases}>
+      <a
+        href={href}
+        target="_blank"
+        rel="noopener noreferrer"
+        style={eco}
+        className={clases}
+      >
         {children}
         {marcas}
       </a>
@@ -71,7 +95,7 @@ export function Boton({
   }
 
   return (
-    <Link href={href} className={clases}>
+    <Link href={href} style={eco} className={clases}>
       {children}
       {marcas}
     </Link>

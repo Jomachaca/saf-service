@@ -98,7 +98,7 @@ export function SubirImagen({
   return (
     <div className="flex flex-col gap-2">
       <label
-        className={`inline-flex w-fit cursor-pointer items-center gap-2 rounded-lg border border-borde-fuerte px-4 py-2 text-sm font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca ${
+        className={`inline-flex w-fit cursor-pointer items-center gap-2 border border-borde-fuerte px-4 py-2 text-sm font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca ${
           subiendo ? "pointer-events-none opacity-50" : ""
         }`}
       >
@@ -136,7 +136,7 @@ export function ImagenActual({
 
   return (
     <div className="flex items-start gap-3">
-      <div className="relative aspect-4/3 w-40 overflow-hidden rounded-lg bg-fondo-hondo">
+      <div className="relative aspect-4/3 w-40 overflow-hidden bg-fondo-hondo">
         <Image src={url} alt={alt} fill sizes="10rem" className="object-contain" />
       </div>
 
@@ -151,7 +151,7 @@ export function ImagenActual({
             setQuitando(false);
           }
         }}
-        className="inline-flex items-center gap-2 rounded-lg border border-borde-fuerte px-3 py-2 text-sm transition duration-200 ease-salida hover:border-marca hover:text-marca disabled:opacity-50"
+        className="inline-flex items-center gap-2 border border-borde-fuerte px-3 py-2 text-sm transition duration-200 ease-salida hover:border-marca hover:text-marca disabled:opacity-50"
       >
         <Trash size={16} />
         {quitando ? "Quitando…" : "Quitar"}

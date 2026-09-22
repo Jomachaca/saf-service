@@ -30,7 +30,7 @@ export function BotonWhatsApp({
           target="_blank"
           rel="noreferrer"
           onClick={() => registrar(() => registrarLinkGenerado(ordenId))}
-          className="inline-flex w-fit rounded-lg bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white"
+          className="inline-flex w-fit bg-emerald-600 px-3 py-1.5 text-sm font-medium text-white"
         >
           Enviar por WhatsApp
         </a>
@@ -47,7 +47,7 @@ export function BotonWhatsApp({
           readOnly
           value={enlacePublico}
           onFocus={(evento) => evento.target.select()}
-          className="w-full rounded-lg border border-borde bg-fondo-hondo px-2.5 py-1.5 font-mono text-xs"
+          className="w-full border border-borde bg-fondo-hondo px-2.5 py-1.5 font-mono text-xs"
         />
       </label>
     </div>

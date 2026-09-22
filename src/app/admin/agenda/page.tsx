@@ -34,12 +34,13 @@ export default function PaginaAgenda() {
   return (
     <div className="flex flex-col gap-8">
       <Encabezado
+        seccion="Panel · lo que viene"
         titulo="Agenda"
         descripcion="Quién dijo que venía: lo que quedó sin cerrar, hoy y lo que sigue."
         acciones={
           <Link
             href="/admin/reservas"
-            className="inline-flex items-center gap-1.5 rounded-lg border border-borde-fuerte px-3 py-1.5 text-sm font-medium transition-colors duration-200 hover:border-marca hover:text-marca"
+            className="inline-flex items-center gap-2 border border-borde-fuerte px-4 py-2.75 font-display text-sm font-semibold tracking-[0.09em] uppercase transition duration-200 ease-salida hover:bg-tinta/6 active:translate-y-px"
           >
             <Clock size={16} />
             Horario y cupos
@@ -123,7 +124,7 @@ async function Contenido() {
             href="/reservar"
             target="_blank"
             rel="noopener noreferrer"
-            className="inline-flex items-center gap-1.5 rounded-lg bg-marca px-3 py-1.5 font-display text-sm font-semibold uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px"
+            className="inline-flex items-center gap-2 border border-marca bg-marca px-4 py-2.75 font-display text-sm font-bold tracking-[0.09em] text-white uppercase transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px"
           >
             Nueva reserva
             <ArrowSquareOut size={16} />
@@ -171,7 +172,7 @@ async function Contenido() {
             }
           >
             {motivoCierre !== undefined ? (
-              <p className="flex flex-wrap items-center gap-2 rounded-lg border border-dashed border-borde-fuerte px-3 py-2 text-sm text-tinta-suave">
+              <p className="flex flex-wrap items-center gap-2 border border-dashed border-borde-fuerte px-3 py-2 text-sm text-tinta-suave">
                 <CalendarX size={16} className="text-marca" />
                 Cerrado a reservas{motivoCierre ? `: ${motivoCierre}` : ""}.
                 {porAvisar > 0 ? " Las de abajo son de antes del cierre: avísales." : null}
@@ -192,7 +193,7 @@ async function Contenido() {
 
 function Lista({ reservas }: { reservas: ReservaEnFila[] }) {
   return (
-    <ul className="flex flex-col divide-y divide-borde rounded-2xl border border-borde bg-fondo-alto">
+    <ul className="flex flex-col divide-y divide-borde border border-borde bg-fondo-alto">
       {reservas.map((reserva) => (
         // El estado entra en la `key`: al cambiar, la fila se remonta limpia,
         // sin la pregunta de «¿seguro?» que había quedado abierta.
@@ -204,7 +205,7 @@ function Lista({ reservas }: { reservas: ReservaEnFila[] }) {
 
 function Nota({ children }: { children: React.ReactNode }) {
   return (
-    <p className="flex max-w-3xl items-start gap-2.5 rounded-2xl border border-borde bg-fondo-alto px-4 py-3 text-sm text-tinta-suave">
+    <p className="flex max-w-3xl items-start gap-2.5 border border-borde bg-fondo-alto px-4 py-3 text-sm text-tinta-suave">
       <Info size={18} weight="duotone" className="mt-px shrink-0 text-marca" />
       <span>{children}</span>
     </p>

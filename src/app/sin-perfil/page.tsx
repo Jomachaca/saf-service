@@ -46,13 +46,13 @@ async function Detalle() {
 
   return (
     <>
-      <div className="flex flex-col gap-3 rounded-lg border border-amber-500/40 bg-amber-500/10 p-4 text-sm">
+      <div className="flex flex-col gap-3 border border-amber-500/40 bg-amber-500/10 p-4 text-sm">
         <p>
           Para darle acceso, un administrador tiene que ejecutar esto en el SQL
           Editor de Supabase:
         </p>
 
-        <pre className="overflow-x-auto rounded bg-fondo-hondo p-3 text-xs">
+        <pre className="overflow-x-auto bg-fondo-hondo p-3 text-xs">
           <code>{`insert into perfil (id, nombre)
 values ('${sesion.usuarioId}', 'Nombre y apellido');`}</code>
         </pre>

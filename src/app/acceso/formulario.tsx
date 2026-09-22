@@ -6,7 +6,7 @@ import { iniciarSesion, type EstadoAcceso } from "./acciones";
 
 const ESTADO_INICIAL: EstadoAcceso = { error: null };
 
-const CLASES_INPUT = "w-full rounded-lg border border-borde bg-fondo-alto px-3 py-2";
+const CLASES_INPUT = "w-full  border border-borde bg-fondo-alto px-3 py-2";
 
 export function FormularioAcceso() {
   const [estado, accion, enviando] = useActionState(iniciarSesion, ESTADO_INICIAL);
@@ -44,7 +44,7 @@ export function FormularioAcceso() {
       </label>
 
       {estado.error ? (
-        <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+        <p role="alert" className="text-sm text-red-600">
           {estado.error}
         </p>
       ) : null}
@@ -52,7 +52,7 @@ export function FormularioAcceso() {
       <button
         type="submit"
         disabled={enviando}
-        className="mt-1 rounded-lg bg-marca px-4 py-2.5 font-display text-sm font-semibold uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px disabled:opacity-60"
+        className="mt-1 bg-marca px-4 py-2.5 font-display text-sm font-semibold uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px disabled:opacity-60"
       >
         {enviando ? "Entrando…" : "Entrar"}
       </button>

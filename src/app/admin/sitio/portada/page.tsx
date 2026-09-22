@@ -6,7 +6,7 @@ import { requerirStaff } from "@/lib/sesion";
 
 import { Encabezado } from "../../componentes";
 import { Destacados } from "../destacados";
-import { Titular } from "../formularios";
+import { DatosPortada, Titular } from "../formularios";
 
 export const metadata = {
   title: "Portada",
@@ -16,7 +16,7 @@ export default function PaginaPortada() {
   return (
     <>
       <Encabezado
-        seccion="Sitio web"
+        seccion="Panel · lo que ve el cliente"
         titulo="Portada"
         descripcion={
           <>
@@ -52,6 +52,7 @@ async function Contenido() {
   return (
     <div className="flex max-w-4xl flex-col gap-5">
       <Titular config={config} />
+      <DatosPortada config={config} />
       <Destacados destacados={destacados} />
     </div>
   );

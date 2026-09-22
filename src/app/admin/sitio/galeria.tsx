@@ -62,7 +62,7 @@ function Tarjeta({ foto }: { foto: FotoPanel }) {
 
   return (
     <li className={`flex flex-col gap-3 ${campos.activo ? "" : "opacity-60"}`}>
-      <div className="relative aspect-4/3 overflow-hidden rounded-lg bg-fondo-hondo">
+      <div className="relative aspect-4/3 overflow-hidden bg-fondo-hondo">
         <Image
           src={foto.url}
           alt={foto.alt}
@@ -95,7 +95,7 @@ function Tarjeta({ foto }: { foto: FotoPanel }) {
           <button
             type="submit"
             disabled={!sucio || guardando}
-            className="ml-auto rounded-lg border border-borde-fuerte px-3 py-1.5 text-sm font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca disabled:opacity-40"
+            className="ml-auto border border-borde-fuerte px-3 py-1.5 text-sm font-medium transition duration-200 ease-salida hover:border-marca hover:text-marca disabled:opacity-40"
           >
             {guardando ? "…" : sucio ? "Guardar" : "Guardado"}
           </button>

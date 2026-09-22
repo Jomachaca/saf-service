@@ -15,7 +15,7 @@ export default function PaginaAcceso() {
       <PanelMarca />
 
       <main className="flex flex-1 items-center justify-center px-6 py-12 sm:py-16">
-        <div className="al-montar w-full max-w-sm rounded-2xl border border-borde bg-fondo-alto p-6 sm:p-8">
+        <div className="al-montar w-full max-w-sm border border-borde bg-fondo-alto p-6 sm:p-8">
           <h1 className="font-display text-2xl font-bold uppercase tracking-tight">Ingresar</h1>
           <p className="mt-1 text-sm text-tinta-suave">
             Las cuentas las crea el administrador desde Supabase.

@@ -166,10 +166,28 @@ no apagar el prerenderizado con `instant = false`.
 **El sistema visual vive en `src/app/globals.css`.** Sale del logo y se resume
 en dos reglas: el **granate** es acción (botones primarios, enlaces, lo que se
 pulsa) y el **azul marino** es estructura (cabeceras, bloques oscuros). Los
-tokens semánticos —`--fondo`, `--tinta`, `--borde`, `--marca`— cambian con el
-modo claro/oscuro; las rampas `vino-*` y `marino-*` no cambian nunca. Nada de
+tokens semánticos —`--fondo`, `--tinta`, `--borde`, `--marca`— nombran el papel
+y la tinta; las rampas `vino-*` y `marino-*` son valores fijos. Nada de
 `border-black/10` ni de opacidades sueltas para atenuar texto: eso ya se migró
 una vez.
+
+**Una regla sin capa le gana a Tailwind, y eso ya mordió dos veces.** Las
+utilidades de Tailwind viven en `@layer utilities`, y en CSS cualquier regla
+fuera de toda capa le gana a cualquier regla dentro de una. Pasó con `.pulso`,
+que fijaba `position: relative` y se comía el `fixed` de la burbuja de
+WhatsApp; y pasó con `.font-display { letter-spacing: -0.02em }`, que anulaba
+en silencio todos los `tracking-[0.24em]` del sitio y dejaba apretadas las
+versalitas que tenían que respirar. Lo propio va dentro de `@layer base` o
+`@layer components`, nunca suelto.
+
+**No hay modo oscuro, y es a propósito.** Hubo uno automático por
+`prefers-color-scheme` y se quitó (decisión 33): el lenguaje está dibujado
+sobre papel, y el contraste lo pone la alternancia entre secciones blancas y
+bloques marinos. Al invertir la paleta esa alternancia se pierde y la página
+entera queda de un solo tono. `:root` declara `color-scheme: light` para que
+los controles que dibuja el navegador —barras de desplazamiento, calendarios
+de los campos de fecha— salgan claros aunque el sistema esté en oscuro. No
+escribas variantes `dark:`.
 
 Desde la decisión 33 el lenguaje es de plano técnico: papel blanco, cantos
 vivos —`--radius-*` vale cero, así que los `rounded-*` escritos quedan
@@ -184,10 +202,16 @@ no la entiende el contenido se ve normal en vez de quedarse invisible. No hay
 librería de animación instalada, y para un taller cuyos clientes entran desde
 WhatsApp con datos móviles eso es una decisión, no una carencia. Las
 utilidades del landing —`.al-entrar`, `.subrayado`, `.llama` y `.cinta`— viven
-en `@layer components`, para que una utilidad de Tailwind pueda pisarlas, y
-todo lo que se mueve solo está detrás de `prefers-reduced-motion`: con las
-animaciones apagadas en el sistema, la página se ve completa y quieta
+en `@layer components`, para que una utilidad de Tailwind pueda pisarlas
 (decisión 32).
+
+**La página no consulta los ajustes del sistema.** Ni el tema claro/oscuro ni
+`prefers-reduced-motion`: el sitio se ve igual en todas las máquinas, y esa
+uniformidad es lo que el taller pidió expresamente después de ver su propia
+página oscura y quieta por tener Windows así configurado. Lo que sí se consulta
+es lo que el navegador *sabe hacer*, con `@supports`, que es otra cosa. No
+agregues `@media (prefers-reduced-motion: …)` ni variantes `dark:` sin
+hablarlo antes.
 
 **El panel mide su columna, no la pantalla.** La barra lateral ocupa 15rem
 desde `lg`, así que un `lg:grid-cols-…` cree tener 1024 px donde quedan poco
