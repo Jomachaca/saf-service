@@ -77,7 +77,7 @@ app móvil, facturación electrónica, multi-taller, roles granulares.
 ## Estado actual
 
 **Fase 4 terminada.** El modelo conceptual está cerrado y las decisiones
-abiertas se resolvieron (`docs/DECISIONES.md` 16–32).
+abiertas se resolvieron (`docs/DECISIONES.md` 16–33).
 
 Funcionan el tablero, la recepción rápida, el detalle de orden con cambio de
 estado, movimiento de box y bitácora, el diagnóstico, el presupuesto con líneas
@@ -167,17 +167,23 @@ no apagar el prerenderizado con `instant = false`.
 en dos reglas: el **granate** es acción (botones primarios, enlaces, lo que se
 pulsa) y el **azul marino** es estructura (cabeceras, bloques oscuros). Los
 tokens semánticos —`--fondo`, `--tinta`, `--borde`, `--marca`— cambian con el
-modo claro/oscuro; las rampas `vino-*` y `marino-*` no cambian nunca. Los radios
-son tres y no hay más: `rounded-lg` en controles, `rounded-2xl` en contenedores,
-`rounded-full` en píldoras. Nada de `border-black/10` ni de opacidades sueltas
-para atenuar texto: eso ya se migró una vez.
+modo claro/oscuro; las rampas `vino-*` y `marino-*` no cambian nunca. Nada de
+`border-black/10` ni de opacidades sueltas para atenuar texto: eso ya se migró
+una vez.
+
+Desde la decisión 33 el lenguaje es de plano técnico: papel blanco, cantos
+vivos —`--radius-*` vale cero, así que los `rounded-*` escritos quedan
+cuadrados solos y solo `rounded-full` sigue redondeando píldoras—, filetes de
+un pixel y titulares en condensada, mayúsculas y apretados. Lo que es un
+objeto lleva marco de plano: la clase `.plano` con sus cuatro `.esquina`. Las
+fotos del sitio público van en `.duotono`.
 
 **Las animaciones son de CSS.** Las apariciones al hacer scroll usan
 `animation-timeline: view()` detrás de un `@supports`, así que donde el navegador
 no la entiende el contenido se ve normal en vez de quedarse invisible. No hay
 librería de animación instalada, y para un taller cuyos clientes entran desde
 WhatsApp con datos móviles eso es una decisión, no una carencia. Las
-utilidades del landing —`.al-entrar`, `.subrayado`, `.pulso` y `.cinta`— viven
+utilidades del landing —`.al-entrar`, `.subrayado`, `.llama` y `.cinta`— viven
 en `@layer components`, para que una utilidad de Tailwind pueda pisarlas, y
 todo lo que se mueve solo está detrás de `prefers-reduced-motion`: con las
 animaciones apagadas en el sistema, la página se ve completa y quieta

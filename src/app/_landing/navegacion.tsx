@@ -4,7 +4,7 @@ import { CalendarCheck, List, WhatsappLogo, X } from "@phosphor-icons/react/dist
 import Link from "next/link";
 import { useState } from "react";
 
-import { Marca } from "./piezas";
+import { Boton, Marca } from "./piezas";
 
 const ENLACES = [
   { ancla: "#servicios", texto: "Servicios" },
@@ -12,31 +12,20 @@ const ENLACES = [
   { ancla: "#contacto", texto: "Contacto" },
 ];
 
-const BOTON =
-  "pulso items-center gap-2 rounded-lg bg-marca px-4 py-2.5 font-display text-sm font-semibold " +
-  "uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida " +
-  "hover:bg-marca-viva active:translate-y-px";
-
-const BOTON_MOVIL =
-  "inline-flex items-center justify-center gap-2 rounded-lg px-4 py-3 font-display " +
-  "font-semibold uppercase tracking-wide";
-
 /**
- * Barra fija sobre el bloque marino.
+ * Barra fija sobre papel.
  *
  * Es la misma en la portada y en `/reservar`. Fuera de la portada `enlacesEn`
  * vale "/", y los enlaces vuelven a las secciones de la portada en vez de
  * buscar anclas que en esa página no existen.
  *
- * A la derecha va un solo botón: «Reservar hora» si las reservas están
- * abiertas, WhatsApp si no. En el menú del celular caben los dos.
+ * A la derecha van las dos acciones del negocio: reservar, con filete, y
+ * WhatsApp, que es el objeto sólido. Las dos se sacuden cada ocho segundos,
+ * desfasadas entre sí (`.llama` en `globals.css`).
  *
- * En móvil el menú se abre y se cierra sin librerías: son tres enlaces, no hace
- * falta traer una librería de animación al navegador de alguien que entró desde
- * WhatsApp con datos móviles.
- *
- * Los enlaces se subrayan desde el centro al pasar el mouse y el botón suelta
- * un anillo cada siete segundos (`.subrayado` y `.pulso`, en `globals.css`).
+ * En móvil el menú se abre y se cierra sin librerías: son tres enlaces, no
+ * hace falta traer una librería de animación al navegador de alguien que entró
+ * desde WhatsApp con datos móviles.
  */
 export function Navegacion({
   whatsapp,
@@ -53,41 +42,49 @@ export function Navegacion({
 }) {
   const [abierto, setAbierto] = useState(false);
 
+  // Con las dos acciones a la vista, WhatsApp es el objeto sólido y reservar
+  // lleva filete. Si una falta, la que queda pasa a sólida.
+  const reservarSolo = reservar && !whatsapp;
+
   return (
-    <header className="sticky top-0 z-40 border-b border-white/10 bg-estructura/95 backdrop-blur">
-      <div className="mx-auto flex h-20 w-full max-w-6xl items-center gap-6 px-5 md:px-8">
-        <a href={enlacesEn || "#inicio"} className="shrink-0" aria-label="Inicio">
-          <Marca tono="claro" url={logo} nombre={nombre} alto="h-14" />
+    <header className="sticky top-0 z-50 border-b border-borde bg-fondo/95 backdrop-blur">
+      <div className="mx-auto flex w-full max-w-7xl items-center gap-7 px-5 py-3 md:px-7">
+        <a href={enlacesEn || "#inicio"} className="shrink-0 leading-none" aria-label="Inicio">
+          <Marca url={logo} nombre={nombre} alto="h-11 md:h-13" prioridad />
         </a>
 
-        <nav className="ml-auto hidden items-center gap-7 md:flex">
+        <nav className="ml-auto hidden items-center gap-7 lg:flex">
           {ENLACES.map((enlace) => (
             <a
               key={enlace.ancla}
               href={`${enlacesEn}${enlace.ancla}`}
-              className="subrayado text-sm font-medium text-white/75 transition-colors duration-200 hover:text-white"
+              className="subrayado font-display text-[15px] font-semibold tracking-[0.09em] text-tinta uppercase"
             >
               {enlace.texto}
             </a>
           ))}
         </nav>
 
-        {reservar ? (
-          <Link href={reservar} className={`ml-auto hidden md:ml-0 md:inline-flex ${BOTON}`}>
-            <CalendarCheck size={18} weight="fill" />
-            Reservar hora
-          </Link>
-        ) : whatsapp ? (
-          <a
-            href={whatsapp}
-            target="_blank"
-            rel="noopener noreferrer"
-            className={`ml-auto hidden md:ml-0 md:inline-flex ${BOTON}`}
-          >
-            <WhatsappLogo size={18} weight="fill" />
-            WhatsApp
-          </a>
-        ) : null}
+        <div className="ml-auto hidden items-center gap-3 lg:ml-0 lg:flex">
+          {reservar ? (
+            <Boton
+              href={reservar}
+              tono={reservarSolo ? "marca" : "linea"}
+              tamano="chico"
+              llamativo="b"
+            >
+              <CalendarCheck size={17} />
+              Reservar
+            </Boton>
+          ) : null}
+
+          {whatsapp ? (
+            <Boton href={whatsapp} tamano="chico" externo llamativo>
+              <WhatsappLogo size={17} />
+              WhatsApp
+            </Boton>
+          ) : null}
+        </div>
 
         <button
           type="button"
@@ -95,38 +92,38 @@ export function Navegacion({
           aria-expanded={abierto}
           aria-controls="menu-movil"
           aria-label={abierto ? "Cerrar menú" : "Abrir menú"}
-          className="ml-auto rounded-lg p-2 text-white transition-colors duration-200 hover:bg-white/10 md:hidden"
+          className="ml-auto p-2 text-tinta transition-colors duration-200 hover:bg-tinta/6 lg:hidden"
         >
           {abierto ? <X size={24} /> : <List size={24} />}
         </button>
       </div>
 
-      <div
-        id="menu-movil"
-        hidden={!abierto}
-        className="border-t border-white/10 bg-estructura md:hidden"
-      >
-        <nav className="mx-auto flex w-full max-w-6xl flex-col px-5 py-2">
+      <div id="menu-movil" hidden={!abierto} className="border-t border-borde bg-fondo lg:hidden">
+        <nav className="mx-auto flex w-full max-w-7xl flex-col px-5 py-3">
           {ENLACES.map((enlace) => (
             <a
               key={enlace.ancla}
               href={`${enlacesEn}${enlace.ancla}`}
               onClick={() => setAbierto(false)}
-              className="rounded-lg px-2 py-3 text-white/85 transition-colors duration-200 hover:bg-white/10 hover:text-white"
+              className="border-b border-borde py-3.5 font-display text-base font-semibold tracking-[0.09em] text-tinta uppercase"
             >
               {enlace.texto}
             </a>
           ))}
 
           {reservar || whatsapp ? (
-            <div className="mt-2 mb-3 flex flex-col gap-2">
+            <div className="mt-4 mb-2 flex flex-col gap-2.5">
               {reservar ? (
                 <Link
                   href={reservar}
                   onClick={() => setAbierto(false)}
-                  className={`${BOTON_MOVIL} bg-marca text-sobre-marca`}
+                  className={`inline-flex items-center justify-center gap-2.5 border px-4 py-3 font-display font-semibold tracking-[0.09em] uppercase ${
+                    reservarSolo
+                      ? "border-marca bg-marca text-white"
+                      : "border-borde-fuerte text-tinta"
+                  }`}
                 >
-                  <CalendarCheck size={18} weight="fill" />
+                  <CalendarCheck size={18} />
                   Reservar hora
                 </Link>
               ) : null}
@@ -137,11 +134,9 @@ export function Navegacion({
                   target="_blank"
                   rel="noopener noreferrer"
                   onClick={() => setAbierto(false)}
-                  className={`${BOTON_MOVIL} ${
-                    reservar ? "border border-white/30 text-white" : "bg-marca text-sobre-marca"
-                  }`}
+                  className="inline-flex items-center justify-center gap-2.5 border border-marca bg-marca px-4 py-3 font-display font-semibold tracking-[0.09em] text-white uppercase"
                 >
-                  <WhatsappLogo size={18} weight="fill" />
+                  <WhatsappLogo size={18} />
                   Escribir por WhatsApp
                 </a>
               ) : null}

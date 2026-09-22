@@ -1,12 +1,4 @@
-import {
-  EnvelopeSimple,
-  FacebookLogo,
-  InstagramLogo,
-  MapPin,
-  Phone,
-  TiktokLogo,
-  WhatsappLogo,
-} from "@phosphor-icons/react/dist/ssr";
+import { FacebookLogo, InstagramLogo, TiktokLogo } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 
 import { CATEGORIAS, ETIQUETA_CATEGORIA } from "@/lib/orden/presupuesto";
@@ -55,17 +47,14 @@ export function Pie({
   );
 
   return (
-    <footer className="mt-auto bg-estructura text-white/70">
-      <div className="mx-auto w-full max-w-6xl px-5 py-14 md:px-8 md:py-16">
-        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-12 lg:gap-8">
-          <div
-            style={paso(0)}
-            className="al-entrar flex flex-col gap-4 sm:col-span-2 lg:col-span-4"
-          >
-            <Marca tono="claro" url={taller.logoUrl} nombre={taller.nombre} alto="h-16" />
+    <footer className="mt-auto bg-marino-900 text-white/70">
+      <div className="mx-auto w-full max-w-7xl px-5 pt-16 pb-7 md:px-7">
+        <div className="grid gap-10 sm:grid-cols-2 lg:grid-cols-[1.5fr_repeat(3,minmax(0,1fr))]">
+          <div style={paso(0)} className="al-entrar flex flex-col gap-4 sm:col-span-2 lg:col-span-1">
+            <Marca tono="claro" url={taller.logoUrl} nombre={taller.nombre} alto="h-15" />
 
             {taller.descripcion ? (
-              <p className="max-w-xs text-sm leading-relaxed">{taller.descripcion}</p>
+              <p className="max-w-76 text-[15px] leading-relaxed">{taller.descripcion}</p>
             ) : null}
 
             {redes.length > 0 ? (
@@ -77,32 +66,29 @@ export function Pie({
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={red.etiqueta}
-                    className="rounded-lg border border-white/20 p-2.5 transition duration-200 ease-salida hover:border-white/50 hover:bg-white/10 hover:text-white active:translate-y-px"
+                    className="border border-white/25 p-2.5 transition duration-200 ease-salida hover:bg-white/12 hover:text-white active:translate-y-px"
                   >
-                    <red.Icono size={20} />
+                    <red.Icono size={19} />
                   </a>
                 ))}
               </div>
             ) : null}
           </div>
 
-          <Columna titulo="Navegación" indice={1} ancho="lg:col-span-3">
+          <Columna titulo="Navegación" indice={1}>
             <Enlace href={enlacesEn || "#inicio"}>Inicio</Enlace>
             <Enlace href={`${enlacesEn}#servicios`}>Servicios</Enlace>
             <Enlace href={`${enlacesEn}#taller`}>El taller</Enlace>
             <Enlace href={`${enlacesEn}#contacto`}>Contacto</Enlace>
             {reservarHref ? (
-              <Link
-                href={reservarHref}
-                className="w-fit text-sm transition-colors duration-200 hover:text-white"
-              >
+              <Link href={reservarHref} className="w-fit text-[15px] text-white/78">
                 <span className="subrayado">Reservar hora</span>
               </Link>
             ) : null}
           </Columna>
 
           {categorias.length > 0 ? (
-            <Columna titulo="Servicios" indice={2} ancho="lg:col-span-2">
+            <Columna titulo="Servicios" indice={2}>
               {categorias.map((categoria) => (
                 <Enlace key={categoria} href={`${enlacesEn}#servicios`}>
                   {ETIQUETA_CATEGORIA[categoria]}
@@ -111,48 +97,40 @@ export function Pie({
             </Columna>
           ) : null}
 
-          <Columna titulo="Contacto" indice={3} ancho="lg:col-span-3">
+          <Columna titulo="Contacto" indice={3}>
             {taller.telefono ? (
-              <Enlace href={`tel:${taller.telefono.replace(/\s/g, "")}`} Icono={Phone}>
+              <Enlace href={`tel:${taller.telefono.replace(/\s/g, "")}`}>
                 <span className="tabular-nums">{taller.telefono}</span>
               </Enlace>
             ) : null}
 
             {whatsappHref ? (
-              <Enlace href={whatsappHref} externo Icono={WhatsappLogo}>
+              <Enlace href={whatsappHref} externo>
                 WhatsApp
               </Enlace>
             ) : null}
 
             {taller.email ? (
-              <Enlace href={`mailto:${taller.email}`} Icono={EnvelopeSimple}>
+              <Enlace href={`mailto:${taller.email}`}>
                 <span className="break-all">{taller.email}</span>
               </Enlace>
             ) : null}
 
             {taller.direccion ? (
-              <p className="flex gap-2.5 text-sm leading-relaxed">
-                <MapPin size={18} className="mt-0.5 shrink-0 text-vino-300" />
-                {mapaHref ? (
-                  <a
-                    href={mapaHref}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    className="transition-colors duration-200 hover:text-white"
-                  >
-                    {taller.direccion}
-                  </a>
-                ) : (
-                  taller.direccion
-                )}
-              </p>
+              mapaHref ? (
+                <Enlace href={mapaHref} externo>
+                  {taller.direccion}
+                </Enlace>
+              ) : (
+                <p className="text-[15px] leading-relaxed">{taller.direccion}</p>
+              )
             ) : null}
           </Columna>
         </div>
 
-        <div className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-white/10 pt-6 text-sm">
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-white/15 pt-5 font-display text-[13px] font-semibold tracking-[0.14em] uppercase">
           <p>{taller.nombre}</p>
-          {taller.slogan ? <p className="text-white/50">{taller.slogan}</p> : null}
+          {taller.slogan ? <p className="text-white/45">{taller.slogan}</p> : null}
         </div>
       </div>
     </footer>
@@ -162,17 +140,15 @@ export function Pie({
 function Columna({
   titulo,
   indice,
-  ancho,
   children,
 }: {
   titulo: string;
   indice: number;
-  ancho: string;
   children: React.ReactNode;
 }) {
   return (
-    <div style={paso(indice)} className={`al-entrar flex flex-col gap-3 ${ancho}`}>
-      <h2 className="font-display text-lg font-semibold tracking-wide text-white uppercase">
+    <div style={paso(indice)} className="al-entrar flex flex-col gap-3">
+      <h2 className="font-display text-[13px] font-bold tracking-[0.2em] text-white/50 uppercase">
         {titulo}
       </h2>
       {children}
@@ -181,28 +157,24 @@ function Columna({
 }
 
 /**
- * Un enlace del pie. El subrayado crece desde el centro y va sobre el texto, no
- * sobre la fila entera: con el ícono adentro, la barra saldría más larga que la
- * palabra.
+ * Un enlace del pie. El subrayado crece desde la izquierda y va sobre el
+ * texto, no sobre la fila: así la barra mide lo que mide la palabra.
  */
 function Enlace({
   href,
   externo,
-  Icono,
   children,
 }: {
   href: string;
   externo?: boolean;
-  Icono?: React.ComponentType<{ size?: number; className?: string }>;
   children: React.ReactNode;
 }) {
   return (
     <a
       href={href}
       {...(externo ? { target: "_blank", rel: "noopener noreferrer" } : {})}
-      className="flex w-fit items-center gap-2.5 text-sm transition-colors duration-200 hover:text-white"
+      className="w-fit text-[15px] text-white/78 transition-colors duration-200 hover:text-white"
     >
-      {Icono ? <Icono size={18} className="shrink-0 text-vino-300" /> : null}
       <span className="subrayado">{children}</span>
     </a>
   );

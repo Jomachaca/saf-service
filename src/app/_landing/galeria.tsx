@@ -2,7 +2,7 @@ import Image from "next/image";
 
 import type { Foto } from "@/lib/sitio/contenido";
 
-import { Seccion, paso } from "./piezas";
+import { Encabezado, Esquinas, Seccion, paso } from "./piezas";
 
 /**
  * Tira que se arrastra de lado, con anclaje.
@@ -10,26 +10,32 @@ import { Seccion, paso } from "./piezas";
  * Una retícula obligaría a decidir cuántas fotos entran por fila y dejaría
  * huecos cuando el taller suba tres o cinco. Así entran las que sean, y en el
  * celular se pasan con el dedo, que es como se miran las fotos.
+ *
+ * Cada foto va enmarcada y teñida de acero como las demás del sitio, para que
+ * una tomada a mediodía y otra de tarde se vean de la misma familia.
  */
 export function Galeria({ fotos }: { fotos: Foto[] }) {
   if (fotos.length === 0) return null;
 
   return (
-    <Seccion titulo="El taller por dentro">
-      <ul className="-mx-5 flex snap-x snap-mandatory gap-4 overflow-x-auto px-5 pb-4 md:-mx-8 md:px-8">
+    <Seccion>
+      <Encabezado titulo="El taller por dentro" />
+
+      <ul className="-mx-5 flex snap-x snap-mandatory gap-5 overflow-x-auto px-5 pt-1 pb-4 md:-mx-7 md:px-7">
         {fotos.map((foto, indice) => (
           <li
             key={foto.id}
             style={paso(indice)}
-            className="al-entrar group relative aspect-4/3 w-72 shrink-0 snap-start overflow-hidden rounded-2xl bg-fondo-hondo md:w-96"
+            className="al-entrar plano duotono relative aspect-4/3 w-72 shrink-0 snap-start overflow-hidden md:w-96"
           >
             <Image
               src={foto.url}
               alt={foto.alt}
               fill
               sizes="(min-width: 768px) 24rem, 18rem"
-              className="object-cover transition duration-500 ease-salida group-hover:scale-105"
+              className="object-cover"
             />
+            <Esquinas />
           </li>
         ))}
       </ul>

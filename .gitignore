@@ -40,3 +40,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# el proyecto de diseño que se importó para rehacer el landing: se queda local
+/diseno/

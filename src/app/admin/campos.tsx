@@ -2,6 +2,8 @@
 
 import { useState } from "react";
 
+import { Esquinas } from "../plano";
+
 import { Aviso } from "./componentes";
 
 /**
@@ -15,7 +17,7 @@ import { Aviso } from "./componentes";
  */
 
 export const CLASES_CAMPO =
-  "w-full rounded-lg border border-borde bg-fondo-alto px-3 py-2 text-sm " +
+  "w-full border border-borde-fuerte bg-fondo-alto px-3.5 py-2.5 " +
   "text-tinta placeholder:text-tinta-tenue transition-colors duration-200 " +
   "focus:border-marca focus:outline-none";
 
@@ -40,7 +42,9 @@ export function Campo({
 }) {
   return (
     <label className="flex flex-col gap-1.5">
-      <span className="text-sm font-medium">{etiqueta}</span>
+      <span className="font-display text-xs font-semibold tracking-[0.16em] text-tinta-suave uppercase">
+        {etiqueta}
+      </span>
       {children}
       {ayuda ? <span className="text-xs text-tinta-tenue">{ayuda}</span> : null}
     </label>
@@ -159,9 +163,9 @@ export function Bloque({
   children: React.ReactNode;
 }) {
   return (
-    <section className="rounded-2xl border border-borde bg-fondo-alto p-5 md:p-6">
+    <section className="plano bg-fondo-alto p-5 md:p-6">
       <div className="mb-5 flex flex-col gap-1">
-        <h2 className="font-display text-xl font-semibold uppercase tracking-tight">
+        <h2 className="font-display text-xl font-bold tracking-[0.06em] uppercase">
           {titulo}
         </h2>
         {descripcion ? (
@@ -180,10 +184,10 @@ export function Bloque({
         <button
           type="submit"
           disabled={!sucio || guardando}
-          className={`rounded-lg px-4 py-2 font-display text-sm font-semibold uppercase tracking-wide transition duration-200 ease-salida active:translate-y-px ${
+          className={`border px-4 py-2.5 font-display text-sm font-semibold tracking-[0.09em] uppercase transition duration-200 ease-salida active:translate-y-px ${
             sucio || guardando
-              ? "bg-marca text-sobre-marca hover:bg-marca-viva"
-              : "cursor-not-allowed border border-borde text-tinta-tenue"
+              ? "border-marca bg-marca text-white hover:bg-marca-viva"
+              : "cursor-not-allowed border-borde text-tinta-tenue"
           }`}
         >
           {guardando ? "Guardando…" : sucio ? "Guardar" : "Guardado"}
@@ -191,6 +195,8 @@ export function Bloque({
 
         {error ? <Aviso>{error}</Aviso> : null}
       </div>
+
+      <Esquinas />
     </section>
   );
 }

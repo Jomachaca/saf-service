@@ -12,6 +12,9 @@ const eslintConfig = defineConfig([
     "out/**",
     "build/**",
     "next-env.d.ts",
+    // El proyecto de diseño importado: es material de referencia, no código
+    // del sitio, y no se sube al repositorio.
+    "diseno/**",
   ]),
 ]);
 

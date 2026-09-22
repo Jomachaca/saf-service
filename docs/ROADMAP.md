@@ -255,6 +255,30 @@ mapa armado con la dirección.
   atada donde debe, pero no se las vio moverse. Eso hay que mirarlo en un
   navegador normal.
 
+## Rediseño del sitio
+
+El taller hizo un rediseño aparte y lo entregó como proyecto de diseño. El
+landing se rehízo con él (decisión 33): papel blanco, cantos vivos, marcos de
+plano con marcas de registro, titulares condensados en mayúsculas, fotos en
+duotono, y el logo de verdad en la barra y en el pie.
+
+### Lo verificado
+
+En el navegador, sobre el servidor de desarrollo, a 1280 px y a 355 px, en modo
+claro y oscuro: portada, servicios, «Cómo trabajamos», «El taller», contacto con
+el mapa cargando, pie, y también `/reservar` y `/acceso`, que heredan los
+tokens sin romperse. TypeScript y ESLint pasan.
+
+### Lo que no está verificado
+
+- **`next build`.** El servidor de desarrollo del taller estaba ocupando el
+  puerto y la carpeta `.next`, y lanzar una compilación encima se la habría
+  llevado puesta. Hay que correrlo con el servidor apagado.
+- **El detalle de orden y la recepción, a fondo.** Se revisaron en el
+  navegador y se ven del mismo lenguaje, pero no se rehicieron bloque por
+  bloque como el tablero: el rediseño propone para ellos una columna de
+  bitácora y una ficha de presupuesto que todavía no se armaron.
+
 ## Fase 5 — Fotos e historial
 
 - [ ] Fotos de ingreso (frontal, posterior, laterales, interior, daños)

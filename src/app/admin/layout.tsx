@@ -44,7 +44,7 @@ export default function LayoutAdmin({ children }: LayoutProps<"/admin">) {
         </Suspense>
       </div>
 
-      <Suspense fallback={<div className="h-15 shrink-0 border-t border-white/10" />}>
+      <Suspense fallback={<div className="h-14 shrink-0 border-t border-white/12" />}>
         <Sesion />
       </Suspense>
     </>
@@ -52,20 +52,20 @@ export default function LayoutAdmin({ children }: LayoutProps<"/admin">) {
 
   return (
     <div className="flex min-h-dvh flex-col lg:flex-row">
-      <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-2 bg-estructura px-4 lg:hidden">
+      <header className="sticky top-0 z-40 flex h-14 shrink-0 items-center gap-2 bg-marino-900 px-4 lg:hidden">
         <MenuMovil>{navegacion}</MenuMovil>
         <MarcaPanel />
       </header>
 
-      <aside className="sticky top-0 hidden h-dvh w-60 shrink-0 flex-col border-r border-marino-800 bg-estructura text-sobre-estructura lg:flex dark:border-borde">
-        <div className="flex h-16 shrink-0 items-center px-6">
+      <aside className="sticky top-0 hidden h-dvh w-62 shrink-0 flex-col bg-marino-900 text-sobre-estructura lg:flex">
+        <div className="flex h-21 shrink-0 items-center border-b border-white/12 px-5.5">
           <MarcaPanel />
         </div>
         {navegacion}
       </aside>
 
-      <main className="min-w-0 flex-1 px-4 py-6 sm:px-6 lg:px-8 lg:py-8">
-        <div className="@container mx-auto w-full max-w-6xl">{children}</div>
+      <main className="min-w-0 flex-1 px-4 py-8 sm:px-6 lg:px-9 lg:pt-10 lg:pb-16">
+        <div className="@container mx-auto w-full max-w-[1160px]">{children}</div>
       </main>
     </div>
   );
@@ -77,14 +77,14 @@ async function Sesion() {
   return (
     <form
       action={cerrarSesion}
-      className="flex shrink-0 items-center gap-2 border-t border-white/10 py-3 pr-3 pl-6"
+      className="flex shrink-0 items-center gap-2.5 border-t border-white/12 py-3.5 pr-3.5 pl-5.5"
     >
-      <span className="min-w-0 flex-1 truncate text-sm text-marino-100">{perfil.nombre}</span>
+      <span className="min-w-0 flex-1 truncate text-[15px] text-marino-200">{perfil.nombre}</span>
       <button
         type="submit"
-        className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-sm text-marino-200 transition-colors duration-200 hover:bg-white/10 hover:text-white"
+        className="inline-flex items-center gap-1.5 border border-white/25 px-2.5 py-1.5 font-display text-xs font-semibold tracking-[0.12em] text-marino-200 uppercase transition-colors duration-200 hover:bg-white/10 hover:text-white"
       >
-        <SignOut size={16} />
+        <SignOut size={14} />
         Salir
       </button>
     </form>
@@ -103,7 +103,7 @@ async function AvisoSinPublicar() {
   if (!publicacion || !haySinPublicar(publicacion)) return null;
 
   return (
-    <span className="shrink-0 rounded-full bg-amber-400/15 px-2 py-0.5 text-xs font-medium text-amber-200">
+    <span className="shrink-0 border border-vino-300/45 px-2 py-0.5 font-display text-[10px] font-semibold tracking-[0.14em] text-vino-300 uppercase">
       Sin publicar
     </span>
   );

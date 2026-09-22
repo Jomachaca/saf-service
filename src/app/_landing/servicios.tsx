@@ -3,7 +3,7 @@ import { Engine, Gauge, PaintRoller, Wrench } from "@phosphor-icons/react/dist/s
 import type { ServicioPublico } from "@/lib/sitio/contenido";
 import { CATEGORIAS, ETIQUETA_CATEGORIA } from "@/lib/orden/presupuesto";
 
-import { Seccion, paso } from "./piezas";
+import { Encabezado, Esquinas, Seccion, paso } from "./piezas";
 
 const ICONO_CATEGORIA = {
   MANTENIMIENTO: Wrench,
@@ -13,46 +13,13 @@ const ICONO_CATEGORIA = {
 } as const;
 
 /**
- * Cuatro tonos, dos de marca y dos neutros, para que la retícula tenga peso
- * visual distinto sin usar cuatro colores distintos.
- */
-const TONOS = [
-  {
-    caja: "bg-marino-800 text-white dark:bg-marino-600",
-    pildora: "border-white/25 text-white/85",
-    icono: "text-marino-200",
-  },
-  {
-    caja: "bg-fondo-alto border border-borde",
-    pildora: "border-borde text-tinta-suave",
-    icono: "text-marca",
-  },
-  {
-    caja: "bg-fondo-alto border border-borde",
-    pildora: "border-borde text-tinta-suave",
-    icono: "text-marca",
-  },
-  {
-    caja: "bg-vino-700 text-white dark:bg-vino-600",
-    pildora: "border-white/25 text-white/85",
-    icono: "text-vino-200",
-  },
-] as const;
-
-/**
- * Anchos por cantidad de categorías con servicios activos.
+ * Las cuatro categorías del catálogo, cada una como una ficha de plano: filete,
+ * marcas de registro, el número de la ficha y la lista de servicios separada
+ * por filetes. Sin relleno de color y sin sombra: son dibujos de línea.
  *
- * La retícula es de cinco columnas y cada fila tiene que sumar cinco: si el
- * taller apaga una categoría entera desde el catálogo, la fila se recompone en
- * vez de dejar un hueco.
+ * Una categoría sin servicios activos no se pinta, así que la retícula se
+ * recompone sola cuando el taller apaga una entera desde el catálogo.
  */
-const ANCHOS: Record<number, string[]> = {
-  1: ["md:col-span-5"],
-  2: ["md:col-span-3", "md:col-span-2"],
-  3: ["md:col-span-3", "md:col-span-2", "md:col-span-5"],
-  4: ["md:col-span-3", "md:col-span-2", "md:col-span-2", "md:col-span-3"],
-};
-
 export function Servicios({ servicios }: { servicios: ServicioPublico[] }) {
   const grupos = CATEGORIAS.map((categoria) => ({
     categoria,
@@ -61,41 +28,50 @@ export function Servicios({ servicios }: { servicios: ServicioPublico[] }) {
 
   if (grupos.length === 0) return null;
 
-  const anchos = ANCHOS[grupos.length] ?? grupos.map(() => "md:col-span-5");
-
   return (
-    <Seccion
-      id="servicios"
-      titulo="Servicios"
-      bajada="Trabajamos unidades livianas y pesadas. Si no sabes qué tiene, lo diagnosticamos primero."
-    >
-      <div className="grid gap-4 md:grid-cols-5">
+    <Seccion id="servicios">
+      <Encabezado
+        numero="01"
+        tema="Qué hacemos"
+        titulo="Servicios"
+        bajada="Trabajamos unidades livianas y pesadas. Si no sabes qué tiene, lo diagnosticamos primero."
+        conReglilla
+      />
+
+      <div className="grid gap-5 sm:grid-cols-2 xl:grid-cols-4">
         {grupos.map((grupo, indice) => {
           const Icono = ICONO_CATEGORIA[grupo.categoria];
-          const tono = TONOS[indice % TONOS.length];
 
           return (
             <article
               key={grupo.categoria}
               style={paso(indice)}
-              className={`al-entrar flex flex-col gap-5 rounded-2xl p-6 transition duration-300 ease-salida hover:-translate-y-1 md:p-8 ${anchos[indice]} ${tono.caja}`}
+              className="al-entrar plano group flex min-h-68 flex-col gap-4 bg-fondo p-6 transition duration-300 ease-salida hover:-translate-y-1 hover:border-borde-fuerte"
             >
-              <Icono size={32} weight="duotone" className={tono.icono} />
+              <div className="flex items-start justify-between gap-4">
+                <Icono size={34} className="text-marca" />
+                <span className="font-mono text-[13px] tracking-[0.16em] text-tinta-tenue transition-colors duration-300 group-hover:text-marca">
+                  {`0${indice + 1}`}
+                </span>
+              </div>
 
-              <h3 className="font-display text-2xl font-bold uppercase tracking-tight">
+              <h3 className="font-display text-2xl leading-tight font-bold uppercase">
                 {ETIQUETA_CATEGORIA[grupo.categoria]}
               </h3>
 
-              <ul className="mt-auto flex flex-wrap gap-2">
+              <ul className="mt-auto flex flex-col">
                 {grupo.servicios.map((servicio) => (
                   <li
                     key={servicio.id}
-                    className={`rounded-full border px-3 py-1 text-sm ${tono.pildora}`}
+                    className="flex items-baseline gap-2.5 border-t border-borde py-2.5 text-[15px] text-tinta-suave"
                   >
+                    <span aria-hidden className="size-1 shrink-0 -translate-y-0.5 bg-marca" />
                     {servicio.nombre}
                   </li>
                 ))}
               </ul>
+
+              <Esquinas />
             </article>
           );
         })}

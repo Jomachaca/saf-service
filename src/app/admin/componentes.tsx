@@ -1,26 +1,34 @@
+import Image from "next/image";
 import Link from "next/link";
 
 import { ETIQUETA_ESTADO, type Estado } from "@/lib/orden/estados";
 import { ETIQUETA_UBICACION, type Ubicacion } from "@/lib/orden/ubicacion";
 import { ETIQUETA_ESTADO_RESERVA, type EstadoReserva } from "@/lib/reserva/estados";
 
+const BASE_INSIGNIA =
+  "inline-flex shrink-0 border px-2.5 py-0.5 font-display text-[11px] " +
+  "font-semibold tracking-[0.14em] uppercase";
+
 /**
- * Los colores son los de ARQUITECTURA.md §3. Se escriben completos y no
- * armados por concatenación: Tailwind no ve las clases construidas en runtime.
+ * Una sola escala para los cinco estados, del acero claro al granate, en el
+ * mismo orden en que avanza la orden: así una columna de insignias se lee de
+ * un vistazo y no como cinco colores sueltos (decisión 33). El granate lleno
+ * es «En trabajo», que es lo único que está pasando ahora mismo.
+ *
+ * Se escriben completas y no armadas por concatenación: Tailwind no ve las
+ * clases construidas en tiempo de ejecución.
  */
 const CLASES_ESTADO: Record<Estado, string> = {
-  RECIBIDO: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
-  DIAGNOSTICO: "bg-orange-500/15 text-orange-700 dark:text-orange-300",
-  ESPERANDO_APROBACION: "bg-violet-500/15 text-violet-700 dark:text-violet-300",
-  EN_TRABAJO: "bg-blue-500/15 text-blue-700 dark:text-blue-300",
-  LISTO: "bg-slate-500/15 text-slate-700 dark:text-slate-300",
+  RECIBIDO: "border-marino-400/40 bg-marino-50 text-marino-700",
+  DIAGNOSTICO: "border-marino-400/50 bg-marino-100 text-marino-700",
+  ESPERANDO_APROBACION: "border-vino-500/40 bg-vino-50 text-vino-600",
+  EN_TRABAJO: "border-marca bg-marca text-white",
+  LISTO: "border-borde-fuerte text-tinta-tenue",
 };
 
 export function Insignia({ estado }: { estado: Estado }) {
   return (
-    <span
-      className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${CLASES_ESTADO[estado]}`}
-    >
+    <span className={`${BASE_INSIGNIA} ${CLASES_ESTADO[estado]}`}>
       {ETIQUETA_ESTADO[estado]}
     </span>
   );
@@ -34,12 +42,13 @@ export function Ubicada({
   box?: string | null;
 }) {
   return (
-    <span className="text-xs text-tinta-tenue">
+    <span className="font-mono text-xs tracking-[0.1em] text-tinta-tenue uppercase">
       {ubicacion === "BOX" && box ? box : ETIQUETA_UBICACION[ubicacion]}
     </span>
   );
 }
 
+/** Un bloque dentro de una pantalla: título en versalitas y un filete debajo. */
 export function Seccion({
   titulo,
   accion,
@@ -51,8 +60,8 @@ export function Seccion({
 }) {
   return (
     <section className="flex flex-col gap-3">
-      <div className="flex items-baseline gap-3">
-        <h2 className="font-display text-sm font-semibold uppercase tracking-[0.12em] text-tinta-tenue">
+      <div className="flex flex-wrap items-baseline justify-between gap-x-3 gap-y-1 border-b border-borde pb-2">
+        <h2 className="font-display text-xl font-bold tracking-[0.06em] uppercase">
           {titulo}
         </h2>
         {accion}
@@ -72,11 +81,7 @@ export function EnlaceOrden({
   children?: React.ReactNode;
 }) {
   return (
-    <Link
-      href={`/admin/orden/${id}`}
-      className="underline-offset-4 hover:underline"
-      title={numero}
-    >
+    <Link href={`/admin/orden/${id}`} className="subrayado" title={numero}>
       {children ?? numero}
     </Link>
   );
@@ -84,50 +89,54 @@ export function EnlaceOrden({
 
 export function Aviso({ children }: { children: React.ReactNode }) {
   return (
-    <p role="alert" className="text-sm text-red-600 dark:text-red-400">
+    <p role="alert" className="border-l-2 border-marca pl-3 text-sm text-marca">
       {children}
     </p>
   );
 }
 
-const CLASES_ESTADO_RESERVA: Record<EstadoReserva, string> = {
-  PENDIENTE: "bg-amber-500/15 text-amber-800 dark:text-amber-300",
-  CONFIRMADA: "bg-emerald-500/15 text-emerald-700 dark:text-emerald-300",
-  CONVERTIDA: "bg-marino-500/15 text-marino-700 dark:text-marino-200",
-  NO_ASISTIO: "bg-red-500/15 text-red-700 dark:text-red-300",
-  CANCELADA: "bg-slate-500/15 text-slate-600 dark:text-slate-300",
-};
-
 /**
  * La insignia de la agenda. Una reserva no es una orden (decisión 1), así que
- * tiene su propia escala: ámbar lo que falta confirmar, verde lo confirmado y
- * marino lo que ya se convirtió en orden.
+ * tiene su propia lectura: granate lo que falta confirmar, acero lo confirmado
+ * y acero lleno lo que ya se convirtió en orden.
  */
+const CLASES_ESTADO_RESERVA: Record<EstadoReserva, string> = {
+  PENDIENTE: "border-vino-500/40 bg-vino-50 text-vino-600",
+  CONFIRMADA: "border-marino-400/40 bg-marino-50 text-marino-700",
+  CONVERTIDA: "border-marino-700 bg-marino-700 text-white",
+  NO_ASISTIO: "border-marca text-marca",
+  CANCELADA: "border-borde-fuerte text-tinta-tenue",
+};
+
 export function InsigniaReserva({ estado }: { estado: EstadoReserva }) {
   return (
-    <span
-      className={`inline-flex shrink-0 rounded-full px-2 py-0.5 text-xs font-medium ${CLASES_ESTADO_RESERVA[estado]}`}
-    >
+    <span className={`${BASE_INSIGNIA} ${CLASES_ESTADO_RESERVA[estado]}`}>
       {ETIQUETA_ESTADO_RESERVA[estado]}
     </span>
   );
 }
 
-/** El nombre con el lettering del logo, sobre el marino. Lleva al tablero. */
+/** El logo en blanco al pie de la barra lateral. Lleva al tablero. */
 export function MarcaPanel() {
   return (
-    <Link
-      href="/admin"
-      className="font-display text-xl font-bold uppercase italic tracking-tight text-white"
-    >
-      <span className="text-vino-300">SAF</span> Service
+    <Link href="/admin" className="leading-none">
+      <Image
+        src="/marca/saf-palabra-blanco.webp"
+        alt="SAF Service"
+        width={520}
+        height={168}
+        priority
+        className="h-9 w-auto object-contain"
+      />
     </Link>
   );
 }
 
 /**
- * La cabecera de cada pantalla. `seccion` nombra la entrada de la barra lateral
- * cuando la pantalla es una de sus partes, como las tres de «Sitio web».
+ * La cabecera de cada pantalla: dónde estoy en versalitas, el título en
+ * condensada y un filete que lo separa del contenido. `seccion` nombra la
+ * entrada de la barra lateral cuando la pantalla es una de sus partes, como
+ * las tres de «Sitio web».
  */
 export function Encabezado({
   titulo,
@@ -141,14 +150,22 @@ export function Encabezado({
   acciones?: React.ReactNode;
 }) {
   return (
-    <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3">
+    <div className="flex flex-wrap items-end justify-between gap-x-6 gap-y-3 border-b border-borde-fuerte pb-4">
       <div className="flex max-w-2xl flex-col gap-2">
-        {seccion ? <p className="text-sm font-medium text-tinta-tenue">{seccion}</p> : null}
-        <h1 className="font-display text-3xl leading-none font-bold uppercase tracking-tight">
+        {seccion ? (
+          <p className="flex items-center gap-3 font-display text-[11px] font-semibold tracking-[0.24em] text-marca uppercase">
+            <span aria-hidden className="h-px w-5 bg-marca" />
+            {seccion}
+          </p>
+        ) : null}
+
+        <h1 className="font-display text-[2.6rem] leading-none font-bold uppercase">
           {titulo}
         </h1>
-        {descripcion ? <p className="text-sm text-tinta-suave">{descripcion}</p> : null}
+
+        {descripcion ? <p className="text-tinta-suave">{descripcion}</p> : null}
       </div>
+
       {acciones ? <div className="flex flex-wrap items-center gap-2">{acciones}</div> : null}
     </div>
   );

@@ -261,7 +261,7 @@ export function FormularioReserva({
                       aria-pressed={activa}
                       aria-label={llena ? `${opcion.etiqueta}, lleno` : opcion.etiqueta}
                       onClick={() => setHora(opcion.hora)}
-                      className={`rounded-full border px-3 py-2.5 text-sm font-medium tabular-nums disabled:line-through disabled:opacity-45 ${PULSABLE} ${
+                      className={`border px-3 py-2.5 text-sm font-medium tabular-nums disabled:line-through disabled:opacity-45 ${PULSABLE} ${
                         activa ? ELEGIDO : SIN_ELEGIR
                       }`}
                     >
@@ -324,7 +324,7 @@ export function FormularioReserva({
                   type="button"
                   aria-pressed={tipo === opcion}
                   onClick={() => setTipo(opcion)}
-                  className={`inline-flex items-center gap-2 rounded-full border px-4 py-2.5 text-sm font-medium ${PULSABLE} ${
+                  className={`inline-flex items-center gap-2 border px-4 py-2.5 text-sm font-medium ${PULSABLE} ${
                     tipo === opcion ? ELEGIDO : SIN_ELEGIR
                   }`}
                 >
@@ -565,7 +565,7 @@ function Confirmacion({
             Escribir por WhatsApp
           </Boton>
         ) : null}
-        <Boton href="/" tono="contorno">
+        <Boton href="/" tono="linea">
           Volver al inicio
         </Boton>
       </div>

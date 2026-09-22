@@ -115,7 +115,7 @@ export function FormularioIngreso({
                 type="button"
                 aria-pressed={ubicacion === opcion}
                 onClick={() => setUbicacion(opcion)}
-                className={`rounded-full border px-3 py-1 text-sm ${
+                className={`border px-3 py-1.5 text-sm ${
                   ubicacion === opcion
                     ? "border-marca bg-marca text-sobre-marca"
                     : "border-borde"
@@ -151,7 +151,7 @@ export function FormularioIngreso({
         <button
           type="submit"
           disabled={enviando || (!elegido && !esNuevo)}
-          className="rounded-lg bg-marca px-4 py-2 font-medium text-sobre-marca disabled:opacity-50"
+          className="border border-marca bg-marca px-4 py-2.5 font-display text-sm font-semibold tracking-[0.09em] text-white uppercase transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px disabled:opacity-50"
         >
           {enviando ? "Creando orden…" : "Crear orden"}
         </button>
@@ -237,7 +237,7 @@ function MotivoConAtajos({ inicial }: { inicial: string }) {
               setMotivo(atajo);
               campo.current?.focus();
             }}
-            className="rounded-full border border-borde px-3 py-1 text-xs hover:border-borde-fuerte"
+            className="border border-borde px-3 py-1.5 text-xs transition-colors duration-200 hover:border-borde-fuerte"
           >
             {atajo}
           </button>

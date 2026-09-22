@@ -281,7 +281,7 @@ export function EditorPresupuesto({
             <button
               type="submit"
               disabled={enviando}
-              className="rounded-lg bg-marca px-3 py-1.5 text-sm font-medium text-sobre-marca disabled:opacity-50"
+              className="border border-marca bg-marca px-3.5 py-2 font-display text-xs font-semibold tracking-[0.09em] text-white uppercase transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px disabled:opacity-50"
             >
               {enviando ? "Emitiendo…" : "Emitir presupuesto"}
             </button>

@@ -35,13 +35,19 @@ La reserva es opcional y desechable. La orden es lo que importa.
 
 ### Estados de v1 (cinco)
 
-| Estado | Color | Significado |
+Desde la decisión 33 los cinco no llevan cinco colores sueltos, sino una sola
+escala que va del acero al granate en el mismo orden en que avanza la orden.
+El granate lleno es lo único que está pasando ahora mismo, y lo terminado se
+apaga a un filete sin relleno. Así una columna de insignias se lee de un
+vistazo.
+
+| Estado | Insignia | Significado |
 |---|---|---|
-| `RECIBIDO` | 🟢 verde | El vehículo llegó y está registrado |
-| `DIAGNOSTICO` | 🟠 naranja | El mecánico está revisando |
-| `ESPERANDO_APROBACION` | 🟣 morado | Presupuesto enviado, falta decisión del cliente |
-| `EN_TRABAJO` | 🔵 azul | Trabajo aprobado y en ejecución |
-| `LISTO` | ⚫ gris | Terminado; incluye esperando recojo y entregado |
+| `RECIBIDO` | acero claro | El vehículo llegó y está registrado |
+| `DIAGNOSTICO` | acero | El mecánico está revisando |
+| `ESPERANDO_APROBACION` | granate claro | Presupuesto enviado, falta decisión del cliente |
+| `EN_TRABAJO` | granate lleno | Trabajo aprobado y en ejecución |
+| `LISTO` | solo filete | Terminado; incluye esperando recojo y entregado |
 
 ### Transiciones válidas
 

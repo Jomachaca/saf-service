@@ -578,3 +578,52 @@ carrusel vacío no es un carrusel.
   el pie de la barra lateral del panel y abajo a la derecha tapa la burbuja.
 
 ---
+
+## 33. El sitio pasa al lenguaje de plano técnico
+
+**Decisión:** el landing se rehace con el rediseño que trajo el taller, hecho
+aparte en Claude Design. El fondo pasa a papel blanco, los radios se van a
+cero, los titulares crecen en Barlow Condensed 700 en mayúsculas, y todo lo que
+es un objeto —tarjetas, figuras y el botón primario— se dibuja como una pieza
+de plano: filete de un pixel y cuatro marcas de registro «+» fuera de la caja.
+Las fotos entran en duotono de acero.
+
+**Descartado:** la paleta del sistema «Industry» del que salió el rediseño, que
+es azul acero monocromo; y cambiar los íconos a Lucide, que es lo que ese
+sistema pide.
+
+**Por qué:** el granate y el marino salen del logo y son del taller, no de un
+tema; la hoja de entrega del rediseño ya venía con esa corrección hecha y es la
+que se usó. Los íconos se quedan en Phosphor porque el catálogo de destacados
+(decisión 11) está escrito contra esa librería y mezclar dos familias de íconos
+en la misma aplicación se nota más que la diferencia de trazo entre una y otra.
+
+**Consecuencias:**
+
+- `--radius-*` vale cero en `@theme`, así que los `rounded-lg` y
+  `rounded-2xl` que ya estaban escritos quedan cuadrados solos, en el sitio y
+  en el panel. `rounded-full` sigue vivo: las píldoras de estado siguen
+  siendo píldoras.
+- Clases nuevas en `globals.css`: `.plano` con sus `.esquina`, `.reglilla`,
+  `.duotono`. Y dos que cambiaron de nombre: `.trama-neumatico` es `.huella` y
+  `.pulso` es `.llama` (con `.llama-b` para desfasar el segundo botón).
+- El logo del taller viaja en el repositorio, en `public/marca/`, en versión de
+  tinta y en blanca. Un logo cargado desde «Sitio web» le sigue ganando.
+- Del rediseño quedaron fuera dos bloques: la banda de cuatro cifras bajo la
+  portada («+12 años», «5 boxes»…) y las marcas de vehículos en «El taller».
+  Los dos piden datos que el CMS no tiene, y el landing no inventa datos del
+  negocio. Entran cuando haya campo en el panel para escribirlos.
+- El panel entró después, por sus piezas compartidas: la barra lateral con
+  filete de marca en la entrada encendida, las cabeceras con su versalita y su
+  filete, los bloques de configuración como marcos de plano, los campos con
+  etiqueta en versalitas, y el tablero con las cifras en condensada sobre una
+  retícula de filetes. Las cinco insignias de estado dejaron los colores
+  sueltos por una sola escala de acero a granate.
+- `/reservar`, `/acceso` y la vista pública de la orden heredan los tokens
+  —papel, cantos vivos, titulares condensados— y no se rehicieron pantalla por
+  pantalla: con el sistema cambiado ya se leen del mismo lenguaje.
+- La carpeta `diseno/` con el proyecto importado se queda fuera del
+  repositorio (está en `.gitignore` y fuera de ESLint): es material de
+  referencia, no código del sitio.
+
+---

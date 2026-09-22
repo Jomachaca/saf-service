@@ -6,6 +6,8 @@ import { iniciarSesion, type EstadoAcceso } from "./acciones";
 
 const ESTADO_INICIAL: EstadoAcceso = { error: null };
 
+const CLASES_INPUT = "w-full rounded-lg border border-borde bg-fondo-alto px-3 py-2";
+
 export function FormularioAcceso() {
   const [estado, accion, enviando] = useActionState(iniciarSesion, ESTADO_INICIAL);
 
@@ -24,8 +26,9 @@ export function FormularioAcceso() {
           value={email}
           onChange={(evento) => setEmail(evento.target.value)}
           autoComplete="username"
+          autoFocus
           required
-          className="rounded-lg border border-borde px-3 py-2"
+          className={CLASES_INPUT}
         />
       </label>
 
@@ -36,7 +39,7 @@ export function FormularioAcceso() {
           type="password"
           autoComplete="current-password"
           required
-          className="rounded-lg border border-borde px-3 py-2"
+          className={CLASES_INPUT}
         />
       </label>
 
@@ -49,7 +52,7 @@ export function FormularioAcceso() {
       <button
         type="submit"
         disabled={enviando}
-        className="rounded-lg bg-marca px-4 py-2 font-medium text-sobre-marca disabled:opacity-60"
+        className="mt-1 rounded-lg bg-marca px-4 py-2.5 font-display text-sm font-semibold uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px disabled:opacity-60"
       >
         {enviando ? "Entrando…" : "Entrar"}
       </button>

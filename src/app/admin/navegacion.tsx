@@ -68,13 +68,20 @@ export function EnlacesPanel({
   avisoSitio: React.ReactNode;
 }) {
   return (
-    <nav aria-label="Secciones del panel" className="flex flex-col px-3 py-4">
-      <Grupo entradas={DIA_A_DIA} ruta={ruta} avisoSitio={avisoSitio} />
+    <nav aria-label="Secciones del panel" className="flex flex-col gap-6 px-3.5 py-5">
+      <div className="flex flex-col gap-2.5">
+        <h2 className="px-2.5 font-display text-[11px] font-semibold tracking-[0.24em] text-marino-400 uppercase">
+          Día a día
+        </h2>
+        <Grupo entradas={DIA_A_DIA} ruta={ruta} avisoSitio={avisoSitio} />
+      </div>
 
-      <h2 className="mt-6 mb-2 px-3 font-display text-xs font-semibold uppercase tracking-[0.14em] text-marino-300">
-        Configuración
-      </h2>
-      <Grupo entradas={CONFIGURACION} ruta={ruta} avisoSitio={avisoSitio} />
+      <div className="flex flex-col gap-2.5">
+        <h2 className="px-2.5 font-display text-[11px] font-semibold tracking-[0.24em] text-marino-400 uppercase">
+          Configuración
+        </h2>
+        <Grupo entradas={CONFIGURACION} ruta={ruta} avisoSitio={avisoSitio} />
+      </div>
     </nav>
   );
 }
@@ -103,16 +110,15 @@ function Grupo({
             <Link
               href={href}
               aria-current={activa ? (partes ? "true" : "page") : undefined}
-              className={`flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors duration-200 ${
+              className={`flex items-center gap-3 border-l-2 px-3 py-2.5 font-display text-[15px] font-semibold tracking-[0.09em] uppercase transition-colors duration-200 ${
                 activa
-                  ? "bg-white/10 text-white"
-                  : "text-marino-200 hover:bg-white/5 hover:text-white"
+                  ? "border-marca bg-white/8 text-white"
+                  : "border-transparent text-marino-300 hover:bg-white/5 hover:text-white"
               }`}
             >
               <Icono
-                size={20}
-                weight={activa ? "fill" : "regular"}
-                className={activa ? "text-vino-300" : "text-marino-300"}
+                size={18}
+                className={activa ? "text-vino-300" : "text-marino-400"}
               />
               <span className="min-w-0 flex-1 truncate">{texto}</span>
               {href === "/admin/sitio" ? avisoSitio : null}
@@ -132,10 +138,10 @@ function Grupo({
                       <Link
                         href={parte.href}
                         aria-current={actual ? "page" : undefined}
-                        className={`block rounded-lg px-3 py-1.5 text-sm transition-colors duration-200 ${
+                        className={`block px-3 py-1.5 text-sm transition-colors duration-200 ${
                           actual
-                            ? "bg-white/10 font-medium text-white"
-                            : "text-marino-200 hover:text-white"
+                            ? "bg-white/8 font-medium text-white"
+                            : "text-marino-300 hover:text-white"
                         }`}
                       >
                         {parte.texto}
@@ -179,7 +185,7 @@ export function MenuMovil({ children }: { children: React.ReactNode }) {
         onClick={() => cajon.current?.showModal()}
         aria-label="Abrir menú"
         aria-haspopup="dialog"
-        className="-ml-2 rounded-lg p-2 text-white transition-colors duration-200 hover:bg-white/10"
+        className="-ml-2 p-2 text-white transition-colors duration-200 hover:bg-white/10"
       >
         <List size={24} />
       </button>
@@ -196,7 +202,7 @@ export function MenuMovil({ children }: { children: React.ReactNode }) {
             evento.currentTarget.close();
           }
         }}
-        className="cajon fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-72 max-w-[85vw] border-0 bg-estructura p-0 text-sobre-estructura backdrop:bg-marino-900/60"
+        className="cajon fixed inset-y-0 left-0 m-0 h-dvh max-h-none w-72 max-w-[85vw] border-0 bg-marino-900 p-0 text-sobre-estructura backdrop:bg-marino-900/70"
       >
         <div className="flex h-full flex-col">
           <div className="flex h-14 shrink-0 items-center justify-between border-b border-white/10 px-4">
@@ -205,7 +211,7 @@ export function MenuMovil({ children }: { children: React.ReactNode }) {
               type="button"
               onClick={() => cajon.current?.close()}
               aria-label="Cerrar menú"
-              className="-mr-2 rounded-lg p-2 text-white transition-colors duration-200 hover:bg-white/10"
+              className="-mr-2 p-2 text-white transition-colors duration-200 hover:bg-white/10"
             >
               <X size={22} />
             </button>

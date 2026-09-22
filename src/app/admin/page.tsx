@@ -26,7 +26,7 @@ export default function PaginaTablero() {
         acciones={
           <Link
             href="/admin/ingreso"
-            className="rounded-lg bg-marca px-4 py-2 font-display text-sm font-semibold uppercase tracking-wide text-sobre-marca transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px"
+            className="border border-marca bg-marca px-4 py-2.5 font-display text-sm font-semibold tracking-[0.09em] text-white uppercase transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px"
           >
             Recibir vehículo
           </Link>
@@ -54,16 +54,15 @@ async function Contenido() {
   return (
     <>
       <Seccion titulo="Resumen">
-        <dl className="flex flex-wrap gap-2">
+        <dl className="grid grid-cols-2 gap-px border border-borde bg-borde @xl:grid-cols-4">
           {(Object.keys(contadores) as Estado[])
             .filter((estado) => estado !== "LISTO")
             .map((estado) => (
-              <div
-                key={estado}
-                className="flex min-w-28 flex-col gap-1 rounded-lg border border-borde bg-fondo-alto px-3 py-2"
-              >
-                <dt className="text-xs text-tinta-tenue">{ETIQUETA_ESTADO[estado]}</dt>
-                <dd className="text-xl font-semibold tabular-nums">
+              <div key={estado} className="flex flex-col gap-1.5 bg-fondo-alto px-4 py-4">
+                <dt className="font-display text-[11px] font-semibold tracking-[0.2em] text-tinta-tenue uppercase">
+                  {ETIQUETA_ESTADO[estado]}
+                </dt>
+                <dd className="font-display text-[2.4rem] leading-none font-bold tabular-nums">
                   {contadores[estado]}
                 </dd>
               </div>
@@ -72,22 +71,24 @@ async function Contenido() {
       </Seccion>
 
       <Seccion titulo="Espacios">
-        <ul className="grid grid-cols-2 gap-3 @xl:grid-cols-3 @4xl:grid-cols-5">
+        <ul className="grid grid-cols-2 gap-2.5 @xl:grid-cols-3 @4xl:grid-cols-5">
           {boxes.map((box) => {
             const orden = ocupacion.get(box.id);
 
             return (
               <li
                 key={box.id}
-                className={`flex flex-col items-start gap-1.5 rounded-lg border p-3 ${
-                  orden
-                    ? "border-borde-fuerte bg-fondo-alto"
-                    : "border-dashed border-borde"
+                className={`flex min-h-26 flex-col items-start gap-2 border bg-fondo-alto p-3.5 ${
+                  orden ? "border-borde-fuerte" : "border-borde"
                 } ${box.activo ? "" : "opacity-40"}`}
               >
                 <div className="flex w-full items-baseline justify-between gap-2">
-                  <span className="text-sm font-medium">{box.nombre}</span>
-                  <span className="text-xs text-tinta-tenue">{box.tipo}</span>
+                  <span className="font-display font-bold tracking-[0.06em] uppercase">
+                    {box.nombre}
+                  </span>
+                  <span className="font-display text-[10px] font-semibold tracking-[0.16em] text-tinta-tenue uppercase">
+                    {box.tipo}
+                  </span>
                 </div>
 
                 {orden ? (
@@ -98,7 +99,9 @@ async function Contenido() {
                     <Insignia estado={orden.estado} />
                   </>
                 ) : (
-                  <span className="text-sm text-tinta-tenue">Libre</span>
+                  <span className="font-display text-sm font-semibold tracking-[0.14em] text-tinta-tenue uppercase">
+                    Libre
+                  </span>
                 )}
               </li>
             );

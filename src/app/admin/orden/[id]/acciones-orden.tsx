@@ -48,7 +48,7 @@ export function CambiarEstado({
             name="estado_nuevo"
             value={destino}
             disabled={enviando}
-            className="rounded-lg bg-marca px-3 py-1.5 text-sm font-medium text-sobre-marca disabled:opacity-50"
+            className="border border-marca bg-marca px-3.5 py-2 font-display text-xs font-semibold tracking-[0.09em] text-white uppercase transition duration-200 ease-salida hover:bg-marca-viva active:translate-y-px disabled:opacity-50"
           >
             Pasar a {ETIQUETA_ESTADO[destino].toLowerCase()}
           </button>
@@ -98,7 +98,7 @@ export function MoverVehiculo({
             type="button"
             aria-pressed={destino === opcion}
             onClick={() => setDestino(opcion)}
-            className={`rounded-full border px-3 py-1 text-sm ${
+            className={`border px-3 py-1.5 text-sm ${
               destino === opcion
                 ? "border-marca bg-marca text-sobre-marca"
                 : "border-borde"

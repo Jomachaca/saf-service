@@ -1,6 +1,6 @@
 import type { Nosotros } from "@/lib/sitio/contenido";
 
-import { MarcoFoto, Seccion, paso } from "./piezas";
+import { MarcoFoto, Seccion } from "./piezas";
 
 /**
  * Quiénes son, con la foto del taller al lado. El texto sale del panel y puede
@@ -12,18 +12,21 @@ export function Taller({ nosotros }: { nosotros: Nosotros }) {
 
   return (
     <Seccion id="taller">
-      <div className="grid items-center gap-10 md:grid-cols-2 md:gap-14">
-        <div className="al-entrar order-2 md:order-1">
-          <MarcoFoto
-            url={nosotros.imagenUrl}
-            alt="Interior del taller"
-            proporcion="aspect-5/4"
-            tamanos="(min-width: 768px) 45vw, 100vw"
-          />
-        </div>
+      <div className="grid items-center gap-12 lg:grid-cols-2 lg:gap-14">
+        <MarcoFoto
+          url={nosotros.imagenUrl}
+          alt="Interior del taller"
+          proporcion="aspect-5/4"
+          tamanos="(min-width: 1024px) 45vw, 100vw"
+        />
 
-        <div className="al-entrar order-1 flex flex-col gap-5 md:order-2" style={paso(1)}>
-          <h2 className="font-display text-3xl font-bold uppercase tracking-tight md:text-4xl">
+        <div className="al-entrar flex flex-col gap-5" style={{ "--paso": 1 } as React.CSSProperties}>
+          <p className="flex items-center gap-3.5 font-display text-xs font-semibold tracking-[0.24em] text-marca uppercase">
+            <span aria-hidden className="h-px w-6 bg-marca" />
+            03 · Quiénes somos
+          </p>
+
+          <h2 className="font-display text-[clamp(2.125rem,4vw,3.25rem)] leading-none font-bold uppercase">
             {nosotros.titulo || "El taller"}
           </h2>
 

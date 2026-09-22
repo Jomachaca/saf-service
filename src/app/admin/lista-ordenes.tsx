@@ -57,9 +57,12 @@ export function ListaOrdenes({
             : "Ninguna orden en ese estado."}
         </p>
       ) : (
-        <ul className="flex flex-col divide-y divide-borde">
+        <ul className="flex flex-col border-t border-borde">
           {visibles.map((orden) => (
-            <li key={orden.id} className="flex flex-wrap items-center gap-x-3 gap-y-1 py-2.5">
+            <li
+              key={orden.id}
+              className="flex flex-wrap items-center gap-x-3 gap-y-1 border-b border-borde px-1 py-3 transition-colors duration-200 hover:bg-fondo-hondo"
+            >
               <Insignia estado={orden.estado} />
 
               <EnlaceOrden id={orden.id} numero={orden.numero}>
@@ -104,10 +107,10 @@ function Chip({
       type="button"
       onClick={onClick}
       aria-pressed={activo}
-      className={`rounded-full border px-3 py-1 text-xs transition ${
+      className={`border px-3 py-1.5 font-display text-[11px] font-semibold tracking-[0.14em] uppercase transition duration-200 ${
         activo
-          ? "border-marca bg-marca text-sobre-marca"
-          : "border-borde hover:border-borde-fuerte"
+          ? "border-marca bg-marca text-white"
+          : "border-borde text-tinta-suave hover:border-borde-fuerte hover:text-tinta"
       }`}
     >
       {children}

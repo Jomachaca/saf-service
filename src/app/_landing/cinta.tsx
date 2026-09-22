@@ -21,12 +21,12 @@ export function Cinta({ servicios }: { servicios: ServicioPublico[] }) {
 
   // Velocidad pareja: más servicios, riel más largo, vuelta más lenta. Con una
   // duración fija, un catálogo grande pasaría volando.
-  const duracion = `${Math.round(nombres.length * 3.5)}s`;
+  const duracion = `${Math.round(nombres.length * 3.8)}s`;
 
   return (
     <div
       aria-hidden
-      className="cinta border-y border-borde bg-fondo-alto py-4"
+      className="cinta border-b border-borde bg-fondo py-4"
       style={{ "--duracion": duracion } as React.CSSProperties}
     >
       <div className="marquesina">
@@ -43,10 +43,10 @@ function Tira({ nombres }: { nombres: string[] }) {
       {nombres.map((nombre, indice) => (
         <li
           key={`${nombre}-${indice}`}
-          className="flex shrink-0 items-center gap-6 pe-6 font-display text-lg font-semibold tracking-wide text-tinta-suave uppercase md:gap-8 md:pe-8 md:text-xl"
+          className="flex shrink-0 items-center gap-6 pe-6 font-display text-lg font-semibold tracking-[0.09em] text-marino-400 uppercase md:text-xl"
         >
           {nombre}
-          <span className="h-4 w-px shrink-0 bg-borde-fuerte" />
+          <span className="size-[5px] shrink-0 bg-marca" />
         </li>
       ))}
     </ul>
