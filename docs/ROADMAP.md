@@ -102,7 +102,7 @@ solo al nuevo: React resetea el formulario antes de ejecutar la acción, así qu
 un error devolvía la pantalla en blanco de lo que se había escrito. En la
 recepción eso significaba perder los siete campos de un vehículo nuevo por una
 placa repetida, y —peor— enviar una ubicación distinta de la que se veía
-marcada. Está arreglado y explicado en `CLAUDE.md`.
+marcada. Está arreglado, y el porqué quedó anotado en las convenciones del proyecto.
 
 Sigue sin recorrerse con una sesión real el flujo de diagnóstico y presupuesto.
 

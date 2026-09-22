@@ -44,6 +44,10 @@ next-env.d.ts
 # el proyecto de diseño que se importó para rehacer el landing: se queda local
 /diseno/
 
-# Configuración local del asistente. Se queda en la máquina: no es del
-# proyecto y no tiene por qué aparecer en el repositorio público.
+# Configuración y contexto del asistente. Se quedan en la máquina: no son del
+# proyecto y no tienen por qué aparecer en el repositorio público.
+# AGENTS.md lo reescribe `next dev` en cada arranque, así que se ignora en vez
+# de borrarse: volvería igual.
 /.claude/
+/CLAUDE.md
+/AGENTS.md
