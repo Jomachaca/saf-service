@@ -77,11 +77,14 @@ const CAMPOS_RESERVA = `
 `;
 
 export type Agenda = {
-  /** De hoy en adelante y en todos los estados: hoy también muestra lo ya resuelto. */
-  proximas: ReservaAgenda[];
+  /** Las de la semana que se está mirando, en todos los estados. */
+  semana: ReservaAgenda[];
   /** De días pasados que nadie cerró. Siguen contando como cupo ocupado. */
   sinCerrar: ReservaAgenda[];
+  /** Los días cerrados que caen dentro de la semana. */
   cerrados: { fecha: string; motivo: string }[];
+  /** El horario completo: de él salen las filas de la cuadrícula. */
+  franjas: Franja[];
   activas: boolean;
   hayHorario: boolean;
   plantilla: string;
@@ -89,14 +92,26 @@ export type Agenda = {
   error: string | null;
 };
 
-export async function cargarAgenda(hoy: string): Promise<Agenda> {
+/**
+ * La agenda de una semana.
+ *
+ * `hoy` no acota la ventana —eso lo hacen `desde` y `hasta`— sino que separa lo
+ * que quedó sin cerrar, que es de días pasados y se muestre la semana que se
+ * muestre.
+ */
+export async function cargarAgenda(
+  hoy: string,
+  desde: string,
+  hasta: string,
+): Promise<Agenda> {
   const supabase = await crearClienteServidor();
 
-  const [proximas, sinCerrar, cerrados, franjas, config] = await Promise.all([
+  const [semana, sinCerrar, cerrados, franjas, config] = await Promise.all([
     supabase
       .from("reserva")
       .select(CAMPOS_RESERVA)
-      .gte("fecha", hoy)
+      .gte("fecha", desde)
+      .lte("fecha", hasta)
       .order("fecha")
       .order("hora")
       .order("creado_en")
@@ -109,8 +124,13 @@ export async function cargarAgenda(hoy: string): Promise<Agenda> {
       .order("fecha")
       .order("hora")
       .overrideTypes<ReservaAgenda[]>(),
-    supabase.from("dia_cerrado").select("fecha, motivo").gte("fecha", hoy).order("fecha"),
-    supabase.from("franja").select("dia_semana", { count: "exact", head: true }),
+    supabase
+      .from("dia_cerrado")
+      .select("fecha, motivo")
+      .gte("fecha", desde)
+      .lte("fecha", hasta)
+      .order("fecha"),
+    supabase.from("franja").select("dia_semana, hora, cupos").order("hora").order("dia_semana"),
     supabase
       .from("config_sitio")
       .select("reservas_activas, plantillas_mensaje, nombre_taller, direccion")
@@ -118,15 +138,17 @@ export async function cargarAgenda(hoy: string): Promise<Agenda> {
       .maybeSingle(),
   ]);
 
-  const error = proximas.error ?? sinCerrar.error ?? cerrados.error ?? config.error;
+  const error = semana.error ?? sinCerrar.error ?? cerrados.error ?? config.error;
   const plantillas = (config.data?.plantillas_mensaje ?? {}) as Record<string, string>;
+  const horario = franjas.data ?? [];
 
   return {
-    proximas: proximas.data ?? [],
+    semana: semana.data ?? [],
     sinCerrar: sinCerrar.data ?? [],
     cerrados: cerrados.data ?? [],
+    franjas: horario,
     activas: config.data?.reservas_activas ?? false,
-    hayHorario: (franjas.count ?? 0) > 0,
+    hayHorario: horario.length > 0,
     plantilla: plantillas.reserva || PLANTILLA_RESERVA,
     taller: {
       nombre: config.data?.nombre_taller ?? "SAF Service",

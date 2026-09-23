@@ -646,3 +646,59 @@ en la misma aplicación se nota más que la diferencia de trazo entre una y otra
   referencia, no código del sitio.
 
 ---
+
+## 34. La agenda es un calendario semanal, y las acciones viven en la lámina
+
+**Decidido.** La agenda se mira por semanas completas, de lunes a domingo, en
+una cuadrícula: las horas del horario del taller son las filas y cada día una
+columna. La semana viaja en la dirección (`?desde=`). Una reserva se lee en
+tres pasos —la cita, la ficha que se asoma al pasar el mouse, la lámina— y
+todo lo que cambia el estado de una reserva vive en la lámina.
+
+**Por qué.**
+
+Era una lista de días, uno debajo del otro, con los botones de confirmar,
+cancelar y «no asistió» en cada fila. Funcionaba, pero contestaba mal la
+pregunta con la que se abre la agenda: *cómo viene la semana*. En una lista
+eso hay que reconstruirlo leyendo y sumando; en una cuadrícula se ve de un
+vistazo qué día está cargado, qué mañana está libre y dónde hay un hueco a las
+once. Es la forma que ya tiene aprendida cualquiera que haya usado un
+calendario, y el taller no tiene por qué aprender otra.
+
+Partir la lectura en tres pasos no es decoración: es lo que permite que la
+casilla sea chica. Una casilla de 90 px no puede decir nombre, vehículo, placa,
+motivo y estado; la ficha que se asoma sí, y sin sacar a nadie de la semana.
+
+**Que la cuadrícula no actúe es la mitad de la decisión.** Los botones estaban
+en la fila porque la fila era ancha. En una casilla de 90 px, un «cancelar» a
+un clic de distancia es un accidente esperando. Cancelar y «no asistió» no
+tienen vuelta atrás (decisión 28 y `estados.ts`), así que ahora hay que abrir
+la lámina y, dentro, confirmar: dos gestos deliberados en vez de uno
+distraído. Confirmar sigue siendo de un clic, porque se puede confirmar y
+después cancelar.
+
+**Fuera del horario no es lo mismo que libre.** Las horas en que el taller no
+atiende ese día y los días cerrados van rayados, no vacíos: en una hora vacía
+hay cupo que ofrecer, y en una rayada no. El horario sale de la tabla `franja`
+y el rayado de la clase `.tramado`.
+
+**Las filas incluyen las horas de las reservas ya tomadas**, aunque ya no estén
+en el horario. Si el taller mueve su horario, una reserva vieja podría caer en
+una hora que ya no se ofrece, y tiene que seguir viéndose: una reserva que
+existe no desaparece de la pantalla porque cambió una configuración.
+
+**Lo que quedó sin cerrar se muestra arriba, pero solo si no está a la vista.**
+Es el recordatorio de lo que ya se debió decidir; si esa reserva cae dentro de
+la semana que se está mirando, ya está en su casilla y repetirla sería la misma
+reserva dos veces en la misma pantalla.
+
+**Descartado:** guardar la semana en el estado del componente. Con la fecha en
+la dirección, la flecha de «atrás» funciona, una semana se puede dejar abierta
+en otra pestaña y el enlace se puede pasar. Es el mismo criterio de la
+decisión 22: lo que define qué se ve, se ve en la URL.
+
+**Descartado:** hacer la cuadrícula desplazable a lo ancho en pantallas
+angostas. El contenedor con desplazamiento recortaría la ficha que se asoma, y
+la ficha es lo que hace legible una casilla chica. En su lugar, debajo de
+`@2xl` la cuadrícula se va y quedan los días apilados en listas, donde hay
+ancho para decirlo todo y la cita se abre tocándola.

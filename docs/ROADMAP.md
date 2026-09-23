@@ -366,6 +366,29 @@ funciones que usa el panel, así que cada una queda con su bitácora de verdad.
 `node scripts/datos-prueba.js quitar` borra exactamente eso y nada más: busca
 por las placas y los teléfonos que él mismo escribió.
 
+### La agenda como calendario
+
+La agenda dejó de ser una lista de días y pasó a ser una cuadrícula semanal:
+las horas del horario son las filas, los siete días del lunes al domingo son
+las columnas y cada reserva cae en su casilla. La semana viaja en la dirección
+(`?desde=`), así que la flecha de «atrás» del navegador funciona. Lo que está
+fuera del horario del taller y los días cerrados van rayados, que no es lo
+mismo que una hora libre.
+
+La reserva se lee en tres pasos: la cita dice el nombre, al pasar el mouse por
+encima se asoma una ficha con vehículo, placa, motivo y estado, y de ahí sale
+la lámina —un `<dialog>` modal— donde está todo y viven las acciones. La
+cuadrícula no actúa: no hay un «cancelar» al alcance de un clic distraído
+sobre una casilla de 90 px. Donde la columna del panel no da para siete
+columnas, los mismos días se apilan en listas y la cita se abre tocándola.
+
+Verificado en el navegador con los datos de prueba: siete columnas de 93 px en
+una columna de panel de 706, la ficha entra a opacidad 1 con el foco puesto en
+la cita y su botón recibe el mouse, la lámina abre centrada y bloquea el
+desplazamiento de atrás, cerrarla vacía su contenido, la pregunta de «¿seguro?»
+arma el `submit` con `estado_nuevo=CANCELADA` y volver atrás no toca la base, y
+a 375 px la cuadrícula desaparece y quedan las listas sin desborde horizontal.
+
 ### Lo que no está verificado
 
 - **El movimiento, visto moverse.** El navegador que usa el asistente fuerza

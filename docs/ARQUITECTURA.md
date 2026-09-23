@@ -255,7 +255,7 @@ Misma tabla, mismo formulario. El catálogo es solo autocompletado.
 /admin                  tablero: resumen + boxes + órdenes activas
 /admin/ingreso          recepción rápida (flujo de 6 pasos); ?reserva={id} la prellena
 /admin/orden/{id}       detalle: diagnóstico, presupuesto, fotos, eventos
-/admin/agenda           de hoy en adelante, más las que quedaron sin cerrar
+/admin/agenda           calendario semanal; ?desde={fecha} elige la semana
 /admin/reservas         interruptor de reservas, cupos por día y hora, días cerrados
 /admin/catalogo         servicios, precios y duraciones; IGV y mensaje del presupuesto
 /admin/sitio            CMS del landing: datos y contacto, horario de atención

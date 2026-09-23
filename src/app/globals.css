@@ -234,6 +234,20 @@ body {
   }
 
   /*
+    ── Tramado ─────────────────────────────────────────────────────────────
+    El rayado diagonal del papel de plano: lo que está fuera de juego. En la
+    agenda tapa las horas en que el taller no atiende y los días cerrados,
+    que no son lo mismo que una hora libre.
+  */
+  .tramado {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      color-mix(in oklab, var(--tinta) 8%, transparent) 0 1px,
+      transparent 1px 7px
+    );
+  }
+
+  /*
     ── Duotono ─────────────────────────────────────────────────────────────
     Las fotos entran en blanco y negro y se tiñen de acero, como una
     serigrafía a dos tintas. Así una foto de celular tomada a mediodía y otra
@@ -481,5 +495,44 @@ body {
 
 /* Con el cajón abierto, lo de atrás no se desplaza. */
 body:has(.cajon[open]) {
+  overflow: hidden;
+}
+
+/*
+  La lámina: el <dialog> modal que se abre en el medio, con el detalle de una
+  reserva. Mismo trato que el cajón —el navegador atrapa el foco, cierra con
+  Escape y deja inerte lo de atrás—, pero entra subiendo, como una hoja que se
+  pone encima de la mesa.
+*/
+.lamina,
+.lamina::backdrop {
+  transition:
+    opacity 0.28s var(--ease-salida),
+    translate 0.28s var(--ease-salida),
+    overlay 0.28s allow-discrete,
+    display 0.28s allow-discrete;
+}
+
+.lamina:not([open]) {
+  opacity: 0;
+  translate: 0 14px;
+}
+
+.lamina:not([open])::backdrop {
+  opacity: 0;
+}
+
+@starting-style {
+  .lamina[open] {
+    opacity: 0;
+    translate: 0 14px;
+  }
+
+  .lamina[open]::backdrop {
+    opacity: 0;
+  }
+}
+
+body:has(.lamina[open]) {
   overflow: hidden;
 }

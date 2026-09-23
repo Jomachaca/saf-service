@@ -157,6 +157,28 @@ export function InsigniaReserva({ estado }: { estado: EstadoReserva }) {
   );
 }
 
+/**
+ * La misma lectura de la insignia, en la cita de la cuadrícula de la agenda.
+ * Ahí el color no acompaña a un texto que ya dice el estado: es lo único que lo
+ * dice, así que el relleno pesa más y el filete de la izquierda lo remarca.
+ */
+export const CITA_ESTADO_RESERVA: Record<EstadoReserva, string> = {
+  PENDIENTE: "border-vino-300 bg-vino-50 text-vino-700 hover:border-marca",
+  CONFIRMADA: "border-marino-300 bg-marino-50 text-marino-800 hover:border-marino-500",
+  CONVERTIDA: "border-marino-700 bg-marino-700 text-white hover:border-marino-900",
+  NO_ASISTIO: "border-borde-fuerte bg-fondo-hondo text-marca hover:border-marca",
+  CANCELADA: "border-borde bg-fondo-hondo text-tinta-tenue hover:border-borde-fuerte",
+};
+
+/** El filete macizo que abre cada cita, en la escala de arriba. */
+export const FILETE_ESTADO_RESERVA: Record<EstadoReserva, string> = {
+  PENDIENTE: "bg-marca",
+  CONFIRMADA: "bg-marino-400",
+  CONVERTIDA: "bg-white/60",
+  NO_ASISTIO: "bg-marca/50",
+  CANCELADA: "bg-borde-fuerte",
+};
+
 /** El logo en blanco al pie de la barra lateral. Lleva al tablero. */
 export function MarcaPanel() {
   return (

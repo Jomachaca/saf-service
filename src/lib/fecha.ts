@@ -105,6 +105,30 @@ export function sumarDias(fechaISO: string, dias: number): string {
   return new Date(Date.UTC(anio, mes - 1, dia + dias)).toISOString().slice(0, 10);
 }
 
+/**
+ * El día de la semana en ISO 8601, como `extract(isodow)` en la base: 1 es
+ * lunes y 7 es domingo. Es el número con el que la tabla `franja` guarda el
+ * horario, así que con él se pregunta qué horas atiende el taller una fecha.
+ *
+ * Aritmética de calendario, igual que `sumarDias`: la fecha se arma en UTC
+ * para que `getUTCDay()` devuelva el día que dice el texto y no el que
+ * resultaría de la zona de quien mira.
+ */
+export function diaSemanaISO(fechaISO: string): number {
+  const [anio, mes, dia] = fechaISO.split("-").map(Number);
+  const domingoCero = new Date(Date.UTC(anio, mes - 1, dia)).getUTCDay();
+  return domingoCero === 0 ? 7 : domingoCero;
+}
+
+/**
+ * El lunes de la semana en que cae esa fecha. La agenda se mira por semanas
+ * completas, así que la flecha de «anterior» siempre cae en un lunes y las
+ * columnas no se corren de una semana a otra.
+ */
+export function lunesDe(fechaISO: string): string {
+  return sumarDias(fechaISO, 1 - diaSemanaISO(fechaISO));
+}
+
 /** "Hoy" o "Mañana" cuando corresponde. */
 export function diaRelativo(fechaISO: string, hoyISO: string): "Hoy" | "Mañana" | null {
   if (fechaISO === hoyISO) return "Hoy";
