@@ -39,30 +39,6 @@ export type Database = {
   }
   public: {
     Tables: {
-      box: {
-        Row: {
-          activo: boolean
-          id: string
-          nombre: string
-          orden_visual: number
-          tipo: string
-        }
-        Insert: {
-          activo?: boolean
-          id?: string
-          nombre: string
-          orden_visual?: number
-          tipo: string
-        }
-        Update: {
-          activo?: boolean
-          id?: string
-          nombre?: string
-          orden_visual?: number
-          tipo?: string
-        }
-        Relationships: []
-      }
       cliente: {
         Row: {
           creado_en: string
@@ -104,8 +80,8 @@ export type Database = {
           igv_tasa_bp: number
           instagram: string
           logo_url: string | null
-          marcas: Json
           mapa_url: string | null
+          marcas: Json
           nombre_taller: string
           nosotros_imagen_url: string | null
           nosotros_texto: string
@@ -135,8 +111,8 @@ export type Database = {
           igv_tasa_bp?: number
           instagram?: string
           logo_url?: string | null
-          marcas?: Json
           mapa_url?: string | null
+          marcas?: Json
           nombre_taller?: string
           nosotros_imagen_url?: string | null
           nosotros_texto?: string
@@ -166,8 +142,8 @@ export type Database = {
           igv_tasa_bp?: number
           instagram?: string
           logo_url?: string | null
-          marcas?: Json
           mapa_url?: string | null
+          marcas?: Json
           nombre_taller?: string
           nosotros_imagen_url?: string | null
           nosotros_texto?: string
@@ -283,6 +259,33 @@ export type Database = {
             referencedColumns: ["id"]
           },
         ]
+      }
+      espacio: {
+        Row: {
+          activo: boolean
+          capacidad: number
+          id: string
+          nombre: string
+          orden_visual: number
+          tipo: string
+        }
+        Insert: {
+          activo?: boolean
+          capacidad?: number
+          id?: string
+          nombre: string
+          orden_visual?: number
+          tipo: string
+        }
+        Update: {
+          activo?: boolean
+          capacidad?: number
+          id?: string
+          nombre?: string
+          orden_visual?: number
+          tipo?: string
+        }
+        Relationships: []
       }
       evento_orden: {
         Row: {
@@ -422,10 +425,10 @@ export type Database = {
       orden_servicio: {
         Row: {
           anio: number
-          box_id: string | null
           cerrado_en: string | null
           cliente_id: string
           correlativo: number
+          espacio_id: string | null
           estado: string
           id: string
           kilometraje: number | null
@@ -439,10 +442,10 @@ export type Database = {
         }
         Insert: {
           anio: number
-          box_id?: string | null
           cerrado_en?: string | null
           cliente_id: string
           correlativo: number
+          espacio_id?: string | null
           estado?: string
           id?: string
           kilometraje?: number | null
@@ -456,10 +459,10 @@ export type Database = {
         }
         Update: {
           anio?: number
-          box_id?: string | null
           cerrado_en?: string | null
           cliente_id?: string
           correlativo?: number
+          espacio_id?: string | null
           estado?: string
           id?: string
           kilometraje?: number | null
@@ -473,17 +476,17 @@ export type Database = {
         }
         Relationships: [
           {
-            foreignKeyName: "orden_servicio_box_id_fkey"
-            columns: ["box_id"]
-            isOneToOne: false
-            referencedRelation: "box"
-            referencedColumns: ["id"]
-          },
-          {
             foreignKeyName: "orden_servicio_cliente_id_fkey"
             columns: ["cliente_id"]
             isOneToOne: false
             referencedRelation: "cliente"
+            referencedColumns: ["id"]
+          },
+          {
+            foreignKeyName: "orden_servicio_espacio_id_fkey"
+            columns: ["espacio_id"]
+            isOneToOne: false
+            referencedRelation: "espacio"
             referencedColumns: ["id"]
           },
           {
@@ -803,16 +806,16 @@ export type Database = {
         Returns: string
       }
       mover_orden: {
-        Args: { p_box_id?: string; p_orden_id: string; p_ubicacion: string }
+        Args: { p_espacio_id?: string; p_orden_id: string; p_ubicacion: string }
         Returns: undefined
       }
       recepcionar_vehiculo: {
         Args: {
           p_anio?: number
-          p_box_id?: string
           p_cliente_id?: string
           p_cliente_nombre?: string
           p_cliente_telefono?: string
+          p_espacio_id?: string
           p_kilometraje?: number
           p_marca?: string
           p_modelo?: string

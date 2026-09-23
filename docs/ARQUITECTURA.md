@@ -73,20 +73,29 @@ cuando el taller los pida en uso real. Ver `DECISIONES.md` #3.
 ## 4. Ubicación (separada del estado)
 
 ```
-ubicacion ∈ { BOX, PATIO, FUERA }
-box_id    → solo cuando ubicacion = BOX
+ubicacion  ∈ { TALLER, FUERA }
+espacio_id → opcional, y solo cuando ubicacion = TALLER
 ```
 
-Un auto esperando un repuesto está en `PATIO` sin ocupar box. Si atas el box al
-estado, el taller mentirá al sistema para liberar espacio.
+Un auto esperando un repuesto está en el taller sin ocupar el elevador. Si atas
+el lugar al estado, el taller mentirá al sistema para liberar espacio.
 
-Los boxes son datos, no constantes en código:
+Son dos ubicaciones y no más porque son las dos respuestas que el sistema
+necesita distinguir: está acá, o no está. **Los lugares de adentro son datos**,
+y el taller los configura en `/admin/espacios` (decisión 35):
 
 ```
-box: { id, nombre, tipo: SEDAN | GRANDE, activo }
+espacio: { id, nombre, tipo: SEDAN | GRANDE | AMBOS, capacidad, activo, orden_visual }
 ```
 
-Arranca con 4 SEDAN + 1 GRANDE, pero el taller debe poder agregar más sin tocar código.
+`capacidad` es cuántos vehículos entran a la vez: un elevador vale 1, un patio
+los que quepan. Lo hace cumplir el disparador `espacio_con_cupo`, que bloquea la
+fila del espacio para que dos recepciones simultáneas no se repartan el mismo
+hueco. `tipo` es informativo: se ve al elegir y no impide nada.
+
+**Estar en el taller sin espacio asignado es válido**, y es lo que antes se
+llamaba `PATIO`. Por eso no hay un mínimo de espacios: con la tabla vacía todos
+los vehículos figuran «en el taller» y nada se rompe.
 
 ## 5. Modelo de datos (borrador)
 
@@ -97,13 +106,13 @@ cliente
 vehiculo
   id, cliente_id, placa (única), marca, modelo, anio?, tipo (SEDAN|GRANDE), creado_en
 
-box
+espacio
   id, nombre, tipo, activo, orden_visual
 
 orden_servicio
   id, anio, correlativo, numero (OS-2026-0182, generado)   -- decision 20
   vehiculo_id, cliente_id
-  estado, ubicacion, box_id?
+  estado, ubicacion, espacio_id?
   motivo_ingreso, kilometraje
   token_publico (aleatorio, único, indexado)
   tiempo_estimado_min?
@@ -196,7 +205,7 @@ ocupan:   PENDIENTE, CONFIRMADA, CONVERTIDA
 liberan:  NO_ASISTIO, CANCELADA
 ```
 
-Con 5 boxes nadie nota la diferencia frente a un motor de capacidad real, y
+Con un taller de este tamaño nadie nota la diferencia frente a un motor de capacidad real, y
 ahorra semanas de trabajo. Ver `DECISIONES.md` #4 y #27.
 
 Las reglas viven en la base, en `crear_reserva()`: cupo libre con bloqueo por
@@ -252,10 +261,11 @@ Misma tabla, mismo formulario. El catálogo es solo autocompletado.
 
 ### Panel
 ```
-/admin                  tablero: resumen + boxes + órdenes activas
+/admin                  tablero: resumen + espacios + órdenes activas
 /admin/ingreso          recepción rápida (flujo de 6 pasos); ?reserva={id} la prellena
 /admin/orden/{id}       detalle: diagnóstico, presupuesto, fotos, eventos
 /admin/agenda           calendario semanal; ?desde={fecha} elige la semana
+/admin/espacios         los lugares del taller: nombre, cupo, orden, activo
 /admin/reservas         interruptor de reservas, cupos por día y hora, días cerrados
 /admin/catalogo         servicios, precios y duraciones; IGV y mensaje del presupuesto
 /admin/sitio            CMS del landing: datos y contacto, horario de atención
@@ -273,7 +283,7 @@ del día a día arriba y la configuración abajo (decisión 31).
 3. Motivo de ingreso
 4. Kilometraje
 5. Fotos (opcional, saltable)
-6. Asignar box → crear orden
+6. Asignar espacio (opcional) → crear orden
 ```
 
 ## 11. Tablero
@@ -282,7 +292,7 @@ Tres bloques, en este orden:
 
 ```
 RESUMEN HOY      contadores por estado
-ESPACIOS         grilla de boxes con color y placa
+ESPACIOS         grilla de espacios con lo que hay dentro de cada uno
 ÓRDENES ACTIVAS  lista filtrable por estado
 ```
 

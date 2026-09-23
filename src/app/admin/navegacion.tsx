@@ -4,6 +4,7 @@ import {
   CalendarDots,
   CarProfile,
   Clock,
+  Garage,
   GlobeSimple,
   List,
   SquaresFour,
@@ -25,8 +26,13 @@ type Entrada = {
 };
 
 /**
- * Seis entradas en dos grupos, y ninguna más sin una buena razón: arriba lo del
- * día a día, abajo lo que se configura de vez en cuando (decisión 31).
+ * Siete entradas en dos grupos, y ninguna más sin una buena razón: arriba lo
+ * del día a día, abajo lo que se configura de vez en cuando (decisión 31).
+ *
+ * «Espacios» es la séptima y entró con la decisión 35. No cabía dentro de
+ * ninguna: los lugares del taller no son el horario de reservas ni el catálogo
+ * ni el sitio público, y esconderlos en una sección ajena los haría
+ * imposibles de encontrar el día que el taller cambia de forma.
  */
 const DIA_A_DIA: Entrada[] = [
   { href: "/admin", texto: "Tablero", icono: SquaresFour },
@@ -35,6 +41,7 @@ const DIA_A_DIA: Entrada[] = [
 ];
 
 const CONFIGURACION: Entrada[] = [
+  { href: "/admin/espacios", texto: "Espacios", icono: Garage },
   { href: "/admin/reservas", texto: "Reservas", icono: Clock },
   { href: "/admin/catalogo", texto: "Catálogo", icono: Wrench },
   {

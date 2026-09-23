@@ -51,8 +51,7 @@ export async function recepcionarVehiculo(
   const ubicacion = texto(datos, "ubicacion");
   if (!esUbicacion(ubicacion)) return { error: "Ubicación inválida." };
 
-  const boxId = texto(datos, "box_id") || null;
-  const destino = ubicar(ubicacion, boxId);
+  const destino = ubicar(ubicacion, texto(datos, "espacio_id") || null);
   if (!destino.ok) return { error: destino.motivo };
 
   const vehiculoId = texto(datos, "vehiculo_id") || null;
@@ -74,7 +73,7 @@ export async function recepcionarVehiculo(
   const { data, error } = await supabase.rpc("recepcionar_vehiculo", {
     p_motivo: motivo,
     p_ubicacion: destino.ubicacion,
-    p_box_id: destino.boxId ?? undefined,
+    p_espacio_id: destino.espacioId ?? undefined,
     p_vehiculo_id: vehiculoId ?? undefined,
     p_cliente_id: texto(datos, "cliente_id") || undefined,
     p_cliente_nombre: texto(datos, "cliente_nombre") || undefined,
@@ -143,14 +142,14 @@ export async function moverOrden(
   const ubicacion = texto(datos, "ubicacion");
   if (!esUbicacion(ubicacion)) return { error: "Ubicación inválida." };
 
-  const destino = ubicar(ubicacion as Ubicacion, texto(datos, "box_id") || null);
+  const destino = ubicar(ubicacion as Ubicacion, texto(datos, "espacio_id") || null);
   if (!destino.ok) return { error: destino.motivo };
 
   const supabase = await crearClienteServidor();
   const { error } = await supabase.rpc("mover_orden", {
     p_orden_id: ordenId,
     p_ubicacion: destino.ubicacion,
-    p_box_id: destino.boxId ?? undefined,
+    p_espacio_id: destino.espacioId ?? undefined,
   });
 
   if (error) return { error: mensajeDeError(error.message) };
@@ -166,14 +165,13 @@ export async function moverOrden(
  * problema.
  */
 function mensajeDeError(mensaje: string): string {
-  if (mensaje.includes("orden_box_ocupado_idx")) {
-    return "Ese box ya está ocupado por otro vehículo.";
-  }
   if (mensaje.includes("vehiculo_placa_key")) {
     return "Ya existe un vehículo con esa placa.";
   }
-  if (mensaje.includes("orden_box_coherente")) {
-    return "Si el vehículo va a un box hay que indicar cuál.";
+  if (mensaje.includes("orden_espacio_coherente")) {
+    return "Un vehículo fuera del taller no puede tener un espacio asignado.";
   }
+  // El disparador `espacio_con_cupo` ya levanta un mensaje en castellano con el
+  // nombre del espacio y cuántos entran, así que ese pasa tal cual.
   return mensaje;
 }

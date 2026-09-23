@@ -13,10 +13,16 @@
 export const ETIQUETA_EVENTO: Record<string, string> = {
   ORDEN_CREADA: "Orden creada",
   ESTADO_CAMBIADO: "Cambio de estado",
+  ESPACIO_ASIGNADO: "Espacio asignado",
+  ESPACIO_CAMBIADO: "Cambio de espacio",
+  ESPACIO_LIBERADO: "Espacio liberado",
+  UBICACION_CAMBIADA: "Cambio de ubicación",
+
+  // Los tres de antes de la decisión 35. Ya no se escriben, pero están en las
+  // bitácoras de las órdenes viejas y tienen que seguir leyéndose.
   BOX_ASIGNADO: "Box asignado",
   BOX_CAMBIADO: "Cambio de box",
   BOX_LIBERADO: "Box liberado",
-  UBICACION_CAMBIADA: "Cambio de ubicación",
 };
 
 export function etiquetaEvento(tipo: string): string {

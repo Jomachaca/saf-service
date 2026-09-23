@@ -26,7 +26,7 @@ export default function PaginaReservas() {
       <Encabezado
         seccion="Panel · configuración"
         titulo="Reservas"
-        descripcion="Si se aceptan reservas por la web, a qué horas y cuántas. Es un tope, no un cálculo de boxes: los vehículos que llegan sin reserva no cuentan acá."
+        descripcion="Si se aceptan reservas por la web, a qué horas y cuántas. Es un tope, no un cálculo de espacios: los vehículos que llegan sin reserva no cuentan acá."
       />
 
       <Suspense fallback={<p className="text-sm text-tinta-tenue">Cargando las reservas…</p>}>

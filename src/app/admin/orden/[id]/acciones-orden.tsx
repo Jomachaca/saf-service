@@ -2,11 +2,11 @@
 
 import { useActionState, useState } from "react";
 
-import type { Box } from "@/lib/orden/consultas";
+import type { EspacioConCupo } from "@/lib/orden/espacio";
 import { ETIQUETA_ESTADO, transicionesValidas, type Estado } from "@/lib/orden/estados";
 import { UBICACIONES, ETIQUETA_UBICACION, type Ubicacion } from "@/lib/orden/ubicacion";
 
-import { Aviso } from "../../componentes";
+import { Aviso, SelectorEspacio } from "../../componentes";
 import { cambiarEstado, moverOrden } from "../../acciones";
 import { SIN_ERROR } from "../../estado-formulario";
 
@@ -62,23 +62,22 @@ export function CambiarEstado({
 
 /**
  * Mover el vehículo no toca el estado (decisión 2). Un auto esperando repuestos
- * puede salir del box sin dejar de estar en trabajo.
+ * puede salir del elevador sin dejar de estar en trabajo.
  */
 export function MoverVehiculo({
   ordenId,
   ubicacion,
-  boxId,
-  boxes,
-  boxesOcupados,
+  espacioId,
+  espacios,
 }: {
   ordenId: string;
   ubicacion: Ubicacion;
-  boxId: string | null;
-  boxes: Box[];
-  boxesOcupados: string[];
+  espacioId: string | null;
+  espacios: EspacioConCupo[];
 }) {
   const [resultado, accion, enviando] = useActionState(moverOrden, SIN_ERROR);
   const [destino, setDestino] = useState<Ubicacion>(ubicacion);
+  const [espacio, setEspacio] = useState(espacioId ?? "");
 
   return (
     <form action={accion} className="flex flex-col gap-3">
@@ -109,28 +108,16 @@ export function MoverVehiculo({
         ))}
       </div>
 
-      {destino === "BOX" ? (
-        <select
-          name="box_id"
-          required
-          defaultValue={boxId ?? ""}
-          className="w-full border border-borde bg-fondo-alto px-3 py-2 text-sm"
-        >
-          <option value="" disabled>
-            Elegir box…
-          </option>
-          {boxes.map((box) => {
-            // El box propio sigue disponible: mover una orden al box en el que
-            // ya está no tiene que fallar.
-            const libre = !boxesOcupados.includes(box.id) || box.id === boxId;
-            return (
-              <option key={box.id} value={box.id} disabled={!libre}>
-                {box.nombre} · {box.tipo}
-                {libre ? "" : " · ocupado"}
-              </option>
-            );
-          })}
-        </select>
+      {destino === "TALLER" && espacios.length > 0 ? (
+        <SelectorEspacio
+          espacios={espacios}
+          valor={espacio}
+          alCambiar={setEspacio}
+          // El sitio propio sigue disponible: guardar sin mover el vehículo no
+          // tiene que fallar por «lleno».
+          actual={espacioId}
+          className="text-sm"
+        />
       ) : null}
 
       <div>

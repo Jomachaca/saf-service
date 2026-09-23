@@ -702,3 +702,68 @@ angostas. El contenedor con desplazamiento recortaría la ficha que se asoma, y
 la ficha es lo que hace legible una casilla chica. En su lugar, debajo de
 `@2xl` la cuadrícula se va y quedan los días apilados en listas, donde hay
 ancho para decirlo todo y la cita se abre tocándola.
+
+## 35. Los lugares del taller son datos; la ubicación se reduce a dos
+
+**Decidido.** `ubicacion` pasa de `BOX / PATIO / FUERA` a `TALLER / FUERA`, y
+los lugares de adentro son filas de una tabla `espacio` que el taller
+configura en `/admin/espacios`: nombre, cuántos vehículos entran, qué admite,
+orden y activo. Un vehículo en el taller puede tener espacio asignado o no
+tenerlo, y no tenerlo es válido.
+
+**Por qué.**
+
+El modelo decía «box» y el taller de referencia no tiene boxes: es un patio con
+autos y dos elevadores. Eso no se arreglaba renombrando filas, porque `BOX` no
+era un nombre sino un comportamiento —el único valor de `ubicacion` que llevaba
+lugar asignado, y con cupo de uno por el índice único—. Con solo renombrar, la
+recepción habría preguntado «¿en box o en patio?» y ofrecido «Patio» y
+«Elevador 1» dentro de la lista de boxes. Alguien iba a leer ese sinsentido
+todos los días.
+
+La pregunta que el sistema necesita contestar sobre la ubicación es binaria:
+¿está acá o no está? Todo lo demás —cómo se llama el sitio, cuántos hay,
+cuántos autos entran— es configuración del taller, y la configuración del
+taller son datos.
+
+**«En el taller sin espacio» reemplaza a `PATIO`**, y no es una pérdida: es
+exactamente la misma fila, sin `espacio_id`. Por eso la migración no pierde
+información —lo que decía `BOX` conserva su espacio y lo que decía `PATIO` se
+queda sin él, que es la misma distinción— y por eso **no hay un mínimo de
+espacios**. El taller puede borrarlos todos: los autos figuran «en el taller» y
+el sistema sigue funcionando. Un mínimo obligatorio habría sido una regla
+inventada para un problema que no existe.
+
+**El cupo lo hace cumplir la base, y con bloqueo.** Antes era un índice único
+sobre `box_id`; con capacidad variable eso no se puede expresar como índice, así
+que pasa a un disparador. El disparador hace `select … for update` sobre la fila
+del espacio antes de contar: sin eso, dos recepciones simultáneas al mismo
+espacio cuentan las dos el mismo hueco y entran las dos. Cuenta también las
+órdenes `LISTO` que nadie pasó a recoger, por la misma razón de la decisión 2:
+ese auto sigue ocupando el sitio.
+
+**Bajar la capacidad por debajo de lo que ya hay adentro se rechaza en la
+acción**, no en el disparador: el disparador solo mira cuando entra un vehículo,
+y si no, el espacio quedaría con más autos de los que dice que le caben.
+
+**Borrar solo se puede mientras esté vacío.** La orden apunta al espacio con
+`on delete restrict` para no romper la trazabilidad (decisión 14), así que el
+que tiene un auto adentro no se borra: se desactiva, que de cara al día a día es
+lo mismo —deja de ofrecerse al recibir y no aparece en el tablero— sin tocar el
+historial.
+
+**`tipo` quedó informativo.** Dice qué admite el espacio y se ve al elegir, pero
+no lo impide. Ya era así antes de esta decisión y se mantuvo a propósito: el
+taller sabe mejor que el sistema si esa camioneta entra, y un sistema que se
+niega cuando la realidad dice que sí es un sistema al que se le miente.
+
+**Entra la séptima entrada en la barra lateral**, contra la costumbre de la
+decisión 31. La razón: los lugares del taller no son el horario de reservas, ni
+el catálogo, ni el sitio público, y meterlos dentro de una sección ajena los
+haría imposibles de encontrar justo el día que el taller cambia de forma. El
+tablero además enlaza a la pantalla desde el encabezado de «Espacios».
+
+**Descartado:** dejar `BOX / PATIO / FUERA` y solo renombrar las filas. Es la
+mitad del trabajo y el resultado miente sobre lo que es el taller.
+
+**Descartado:** un mínimo de un espacio obligatorio. Ver arriba.

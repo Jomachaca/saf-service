@@ -13,7 +13,7 @@ export const TIPOS_VEHICULO = ["SEDAN", "GRANDE"] as const;
 export type TipoVehiculo = (typeof TIPOS_VEHICULO)[number];
 
 /**
- * Cómo lo nombra el cliente. En la base son los mismos tipos que usan los boxes
+ * Cómo lo nombra el cliente. En la base son los mismos tipos que usan los espacios
  * (`SEDAN`, `GRANDE`), pero nadie reserva diciendo «sedán».
  */
 export const ETIQUETA_TIPO_VEHICULO: Record<TipoVehiculo, string> = {

@@ -11,7 +11,7 @@ import { crearClienteServicio } from "./supabase/admin";
  * la consulta nombra los campos uno por uno y arma un objeto nuevo. Nunca se
  * devuelve la fila tal cual.
  *
- * Lo que queda deliberadamente fuera: el estado interno de la orden, el box, la
+ * Lo que queda deliberadamente fuera: el estado interno de la orden, el espacio, la
  * bitácora, los ids, quién del taller hizo qué, y el propio token.
  */
 

@@ -127,7 +127,7 @@ export function Hero({
 
         {/*
           La banda de datos duros, al pie de la portada. Lo que dice sale del
-          panel: cuántos años lleva el taller o cuántos boxes tiene no se
+          panel: cuántos años lleva el taller o cuántos espacios tiene no se
           inventa desde acá, así que si nadie lo cargó la banda no existe y la
           portada cierra con su relleno de siempre.
         */}

@@ -440,7 +440,7 @@ async function marcarActualizado(): Promise<void> {
 
 /**
  * Los cuatro datos duros que van bajo el titular. Son del taller, no del
- * sistema: cuántos años lleva abierto o cuántos boxes tiene no se deduce de
+ * sistema: cuántos años lleva abierto o cuántos espacios tiene no se deduce de
  * ninguna tabla, así que se escriben acá o la banda no existe.
  */
 export async function guardarDatosPortada(

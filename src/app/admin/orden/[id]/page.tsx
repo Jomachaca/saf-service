@@ -4,7 +4,8 @@ import { Suspense } from "react";
 
 import { formatearFechaHora, tiempoTranscurrido } from "@/lib/fecha";
 import {
-  cargarBoxes,
+  cargarEspacios,
+  conCupo,
   cargarCatalogo,
   cargarConfig,
   cargarDiagnostico,
@@ -55,10 +56,10 @@ async function Contenido({ params }: { params: Parametros }) {
   const orden = await cargarOrden(id);
   if (!orden) notFound();
 
-  const [eventos, boxes, { ocupacion }, diagnostico, presupuestos, catalogo, config] =
+  const [eventos, espacios, { ocupacion }, diagnostico, presupuestos, catalogo, config] =
     await Promise.all([
       cargarEventos(id),
-      cargarBoxes(),
+      cargarEspacios(),
       cargarTablero(),
       cargarDiagnostico(id),
       cargarPresupuestos(id),
@@ -66,8 +67,7 @@ async function Contenido({ params }: { params: Parametros }) {
       cargarConfig(),
     ]);
 
-  const nombresDeBox = Object.fromEntries(boxes.map((box) => [box.id, box.nombre]));
-  const boxesOcupados = [...ocupacion.keys()];
+  const nombresDeEspacio = Object.fromEntries(espacios.map((uno) => [uno.id, uno.nombre]));
   const ahora = new Date();
 
   const borrador = presupuestos.find((p) => p.estado === "BORRADOR") ?? null;
@@ -104,7 +104,7 @@ async function Contenido({ params }: { params: Parametros }) {
           <Insignia estado={orden.estado} />
           <Ubicada
             ubicacion={orden.ubicacion}
-            box={orden.box_id ? nombresDeBox[orden.box_id] : null}
+            espacio={orden.espacio_id ? nombresDeEspacio[orden.espacio_id] : null}
           />
           <span className="ms-auto font-mono text-sm text-tinta-tenue">{orden.numero}</span>
         </div>
@@ -205,12 +205,20 @@ async function Contenido({ params }: { params: Parametros }) {
           </FichaLateral>
 
           <FichaLateral titulo="Ubicación">
+            {/*
+              La `key` lleva dónde está el vehículo: al moverlo, la página se
+              revalida y el control se remonta con el lugar nuevo puesto. Sin
+              esto su estado interno se queda con el de antes —React resetea el
+              formulario pero no vuelve a leer las props—, el desplegable dice
+              «sin espacio asignado» con el auto adentro, y el siguiente guardado
+              lo sacaría sin que nadie lo pidiera.
+            */}
             <MoverVehiculo
+              key={`${orden.ubicacion}-${orden.espacio_id ?? "libre"}`}
               ordenId={orden.id}
               ubicacion={orden.ubicacion}
-              boxId={orden.box_id}
-              boxes={boxes}
-              boxesOcupados={boxesOcupados}
+              espacioId={orden.espacio_id}
+              espacios={conCupo(espacios, ocupacion)}
             />
           </FichaLateral>
 

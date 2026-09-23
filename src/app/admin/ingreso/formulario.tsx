@@ -4,10 +4,11 @@ import { CalendarCheck } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { useActionState, useEffect, useRef, useState, useTransition } from "react";
 
-import type { Box, VehiculoEncontrado } from "@/lib/orden/consultas";
+import type { VehiculoEncontrado } from "@/lib/orden/consultas";
+import type { EspacioConCupo } from "@/lib/orden/espacio";
 import { UBICACIONES, ETIQUETA_UBICACION, type Ubicacion } from "@/lib/orden/ubicacion";
 
-import { Aviso } from "../componentes";
+import { Aviso, SelectorEspacio } from "../componentes";
 import { Esquinas } from "../../plano";
 import { Seccion } from "../componentes";
 import { buscarVehiculos, recepcionarVehiculo } from "../acciones";
@@ -41,18 +42,17 @@ export type ReservaEnRecepcion = {
  * la misma pantalla con menos que escribir, no un flujo aparte (decisión 28).
  */
 export function FormularioIngreso({
-  boxes,
-  boxesLibres,
+  espacios,
   reserva,
 }: {
-  boxes: Box[];
-  boxesLibres: string[];
+  espacios: EspacioConCupo[];
   reserva: ReservaEnRecepcion | null;
 }) {
   const [estado, accion, enviando] = useActionState(recepcionarVehiculo, SIN_ERROR);
   const [elegido, setElegido] = useState<VehiculoEncontrado | null>(null);
   const [esNuevo, setEsNuevo] = useState(false);
-  const [ubicacion, setUbicacion] = useState<Ubicacion>("BOX");
+  const [ubicacion, setUbicacion] = useState<Ubicacion>("TALLER");
+  const [espacioId, setEspacioId] = useState("");
   const [kilometraje, setKilometraje] = useState("");
 
   return (
@@ -131,21 +131,8 @@ export function FormularioIngreso({
             ))}
           </div>
 
-          {ubicacion === "BOX" ? (
-            <select name="box_id" required defaultValue="" className={CLASES_INPUT}>
-              <option value="" disabled>
-                Elegir box…
-              </option>
-              {boxes.map((box) => {
-                const libre = boxesLibres.includes(box.id);
-                return (
-                  <option key={box.id} value={box.id} disabled={!libre}>
-                    {box.nombre} · {box.tipo}
-                    {libre ? "" : " · ocupado"}
-                  </option>
-                );
-              })}
-            </select>
+          {ubicacion === "TALLER" && espacios.length > 0 ? (
+            <SelectorEspacio espacios={espacios} valor={espacioId} alCambiar={setEspacioId} />
           ) : null}
         </div>
       </Campo>
@@ -224,7 +211,7 @@ const ATAJOS_MOTIVO = [
 function MotivoConAtajos({ inicial }: { inicial: string }) {
   const campo = useRef<HTMLInputElement>(null);
   // En estado y no en el DOM: React vacía los campos no controlados en cuanto
-  // se envía el formulario, y una recepción rechazada —placa repetida, box
+  // se envía el formulario, y una recepción rechazada —placa repetida, espacio
   // ocupado— borraba todo lo escrito.
   const [motivo, setMotivo] = useState(inicial);
 

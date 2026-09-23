@@ -1,7 +1,9 @@
+import { SlidersHorizontal } from "@phosphor-icons/react/dist/ssr";
 import Link from "next/link";
 import { Suspense } from "react";
 
 import { cargarTablero } from "@/lib/orden/consultas";
+import { ETIQUETA_TIPO_ESPACIO } from "@/lib/orden/espacio";
 import { ETIQUETA_ESTADO, type Estado } from "@/lib/orden/estados";
 import { requerirStaff } from "@/lib/sesion";
 
@@ -65,16 +67,25 @@ function Cargando() {
 async function Contenido() {
   await requerirStaff();
 
-  const { boxes, activas, ocupacion, contadores } = await cargarTablero();
+  const { espacios, activas, ocupacion, contadores } = await cargarTablero();
   const ahora = new Date();
-  const nombresDeBox = Object.fromEntries(boxes.map((box) => [box.id, box.nombre]));
+  const nombresDeEspacio = Object.fromEntries(espacios.map((uno) => [uno.id, uno.nombre]));
 
   const tuberia = EN_CURSO.map((estado) => ({
     estado,
     n: contadores[estado] ?? 0,
   }));
   const enTaller = tuberia.reduce((suma, tramo) => suma + tramo.n, 0);
-  const libres = boxes.filter((box) => box.activo && !ocupacion.has(box.id)).length;
+
+  // Los huecos, no los espacios vacíos: un patio con cupo para seis y dos autos
+  // adentro tiene cuatro huecos, y eso es lo que se pregunta al recibir.
+  const sitios = espacios
+    .filter((espacio) => espacio.activo)
+    .reduce((suma, espacio) => suma + espacio.capacidad, 0);
+  const tomados = espacios
+    .filter((espacio) => espacio.activo)
+    .reduce((suma, espacio) => suma + (ocupacion.get(espacio.id)?.length ?? 0), 0);
+  const huecos = sitios - tomados;
 
   return (
     <>
@@ -89,8 +100,8 @@ async function Contenido() {
             En el taller
           </h2>
           <span className="font-mono text-xs text-tinta-tenue">
-            {enTaller === 1 ? "1 vehículo" : `${enTaller} vehículos`} ·{" "}
-            {boxes.length - libres} de {boxes.length} boxes ocupados
+            {enTaller === 1 ? "1 vehículo" : `${enTaller} vehículos`}
+            {sitios > 0 ? ` · ${tomados} de ${sitios} sitios ocupados` : ""}
           </span>
         </div>
 
@@ -141,58 +152,88 @@ async function Contenido() {
       </section>
 
       {/*
-        Los espacios. El box vacío va con filete punteado y no lleno: es un
+        Los espacios. El que está vacío va con filete punteado y no lleno: es un
         hueco, y un hueco se dibuja distinto de una caja con algo adentro.
       */}
-      <Seccion titulo="Espacios" conteo={libres === 1 ? "1 libre" : `${libres} libres`}>
-        <ul className="grid grid-cols-2 gap-3.5 @2xl:grid-cols-3 @4xl:grid-cols-5">
-          {boxes.map((box) => {
-            const orden = ocupacion.get(box.id);
+      <Seccion
+        titulo="Espacios"
+        conteo={sitios === 0 ? undefined : huecos === 1 ? "1 hueco" : `${huecos} huecos`}
+        accion={
+          <Link
+            href="/admin/espacios"
+            className="inline-flex items-center gap-1.5 font-display text-[11px] font-semibold tracking-[0.14em] text-tinta-tenue uppercase transition-colors duration-200 hover:text-marca"
+          >
+            <SlidersHorizontal size={13} />
+            Configurar
+          </Link>
+        }
+      >
+        {espacios.length === 0 ? (
+          <p className="border border-dashed border-borde-fuerte px-4 py-6 text-center text-sm text-tinta-suave">
+            Todavía no hay espacios configurados, y no pasa nada: los vehículos figuran «en el
+            taller» sin sitio asignado.{" "}
+            <Link href="/admin/espacios" className="font-medium text-marca underline underline-offset-4">
+              Créalos en Espacios
+            </Link>{" "}
+            si quieres saber dónde está cada uno.
+          </p>
+        ) : (
+          <ul className="grid grid-cols-2 gap-3.5 @2xl:grid-cols-3 @4xl:grid-cols-4">
+            {espacios.map((espacio) => {
+              const dentro = ocupacion.get(espacio.id) ?? [];
+              const vacio = dentro.length === 0;
 
-            return (
-              <li
-                key={box.id}
-                className={`flex flex-col gap-2 border bg-fondo-alto p-4 ${
-                  orden ? "border-borde-fuerte" : "border-dashed border-borde-fuerte"
-                } ${box.activo ? "" : "opacity-40"}`}
-              >
-                <div className="flex items-baseline justify-between gap-2">
-                  <span className="font-display text-[17px] font-bold tracking-[0.08em] uppercase">
-                    {box.nombre}
-                  </span>
-                  <span className="font-mono text-[10px] tracking-[0.14em] text-tinta-tenue uppercase">
-                    {box.tipo}
-                  </span>
-                </div>
-
-                {orden ? (
-                  <>
-                    <EnlaceOrden id={orden.id} numero={orden.numero}>
-                      <span className="font-mono text-lg font-medium">
-                        {orden.vehiculo?.placa}
-                      </span>
-                    </EnlaceOrden>
-                    <Insignia estado={orden.estado} />
-                  </>
-                ) : (
-                  <>
-                    <span className="font-display text-lg font-bold tracking-[0.1em] text-tinta-tenue uppercase">
-                      Libre
+              return (
+                <li
+                  key={espacio.id}
+                  className={`flex flex-col gap-2 border bg-fondo-alto p-4 ${
+                    vacio ? "border-dashed border-borde-fuerte" : "border-borde-fuerte"
+                  } ${espacio.activo ? "" : "opacity-40"}`}
+                >
+                  <div className="flex items-baseline justify-between gap-2">
+                    <span className="font-display text-[17px] font-bold tracking-[0.08em] uppercase">
+                      {espacio.nombre}
                     </span>
-                    <span className="text-[13px] text-tinta-tenue">Sin vehículo</span>
-                  </>
-                )}
-              </li>
-            );
-          })}
-        </ul>
+                    <span className="font-mono text-[11px] tracking-[0.1em] text-tinta-tenue tabular-nums">
+                      {dentro.length}/{espacio.capacidad}
+                    </span>
+                  </div>
+
+                  {vacio ? (
+                    <>
+                      <span className="font-display text-lg font-bold tracking-[0.1em] text-tinta-tenue uppercase">
+                        Libre
+                      </span>
+                      <span className="text-[13px] text-tinta-tenue">
+                        {ETIQUETA_TIPO_ESPACIO[espacio.tipo]}
+                      </span>
+                    </>
+                  ) : (
+                    <ul className="flex flex-col gap-2">
+                      {dentro.map((orden) => (
+                        <li key={orden.id} className="flex flex-col gap-1">
+                          <EnlaceOrden id={orden.id} numero={orden.numero}>
+                            <span className="font-mono text-lg font-medium">
+                              {orden.vehiculo?.placa}
+                            </span>
+                          </EnlaceOrden>
+                          <Insignia estado={orden.estado} />
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+        )}
       </Seccion>
 
       {/* El encabezado de esta sección lo pone la propia lista: su conteo
           cambia con el filtro, y el filtro vive del lado del cliente. */}
       <ListaOrdenes
         ordenes={activas}
-        nombresDeBox={nombresDeBox}
+        nombresDeEspacio={nombresDeEspacio}
         ahora={ahora.toISOString()}
       />
     </>

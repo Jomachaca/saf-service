@@ -389,6 +389,35 @@ desplazamiento de atrás, cerrarla vacía su contenido, la pregunta de «¿segur
 arma el `submit` con `estado_nuevo=CANCELADA` y volver atrás no toca la base, y
 a 375 px la cuadrícula desaparece y quedan las listas sin desborde horizontal.
 
+### Los espacios del taller
+
+`ubicacion` dejó de ser `BOX / PATIO / FUERA` y ahora es `TALLER / FUERA`; los
+lugares de adentro son filas de `espacio` que el taller configura en
+`/admin/espacios` (decisión 35). El motivo salió del taller de referencia: no
+tiene boxes, es un patio con dos elevadores, y «box» era un comportamiento
+—cupo de uno, el único con lugar asignado— y no un nombre que se pudiera
+cambiar.
+
+La pantalla nueva crea, renombra, reordena, activa, desactiva y borra espacios,
+y a cada uno le fija cuántos vehículos entran. El cupo lo hace cumplir un
+disparador de Postgres que bloquea la fila del espacio antes de contar, para
+que dos recepciones a la vez no se repartan el mismo hueco. Bajar el cupo por
+debajo de lo que ya hay adentro lo rechaza la acción, porque el disparador solo
+mira cuando entra un vehículo.
+
+La migración `20260923120000_espacios.sql` renombra la tabla y la columna, funde
+`BOX` y `PATIO` en `TALLER`, cambia el índice único por el disparador y rehace
+`recepcionar_vehiculo` y `mover_orden`. No pierde información: lo que decía BOX
+conserva su espacio y lo que decía PATIO se queda sin él.
+
+### Órdenes activas, como una tabla
+
+La lista del tablero ganó buscador —placa, cliente, motivo, número de orden, sin
+importar las tildes—, y encabezados que ordenan por vehículo, estado, dónde está
+y tiempo en el taller. Arranca por el que más tiempo lleva, que es el urgente.
+Donde no entra la fila de encabezados, el mismo orden se elige en un
+desplegable con las opciones escritas en palabras.
+
 ### Lo que no está verificado
 
 - **El movimiento, visto moverse.** El navegador que usa el asistente fuerza

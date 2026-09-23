@@ -1,7 +1,7 @@
 import { Suspense } from "react";
 
 import { diaRelativo, fechaISOLima, formatearDia, formatearHoraFranja } from "@/lib/fecha";
-import { cargarBoxes, cargarTablero } from "@/lib/orden/consultas";
+import { cargarEspacios, cargarTablero, conCupo } from "@/lib/orden/consultas";
 import { cargarReserva } from "@/lib/reserva/consultas";
 import { ETIQUETA_ESTADO_RESERVA, puedeRecibirse } from "@/lib/reserva/estados";
 import { motivoCompleto } from "@/lib/reserva/modelo";
@@ -43,15 +43,11 @@ async function Contenido({ searchParams }: { searchParams: ParametrosBusqueda })
 
   const { reserva: idReserva } = await searchParams;
 
-  const [boxes, { ocupacion }, reserva] = await Promise.all([
-    cargarBoxes(),
+  const [espacios, { ocupacion }, reserva] = await Promise.all([
+    cargarEspacios(),
     cargarTablero(),
     typeof idReserva === "string" ? cargarReserva(idReserva) : null,
   ]);
-
-  const boxesLibres = boxes
-    .filter((box) => !ocupacion.has(box.id))
-    .map((box) => box.id);
 
   // Desde la agenda llega el id de la reserva (decisión 28). Si ya se cerró, no
   // se ofrece: la base la rechazaría al guardar, después de llenarlo todo.
@@ -84,8 +80,7 @@ async function Contenido({ searchParams }: { searchParams: ParametrosBusqueda })
 
       <FormularioIngreso
         key={enRecepcion?.id ?? "sin-reserva"}
-        boxes={boxes}
-        boxesLibres={boxesLibres}
+        espacios={conCupo(espacios, ocupacion)}
         reserva={enRecepcion}
       />
     </>

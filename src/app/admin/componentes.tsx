@@ -4,7 +4,8 @@ import Link from "next/link";
 import { Esquinas } from "../plano";
 
 import { ETIQUETA_ESTADO, type Estado } from "@/lib/orden/estados";
-import { ETIQUETA_UBICACION, type Ubicacion } from "@/lib/orden/ubicacion";
+import type { EspacioConCupo } from "@/lib/orden/espacio";
+import { nombrarLugar, type Ubicacion } from "@/lib/orden/ubicacion";
 import { ETIQUETA_ESTADO_RESERVA, type EstadoReserva } from "@/lib/reserva/estados";
 
 const BASE_INSIGNIA =
@@ -61,15 +62,63 @@ export function Insignia({ estado }: { estado: Estado }) {
 
 export function Ubicada({
   ubicacion,
-  box,
+  espacio,
 }: {
   ubicacion: Ubicacion;
-  box?: string | null;
+  espacio?: string | null;
 }) {
   return (
     <span className="font-mono text-xs tracking-[0.1em] text-tinta-tenue uppercase">
-      {ubicacion === "BOX" && box ? box : ETIQUETA_UBICACION[ubicacion]}
+      {nombrarLugar(ubicacion, espacio ?? null)}
     </span>
+  );
+}
+
+/**
+ * Elegir dónde queda el vehículo dentro del taller.
+ *
+ * «Sin espacio asignado» es una opción de verdad y va primero: el auto que está
+ * en el local pero en ningún sitio concreto es el caso más común de todos, y es
+ * lo que había que elegir a mano cuando esto se llamaba «patio» (decisión 35).
+ *
+ * Va controlado porque React resetea el formulario antes de cada acción: sin
+ * `value`, un error de la acción devolvería el desplegable a su valor inicial y
+ * quien recibe el auto tendría que volver a elegir.
+ */
+export function SelectorEspacio({
+  espacios,
+  valor,
+  alCambiar,
+  actual = null,
+  className = "",
+}: {
+  espacios: EspacioConCupo[];
+  valor: string;
+  alCambiar: (valor: string) => void;
+  /** El espacio donde la orden ya está: no se ofrece como lleno. */
+  actual?: string | null;
+  className?: string;
+}) {
+  return (
+    <select
+      name="espacio_id"
+      value={valor}
+      onChange={(evento) => alCambiar(evento.target.value)}
+      aria-label="Espacio del taller"
+      className={`w-full border border-borde bg-fondo-alto px-3 py-2 ${className}`}
+    >
+      <option value="">Sin espacio asignado</option>
+      {espacios.map((espacio) => {
+        const lleno = espacio.ocupados >= espacio.capacidad && espacio.id !== actual;
+
+        return (
+          <option key={espacio.id} value={espacio.id} disabled={lleno}>
+            {espacio.nombre} · {espacio.ocupados}/{espacio.capacidad}
+            {lleno ? " · lleno" : ""}
+          </option>
+        );
+      })}
+    </select>
   );
 }
 

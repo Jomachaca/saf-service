@@ -94,19 +94,36 @@ function enLima(dias) {
 }
 
 async function poner() {
-  const { data: boxes } = await db
-    .from("box")
-    .select("id, nombre, tipo, activo")
+  const { data: espacios } = await db
+    .from("espacio")
+    .select("id, nombre, tipo, activo, capacidad")
     .order("orden_visual");
 
   const { data: ocupadas } = await db
     .from("orden_servicio")
-    .select("box_id")
-    .not("box_id", "is", null)
-    .neq("estado", "LISTO");
+    .select("espacio_id")
+    .not("espacio_id", "is", null);
 
-  const tomados = new Set((ocupadas ?? []).map((o) => o.box_id));
-  const libres = (boxes ?? []).filter((b) => b.activo && !tomados.has(b.id));
+  // Cuántos hay en cada espacio. Cuenta también las órdenes LISTO que nadie
+  // pasó a recoger: siguen ocupando el sitio (decisión 2).
+  const dentro = new Map();
+  for (const orden of ocupadas ?? []) {
+    dentro.set(orden.espacio_id, (dentro.get(orden.espacio_id) ?? 0) + 1);
+  }
+
+  const disponibles = (espacios ?? []).filter((espacio) => espacio.activo);
+
+  /** El primer espacio con sitio que admita ese vehículo, o ninguno. */
+  function elegirEspacio(tipo) {
+    const espacio = disponibles.find(
+      (uno) =>
+        (uno.tipo === tipo || uno.tipo === "AMBOS") &&
+        (dentro.get(uno.id) ?? 0) < uno.capacidad,
+    );
+
+    if (espacio) dentro.set(espacio.id, (dentro.get(espacio.id) ?? 0) + 1);
+    return espacio ?? null;
+  }
 
   for (const auto of FLOTA) {
     const { data: yaEsta } = await db
@@ -120,15 +137,14 @@ async function poner() {
       continue;
     }
 
-    // Un box del tipo que corresponde si queda alguno; si no, al patio. Es lo
-    // mismo que haría el recepcionista un día con el taller lleno.
-    const i = libres.findIndex((b) => b.tipo === auto.tipo);
-    const box = i >= 0 ? libres.splice(i, 1)[0] : null;
+    // Un espacio con sitio si queda alguno; si no, en el taller sin asignar.
+    // Es lo mismo que haría el recepcionista un día con el taller lleno.
+    const espacio = elegirEspacio(auto.tipo);
 
     const { data: ordenId, error } = await db.rpc("recepcionar_vehiculo", {
       p_motivo: auto.motivo,
-      p_ubicacion: box ? "BOX" : "PATIO",
-      p_box_id: box ? box.id : null,
+      p_ubicacion: "TALLER",
+      p_espacio_id: espacio ? espacio.id : null,
       p_cliente_nombre: auto.cliente,
       p_cliente_telefono: auto.telefono,
       p_placa: auto.placa,
@@ -162,7 +178,7 @@ async function poner() {
 
     if (auto.conPresupuesto) await presupuestar(ordenId);
 
-    console.log("orden:", auto.placa, "→", actual, box ? `· ${box.nombre}` : "· patio");
+    console.log("orden:", auto.placa, "→", actual, espacio ? `· ${espacio.nombre}` : "· sin sitio");
   }
 
   for (const reserva of RESERVAS) {

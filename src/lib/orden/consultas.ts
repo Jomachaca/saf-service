@@ -8,23 +8,16 @@ import type {
   Presupuesto,
   ServicioCatalogo,
 } from "./presupuesto";
+import type { Espacio, EspacioConCupo } from "./espacio";
 import type { Estado } from "./estados";
 import type { Ubicacion } from "./ubicacion";
-
-export type Box = {
-  id: string;
-  nombre: string;
-  tipo: string;
-  activo: boolean;
-  orden_visual: number;
-};
 
 export type OrdenEnTablero = {
   id: string;
   numero: string;
   estado: Estado;
   ubicacion: Ubicacion;
-  box_id: string | null;
+  espacio_id: string | null;
   motivo_ingreso: string;
   recibido_en: string;
   vehiculo: { placa: string; marca: string; modelo: string; tipo: string } | null;
@@ -32,16 +25,20 @@ export type OrdenEnTablero = {
 };
 
 export type Tablero = {
-  boxes: Box[];
+  espacios: Espacio[];
   /** Órdenes sin cerrar. Es la respuesta a "qué está pasando ahora en el taller". */
   activas: OrdenEnTablero[];
-  /** box_id → la orden que lo ocupa. Puede ser una orden LISTO sin recoger. */
-  ocupacion: Map<string, OrdenEnTablero>;
+  /**
+   * espacio_id → las órdenes que están ahí. Es una lista y no una orden
+   * suelta porque un espacio puede tener cupo para varios (decisión 35), y
+   * puede incluir una orden LISTO que nadie pasó a recoger.
+   */
+  ocupacion: Map<string, OrdenEnTablero[]>;
   contadores: Record<Estado, number>;
 };
 
 const CAMPOS_TABLERO = `
-  id, numero, estado, ubicacion, box_id, motivo_ingreso, recibido_en,
+  id, numero, estado, ubicacion, espacio_id, motivo_ingreso, recibido_en,
   vehiculo ( placa, marca, modelo, tipo ),
   cliente ( nombre, telefono )
 `;
@@ -49,14 +46,14 @@ const CAMPOS_TABLERO = `
 export async function cargarTablero(): Promise<Tablero> {
   const supabase = await crearClienteServidor();
 
-  const [{ data: boxes }, { data: ordenes }] = await Promise.all([
-    supabase.from("box").select("*").order("orden_visual"),
-    // Una orden LISTO que todavía ocupa un box tiene que salir en la grilla
-    // aunque no esté activa: el espacio sigue ocupado (decisión 2).
+  const [{ data: espacios }, { data: ordenes }] = await Promise.all([
+    supabase.from("espacio").select("*").order("orden_visual"),
+    // Una orden LISTO que todavía ocupa un espacio tiene que salir en la
+    // grilla aunque no esté activa: el sitio sigue ocupado (decisión 2).
     supabase
       .from("orden_servicio")
       .select(CAMPOS_TABLERO)
-      .or("estado.neq.LISTO,ubicacion.eq.BOX")
+      .or("estado.neq.LISTO,espacio_id.not.is.null")
       .order("recibido_en", { ascending: false })
       .overrideTypes<OrdenEnTablero[]>(),
   ]);
@@ -64,11 +61,10 @@ export async function cargarTablero(): Promise<Tablero> {
   const todas = ordenes ?? [];
   const activas = todas.filter((orden) => orden.estado !== "LISTO");
 
-  const ocupacion = new Map<string, OrdenEnTablero>();
+  const ocupacion = new Map<string, OrdenEnTablero[]>();
   for (const orden of todas) {
-    if (orden.ubicacion === "BOX" && orden.box_id) {
-      ocupacion.set(orden.box_id, orden);
-    }
+    if (!orden.espacio_id) continue;
+    ocupacion.set(orden.espacio_id, [...(ocupacion.get(orden.espacio_id) ?? []), orden]);
   }
 
   const contadores = {
@@ -81,7 +77,22 @@ export async function cargarTablero(): Promise<Tablero> {
 
   for (const orden of activas) contadores[orden.estado] += 1;
 
-  return { boxes: (boxes ?? []) as Box[], activas, ocupacion, contadores };
+  return { espacios: (espacios ?? []) as Espacio[], activas, ocupacion, contadores };
+}
+
+/**
+ * Cruza los espacios con la ocupación del tablero. Lo usan la recepción y el
+ * detalle de la orden para no ofrecer un sitio donde ya no entra nadie; quien
+ * lo impide de verdad es el disparador `espacio_con_cupo` de la base.
+ */
+export function conCupo(
+  espacios: Espacio[],
+  ocupacion: Map<string, OrdenEnTablero[]>,
+): EspacioConCupo[] {
+  return espacios.map((espacio) => ({
+    ...espacio,
+    ocupados: ocupacion.get(espacio.id)?.length ?? 0,
+  }));
 }
 
 export type EventoOrden = {
@@ -98,7 +109,7 @@ export type DetalleOrden = {
   numero: string;
   estado: Estado;
   ubicacion: Ubicacion;
-  box_id: string | null;
+  espacio_id: string | null;
   motivo_ingreso: string;
   kilometraje: number | null;
   token_publico: string;
@@ -122,7 +133,7 @@ export async function cargarOrden(id: string): Promise<DetalleOrden | null> {
     .from("orden_servicio")
     .select(
       `
-        id, numero, estado, ubicacion, box_id, motivo_ingreso, kilometraje,
+        id, numero, estado, ubicacion, espacio_id, motivo_ingreso, kilometraje,
         token_publico, recibido_en, cerrado_en,
         vehiculo ( id, placa, marca, modelo, anio, tipo ),
         cliente ( id, nombre, telefono, email )
@@ -147,15 +158,20 @@ export async function cargarEventos(ordenId: string): Promise<EventoOrden[]> {
   return (data ?? []) as EventoOrden[];
 }
 
-export async function cargarBoxes(): Promise<Box[]> {
+/**
+ * Los espacios que se pueden elegir al recibir o al mover. Solo los activos:
+ * desactivar un espacio es justamente decir «no lo ofrezcas más», sin borrar
+ * el historial de lo que pasó por ahí.
+ */
+export async function cargarEspacios(): Promise<Espacio[]> {
   const supabase = await crearClienteServidor();
   const { data } = await supabase
-    .from("box")
+    .from("espacio")
     .select("*")
     .eq("activo", true)
     .order("orden_visual");
 
-  return (data ?? []) as Box[];
+  return (data ?? []) as Espacio[];
 }
 
 export type VehiculoEncontrado = {
