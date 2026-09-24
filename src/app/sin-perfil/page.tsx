@@ -5,6 +5,7 @@ import { cerrarSesion } from "@/app/acceso/acciones";
 import { obtenerSesion } from "@/lib/sesion";
 
 export const metadata = {
+  robots: { index: false, follow: false },
   title: "Sin perfil",
 };
 

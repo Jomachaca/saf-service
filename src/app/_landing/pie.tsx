@@ -128,8 +128,21 @@ export function Pie({
           </Columna>
         </div>
 
-        <div className="mt-12 flex flex-wrap items-center justify-between gap-3 border-t border-white/15 pt-5 font-display text-[13px] font-semibold tracking-[0.14em] uppercase">
+        <div className="mt-12 flex flex-wrap items-center justify-between gap-x-6 gap-y-3 border-t border-white/15 pt-5 font-display text-[13px] font-semibold tracking-[0.14em] uppercase">
           <p>{taller.nombre}</p>
+
+          {/* Los dos legales van acá y no en una columna: se buscan cuando se
+              buscan, y ocupar una columna entera con ellos sería darles un peso
+              que no tienen. */}
+          <nav aria-label="Información legal" className="flex flex-wrap gap-x-5 gap-y-2">
+            <Link href="/privacidad" className="transition-colors duration-200 hover:text-white">
+              Privacidad
+            </Link>
+            <Link href="/terminos" className="transition-colors duration-200 hover:text-white">
+              Términos
+            </Link>
+          </nav>
+
           {taller.slogan ? <p className="text-white/45">{taller.slogan}</p> : null}
         </div>
       </div>

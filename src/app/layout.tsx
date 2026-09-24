@@ -1,4 +1,6 @@
 import type { Metadata } from "next";
+
+import { sitioUrl } from "@/lib/sitio/url";
 import { Barlow, Barlow_Condensed, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
@@ -30,7 +32,7 @@ const geistMono = Geist_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL(process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000"),
+  metadataBase: new URL(sitioUrl()),
   title: {
     default: "SAF Service · Taller automotriz en Arequipa",
     template: "%s · SAF Service",

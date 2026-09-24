@@ -2,6 +2,7 @@ import { SALUDO_WHATSAPP, cargarSitio, enlaceComoLlegar } from "@/lib/sitio/cont
 import { enlaceWhatsApp } from "@/lib/whatsapp";
 
 import { Cinta } from "./_landing/cinta";
+import { DatosEstructurados } from "./_landing/datos-estructurados";
 import { Contacto } from "./_landing/contacto";
 import { Destacados } from "./_landing/destacados";
 import { BurbujaWhatsApp } from "./_landing/flotante";
@@ -37,6 +38,8 @@ export default async function PaginaInicio() {
 
   return (
     <>
+      <DatosEstructurados taller={taller} />
+
       <Navegacion
         logo={taller.logoUrl}
         nombre={taller.nombre}

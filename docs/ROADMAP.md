@@ -449,8 +449,36 @@ devuelven datos. Se creó y borró una orden completa (OS-2026-0011) para
 comprobar la cadena del valor por defecto del token y del disparador del
 correlativo; el contador quedó restaurado en 10.
 
+### Lo que un sitio público necesita y no tenía
+
+Icono propio —la S del logo, recortada de la marca real— en vez del de
+`create-next-app`, imagen de vista previa de 1200×630 para cuando alguien pegue
+el enlace en WhatsApp, `robots.txt` y `sitemap.xml`, y `noindex` en el acceso,
+el panel y la vista del cliente. Los SVG de ejemplo de `create-next-app` se
+fueron de `public/`.
+
+`/privacidad` y `/terminos`, con los datos del responsable leídos del CMS, más
+un aviso de datos personales pegado al botón de reservar. **Sin banner de
+cookies, a propósito**: el sitio no instala ninguna cookie a un visitante, y un
+banner sería declarar un seguimiento que no existe (decisión 37).
+
+Datos estructurados `AutoRepair` con nombre, dirección, teléfono y redes. Sin
+horarios: en el CMS son texto libre y traducirlos sería adivinar.
+
+Verificado a 375 px: la portada, el formulario de reserva y las dos páginas
+legales sin una sola barra de desplazamiento horizontal, sin texto por debajo
+de 11 px.
+
 ### Lo que no está verificado
 
+- **Los objetivos táctiles del pie y la navegación** miden 20–23 px de alto.
+  Los enlaces en línea están exentos de la regla de tamaño de la WCAG, pero una
+  lista de enlaces en el pie está en el límite. Se arregla con un poco de
+  relleno vertical; sin hacer.
+- **El `noindex` del panel.** Está declarado en el layout de `/admin`, pero no
+  se pudo ver renderizado porque sin sesión la ruta redirige antes de emitir
+  HTML. Lo que sí protege hoy es el `Disallow` de `robots.txt` y la propia
+  redirección.
 - **El spam de reservas.** El tope es de tres reservas pendientes por celular y
   ninguna repetida en la misma franja, pero el celular no se verifica: con cien
   millones de números peruanos válidos se puede llenar la agenda de reservas

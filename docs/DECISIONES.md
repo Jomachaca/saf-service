@@ -819,3 +819,54 @@ que el CMS gane un campo. Queda anotado, no arreglado.
 las funciones que crean las extensiones y las que instala Supabase, y el día que
 una de ellas haga falta el fallo aparece lejos de acá. Se nombran una por una,
 aunque sean dieciocho líneas.
+
+## 37. Sin banner de cookies, con política de privacidad de verdad
+
+**Decidido.** El sitio no lleva banner de cookies. Sí lleva `/privacidad` y
+`/terminos`, un aviso de datos personales pegado al botón de reservar, y los
+datos del responsable salen del CMS en vez de estar escritos en el código.
+
+**Por qué no hay banner.**
+
+Un banner de cookies existe para pedir consentimiento por cookies que **no son
+necesarias**: analítica, publicidad, seguimiento entre sitios. Este proyecto no
+tiene ninguna. No hay Google Analytics, ni píxeles, ni etiquetas de terceros; un
+visitante del sitio público no recibe una sola cookie. La única del sistema es
+la de sesión del panel, que es estrictamente necesaria para que el staff pueda
+entrar y que un visitante nunca ve.
+
+Poner un banner igual no sería «ir a lo seguro»: sería declarar en la cara de
+cada visitante que se le está siguiendo, cuando no es verdad, y añadir un clic
+a la primera impresión del taller a cambio de nada. Si algún día se agrega
+analítica, el banner entra el mismo día que la analítica, no antes.
+
+**Por qué sí hace falta la política de privacidad.** El formulario de reserva
+recoge nombre, celular y placa: datos personales a los que les aplica la Ley
+N.° 29733. Lo que la ley pide no es un banner, es que la persona sepa quién
+guarda sus datos, para qué y cómo pedir que se corrijan o se borren. Eso es lo
+que dice la página, y el aviso va pegado al botón de reservar y no escondido en
+el pie, porque «informado» significa saberlo en el momento de entregarlos.
+
+**El texto dice lo que el sistema hace, no una plantilla.** Los datos que lista
+son exactamente los que piden `crear_reserva()` y la recepción. Declara que la
+base está en São Paulo, o sea que hay flujo transfronterizo. Explica que quien
+tenga el enlace de `/o/{token}` ve esa información. Si mañana se recoge un dato
+más, este texto cambia el mismo día: una política que describe otro sistema es
+peor que no tenerla.
+
+**El responsable sale del CMS.** Nombre, dirección, correo y teléfono se leen de
+`config_sitio` como en el resto del sitio. Escribirlos a mano significaría que
+el día que el taller se mude, su política de privacidad siga apuntando al local
+anterior.
+
+**Descartado:** una casilla de «acepto» obligatoria. Añade fricción al
+formulario que más importa que se termine, y el aviso visible junto al botón ya
+cumple el requisito de información previa. Si un abogado lo pide, la casilla va
+con `input type="hidden"` y un botón, como el resto de los formularios con
+acción del proyecto.
+
+**Descartado:** publicar los horarios como dato estructurado. En el CMS son
+texto libre —«Lunes a viernes», «8:00 a 18:00»— y traducirlos a
+`openingHoursSpecification` sería adivinar. Un horario equivocado en los datos
+estructurados manda gente al taller cuando está cerrado, así que el JSON-LD
+publica nombre, dirección, teléfono y redes, y nada de horarios.

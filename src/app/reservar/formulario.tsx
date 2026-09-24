@@ -401,6 +401,24 @@ export function FormularioReserva({
               ? `Falta completar ${enumerar(faltan)}.`
               : "El taller revisa la reserva y te confirma por WhatsApp."}
           </p>
+
+          {/*
+            El aviso de datos personales, donde se lee: pegado al botón, no
+            escondido en el pie. La Ley 29733 pide consentimiento informado, y
+            «informado» quiere decir que la persona sepa qué está entregando
+            justo cuando lo entrega.
+          */}
+          <p className="border-t border-white/15 pt-3.5 text-xs leading-relaxed text-white/55">
+            Al reservar aceptas que guardemos tu nombre y tu celular para gestionar esta cita y
+            contactarte por ella. Nada más, y nunca para publicidad.{" "}
+            <a
+              href="/privacidad"
+              className="text-white/80 underline underline-offset-4 transition-colors duration-200 hover:text-white"
+            >
+              Cómo tratamos tus datos
+            </a>
+            .
+          </p>
         </div>
 
         {direccion && mapaHref ? (

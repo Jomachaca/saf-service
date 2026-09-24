@@ -7,6 +7,8 @@
  * devuelve ninguna confirmación de entrega (regla 7).
  */
 
+import { sitioUrl } from "./sitio/url";
+
 /** Perú. Se antepone cuando el número viene sin código de país. */
 const CODIGO_PAIS = "51";
 
@@ -54,6 +56,5 @@ export function enlaceWhatsApp(telefono: string, mensaje: string): string | null
 
 /** La URL que ve el cliente. Sale de `NEXT_PUBLIC_SITE_URL` (decisión 7). */
 export function enlacePublico(token: string): string {
-  const base = (process.env.NEXT_PUBLIC_SITE_URL ?? "http://localhost:3000").replace(/\/$/, "");
-  return `${base}/o/${token}`;
+  return `${sitioUrl()}/o/${token}`;
 }

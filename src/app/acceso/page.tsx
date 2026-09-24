@@ -6,6 +6,8 @@ import { supabaseConfigurado } from "@/lib/supabase/env";
 import { FormularioAcceso } from "./formulario";
 
 export const metadata = {
+  // Una pantalla de acceso no tiene nada que hacer en un buscador.
+  robots: { index: false, follow: false },
   title: "Acceso",
 };
 

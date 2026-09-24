@@ -257,6 +257,8 @@ Misma tabla, mismo formulario. El catálogo es solo autocompletado.
 /servicios              catálogo público
 /reservar               formulario de reserva
 /o/{token}              consulta de orden + aprobación   [server-side]
+/privacidad             política de privacidad (Ley 29733)
+/terminos               términos de uso
 ```
 
 ### Panel

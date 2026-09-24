@@ -29,6 +29,14 @@ import { EnlacesConRuta, EnlacesPanel, MenuMovil } from "./navegacion";
  * de pantalla: con la barra lateral, una pantalla de 1024 px deja poco más de
  * 720 para el contenido, y un `lg:` creería que tiene los 1024.
  */
+/**
+ * Todo lo que cuelga de /admin queda fuera de los buscadores. Las pantallas de
+ * abajo solo declaran su `title`, así que heredan este `robots`.
+ */
+export const metadata = {
+  robots: { index: false, follow: false },
+};
+
 export default function LayoutAdmin({ children }: LayoutProps<"/admin">) {
   const avisoSitio = (
     <Suspense fallback={null}>
