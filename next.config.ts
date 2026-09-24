@@ -38,6 +38,36 @@ const nextConfig: NextConfig = {
   // importante: los errores de compilación y de ejecución se siguen mostrando.
   devIndicators: false,
 
+  /**
+   * Cabeceras de seguridad. No había ninguna (decisión 36).
+   *
+   * `frame-ancestors: none` es la que importa: sin ella, una página cualquiera
+   * puede meter el panel en un iframe invisible y hacer que alguien con sesión
+   * abierta pulse botones sin verlos. Va como CSP y también como
+   * `X-Frame-Options`, porque los navegadores viejos solo entienden la segunda.
+   *
+   * La CSP se queda en `frame-ancestors` a propósito. Una CSP completa para
+   * Next.js necesita nonces por petición en el proxy, y una mal puesta rompe la
+   * página entera en silencio: es un trabajo aparte, con su propia prueba.
+   */
+  async headers() {
+    return [
+      {
+        source: "/:ruta*",
+        headers: [
+          { key: "Content-Security-Policy", value: "frame-ancestors 'none'" },
+          { key: "X-Frame-Options", value: "DENY" },
+          { key: "X-Content-Type-Options", value: "nosniff" },
+          { key: "Referrer-Policy", value: "strict-origin-when-cross-origin" },
+          {
+            key: "Permissions-Policy",
+            value: "camera=(), microphone=(), geolocation=(), payment=(), usb=()",
+          },
+        ],
+      },
+    ];
+  },
+
   // Rutas que cambiaron al ordenar el panel en una barra lateral (decisión 31).
   // Temporales: una pestaña vieja o un marcador siguen llegando a su pantalla.
   async redirects() {

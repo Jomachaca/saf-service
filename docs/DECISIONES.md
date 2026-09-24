@@ -767,3 +767,55 @@ tablero además enlaza a la pantalla desde el encabezado de «Espacios».
 mitad del trabajo y el resultado miente sobre lo que es el taller.
 
 **Descartado:** un mínimo de un espacio obligatorio. Ver arriba.
+
+## 36. Los permisos se revocan de `public`, no de `anon`
+
+**Decidido.** Toda función del esquema `public` empieza cerrada con
+`revoke execute … from public, anon, authenticated` y después se le concede
+explícitamente a quien la necesita. Las tablas que el sitio público no lee
+pierden además el permiso de tabla para `anon`, no solo las filas por RLS.
+
+**Por qué.**
+
+El proyecto ya cerraba las funciones de staff con `revoke execute … from anon`.
+No servía de nada, y la razón es de PostgreSQL: al crear una función, Postgres
+le concede `execute` a `PUBLIC`, el pseudo-rol al que pertenece todo el mundo.
+Quitarle la concesión nominal a `anon` deja intacta la de `PUBLIC`, que `anon`
+hereda igual.
+
+Comprobado contra la base de producción con la clave publicable: se ejecutaban
+sin sesión `buscar_vehiculo`, `cambiar_estado_orden`, `guardar_diagnostico`,
+`enviar_presupuesto`, `responder_presupuesto`, `registrar_evento`, `es_staff` y
+`siguiente_correlativo`. Las tres que sí estaban cerradas —`recepcionar_vehiculo`,
+`mover_orden` y `guardar_franjas`— son exactamente las que decían
+`from public, anon`. El patrón correcto estaba escrito en tres sitios de trece,
+por casualidad.
+
+**Casi ninguna llegaba a hacer daño**, porque ninguna es `security definer` y RLS
+filtraba a cero todo lo que tocaban: `buscar_vehiculo` con una placa real
+devolvía `[]`. Pero eso significa que la única capa que protegía los datos de los
+clientes era RLS, mientras el proyecto creía tener dos.
+
+**La excepción sí hacía daño.** `siguiente_correlativo()` es `security definer`
+—tiene que serlo, porque `contador_orden` está cerrada a todo el mundo— y por eso
+se salta RLS. Cualquiera con la clave publicable, que está en el HTML del sitio,
+podía llamarla en bucle e inflar el correlativo: los números de orden del taller
+empezarían a dar saltos. Se confirmó creando la fila del año 1999 en
+`contador_orden`, que se borró enseguida.
+
+**Cerrar también las tablas** es lo que convierte una capa en dos. RLS ya devuelve
+cero filas, pero una política nueva mal escrita publicaría los datos al instante;
+sin el permiso de tabla, esa política ni llega a evaluarse. Se quedan abiertas a
+`anon` solo las cuatro que alimentan el sitio: `config_sitio`,
+`servicio_catalogo`, `galeria_imagen` y `destacado`.
+
+**Lo que no se cerró y por qué.** `config_sitio` se lee entera, así que los textos
+guardados y todavía sin publicar se pueden leer consultando la base aunque el
+landing muestre la versión anterior. No hay nada secreto ahí —es el contenido
+público del taller— y restringir por columnas obligaría a tocar la lista cada vez
+que el CMS gane un campo. Queda anotado, no arreglado.
+
+**Descartado:** `revoke execute on all functions in schema public`. Barre también
+las funciones que crean las extensiones y las que instala Supabase, y el día que
+una de ellas haga falta el fallo aparece lejos de acá. Se nombran una por una,
+aunque sean dieciocho líneas.

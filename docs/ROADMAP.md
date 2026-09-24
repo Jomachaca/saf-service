@@ -418,8 +418,49 @@ y tiempo en el taller. Arranca por el que más tiempo lleva, que es el urgente.
 Donde no entra la fila de encabezados, el mismo orden se elige en un
 desplegable con las opciones escritas en palabras.
 
+### Revisión de seguridad
+
+Revisión enfocada con la skill `security-audit` de Cloudflare, contra el código
+y contra la base de producción con la clave publicable, usando solo lecturas y
+escrituras diseñadas para abortar antes de tocar nada.
+
+**Lo que aguantó.** No hay ni un vector de inyección SQL: ninguna de las veinte
+funciones arma SQL dinámico, y lo que parece concatenación son parámetros dentro
+de un `ilike`. La clave de servicio no aparece en `.next/static` ni en las
+páginas compiladas —se buscó carácter por carácter— y se usa en un solo archivo.
+RLS devuelve cero filas a un anónimo en las diecisiete tablas, incluso
+actualizando filas reales con su propio valor. El token público son 192 bits de
+aleatoriedad criptográfica. Las veinte acciones del panel llaman a
+`requerirStaff()`. El acceso no revela qué correos existen.
+
+**Lo que falló.** Ocho funciones de staff se podían ejecutar sin sesión porque
+el `revoke` iba contra `anon` en vez de contra `public`, y una de ellas
+—`siguiente_correlativo`, que es `security definer`— permitía a cualquiera
+inflar el correlativo de las órdenes. Arreglado en
+`20260923170000_permisos.sql` (decisión 36). No había ninguna cabecera de
+seguridad; ahora van `frame-ancestors`, `X-Frame-Options`, `nosniff`,
+`Referrer-Policy` y `Permissions-Policy` desde `next.config.ts`.
+
+**Verificado después de aplicar.** Con la clave publicable: once funciones
+denegadas, nueve tablas denegadas, y siguen abiertas solo
+`disponibilidad_reservas`, `crear_reserva` y las cuatro tablas del landing. Con
+sesión de staff: las diez funciones pasan el permiso y las diez tablas
+devuelven datos. Se creó y borró una orden completa (OS-2026-0011) para
+comprobar la cadena del valor por defecto del token y del disparador del
+correlativo; el contador quedó restaurado en 10.
+
 ### Lo que no está verificado
 
+- **El spam de reservas.** El tope es de tres reservas pendientes por celular y
+  ninguna repetida en la misma franja, pero el celular no se verifica: con cien
+  millones de números peruanos válidos se puede llenar la agenda de reservas
+  falsas. No es una caída de infraestructura, es una denegación de servicio al
+  negocio. Las salidas son Cloudflare Turnstile en `/reservar` o las reglas de
+  firewall de Vercel Pro. Sin decidir.
+- **Lo guardado sin publicar es legible.** `config_sitio` se lee entera con la
+  clave publicable, así que los textos del CMS que todavía no se publicaron ya
+  se pueden consultar contra la base. No hay nada secreto, pero «sin publicar»
+  no significa lo que parece (decisión 36).
 - **El movimiento, visto moverse.** El navegador que usa el asistente fuerza
   `prefers-reduced-motion` y congela `document.timeline`, así que se puede
   comprobar que las animaciones están enganchadas y en `running`, pero no
